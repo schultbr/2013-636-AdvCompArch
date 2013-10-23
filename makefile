@@ -11,21 +11,36 @@ LINKER   = gcc -o
 LFLAGS   = -Wall -I. -lm
 
 # change these to set the proper directories where each files shoould be
-SRCDIR   = src
-OBJDIR   = obj
-BINDIR   = bin
+SRCPREFIX = ./src
+OBJDIR    = obj
+BINDIR    = bin
 
-SOURCES  := $(wildcard $(SRCDIR)/*.c)
-INCLUDES := $(wildcard $(SRCDIR)/*.h)
-OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+SRCDIRS=mainApp
+SRCDIRS+= structDefs
+SRCDIRS+= fetchStage
+SRCDIRS+= decodeStage
+SRCDIRS+= dispatchStage
+SRCDIRS+= issueStage
+SRCDIRS+= executeStage
+SRCDIRS+= reservationStations
+SRCDIRS+= functionalUnits
+SRCDIRS+= utilities/branchPrediction
+SRCDIRS+= utilities/cacheController
+SRCDIRS+= utilities/commandLine
+
+
+SOURCES  := $(wildcard $(SRCPREFIX)/$(SRCDIRS)/*.c)
+INCLUDES := $(wildcard $(SRCPREFIX)/$(SRCDIRS)/*.h)
+OBJECTS  := $(SOURCES:$(SRCPREFIX)/$(SRCDIRS)/%.c=$(OBJDIR)/%.o)
 rm       = rm -f
 
-
 $(BINDIR)/$(TARGET): $(OBJECTS)
+	@echo "$(SOURCES)"
 	@$(LINKER) $@ $(LFLAGS) $(OBJECTS)
 	@echo "Linking complete!"
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCPREFIX)/$(SRCDIRS)/%.c
+	@echo $(SOURCES)
 	@$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled "$<" successfully!"
 

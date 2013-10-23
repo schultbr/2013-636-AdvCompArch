@@ -18,7 +18,7 @@ int processCommandLine(int argc, char **argv,
 						float *level1CacheHitRate,
 						int *level1CacheAccessTime,
 						float *level2CacheHitRate,
-						int *level1CacheAccessTime,
+						int *level2CacheAccessTime,
 						char *inputTrace);
 
 #endif /* COMMANDLINE_H_ */
