@@ -9,6 +9,7 @@
 #include "ReservationStations.h"
 #include "FunctionalUnits.h"
 #include "CommandLine.h"
+#include <stdio.h>
 
 
 

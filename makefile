@@ -14,9 +14,9 @@ ObjDir = ./_obj
 #
 BinDir = ./bin
 
-CC = gcc
+CC = g++
 # compiling flags here
-CFLAGS = -c -std=c99 -g3 -ggdb3 -Wall
+CFLAGS = -c -g3 -ggdb3 -Wall
 
 LINK = $(CC)
 # linking flags here
@@ -51,10 +51,10 @@ CINCLUDE += $(addprefix -I, $(SrcDirs)) -I/usr/include
 # to search in implicit rules 
 VPATH := $(SrcDirs)
 
-search_wildcards := $(addsuffix /*.c, $(SrcDirs))
+search_wildcards := $(addsuffix /*.cpp, $(SrcDirs))
 
-CSrc  = $(wildcard $(search_wildcards))
-Objs    = $(addprefix $(ObjDir)/, $(notdir $(patsubst %.c, %.o, $(CSrc))))
+CppSrc  = $(wildcard $(search_wildcards))
+Objs    = $(addprefix $(ObjDir)/, $(notdir $(patsubst %.cpp, %.o, $(CppSrc))))
 
 ##############################################################################
 
@@ -73,7 +73,7 @@ build : prepare $(BinDir)/$(BinName)
 $(BinDir)/$(BinName) : $(Objs)
 	$(LINK) $^ $(LINKFLAGS) -o $@
 
-$(ObjDir)/%.o: %.c 
+$(ObjDir)/%.o: %.cpp 
 	$(CC) $(CFLAGS) $(CINCLUDE) -o $@ $< 
 
 -include $(Objs:%.o=%.d) 
