@@ -1,48 +1,83 @@
 
+SHELL = /bin/sh
+
 # project name (generate executable with this name)
-TARGET   = project2
+BinName = project2
+
+#
+# Directory name for obj-files
+#
+ObjDir = ./_obj
+
+#
+# Directory name for exe-files
+#
+BinDir = ./bin
 
 CC       = gcc
 # compiling flags here
-CFLAGS   = -std=c99 -Wall -I.
+CFLAGS   = -std=c99 -g3 -ggdb3 -Wall
 
-LINKER   = gcc -o
+LINK   = $(CC) -o
 # linking flags here
 LFLAGS   = -Wall -I. -lm
 
-# change these to set the proper directories where each files shoould be
-SRCPREFIX = ./src
-OBJDIR    = obj
-BINDIR    = bin
 
-SRCDIRS=mainApp
-SRCDIRS+= structDefs
-SRCDIRS+= fetchStage
-SRCDIRS+= decodeStage
-SRCDIRS+= dispatchStage
-SRCDIRS+= issueStage
-SRCDIRS+= executeStage
-SRCDIRS+= reservationStations
-SRCDIRS+= functionalUnits
-SRCDIRS+= utilities/branchPrediction
-SRCDIRS+= utilities/cacheController
-SRCDIRS+= utilities/commandLine
+SrcDirs = ./src/mainApp
+SrcDirs += ./src/structDefs
+SrcDirs += ./src/fetchStage
+SrcDirs += ./src/decodeStage
+SrcDirs += ./src/dispatchStage
+SrcDirs += ./src/issueStage
+SrcDirs += ./src/executeStage
+SrcDirs += ./src/reservationStations
+SrcDirs += ./src/functionalUnits
+SrcDirs += ./src/utilities/branchPrediction
+SrcDirs += ./src/utilities/cacheController
+SrcDirs += ./src/utilities/commandLine
 
+CINCLUDE += $(addprefix -I, $(SrcDirs))
 
-SOURCES  := $(wildcard $(SRCPREFIX)/$(SRCDIRS)/*.c)
-INCLUDES := $(wildcard $(SRCPREFIX)/$(SRCDIRS)/*.h)
-OBJECTS  := $(SOURCES:$(SRCPREFIX)/$(SRCDIRS)/%.c=$(OBJDIR)/%.o)
+#
+##############################################################################
+#
+# Makefile targets
+#
+##############################################################################
+# to search in implicit rules 
+VPATH := $(SrcDirs)
+
+search_wildcards := $(addsuffix /*.c, $(SrcDirs))
+
+CSrc  = $(wildcard $(search_wildcards))
+Objs    = $(addprefix $(ObjDir)/, $(notdir $(patsubst %.c, %.o, $(CSrc))))
 rm       = rm -f
 
-$(BINDIR)/$(TARGET): $(OBJECTS)
-	@echo "$(SOURCES)"
-	@$(LINKER) $@ $(LFLAGS) $(OBJECTS)
-	@echo "Linking complete!"
+all : prepare build
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCPREFIX)/$(SRCDIRS)/%.c
-	@echo $(SOURCES)
-	@$(CC) $(CFLAGS) -c $< -o $@
-	@echo "Compiled "$<" successfully!"
+build : prepare $(BinDir)/$(BinName)
+
+	@echo "CFLAGS = $(CFLAGS)"
+	@echo "============================================================"
+	@echo "============================================================"
+	@echo "==   ${BinName} Build complete."
+	@echo "============================================================"
+	@echo "============================================================"
+
+	
+$(BinDir)/$(BinName) : $(Objs)
+	$(LINKER) $^ $(LINKFLAGS) $(LIBS) -o $@
+
+$(ObjDir)/%.o: %.c 
+	$(CC) $(CFLAGS) $(CINCLUDE) -o $@ $< 
+
+-include $(Objs:%.o=%.d) 
+
+.PHONY: prepare
+prepare :
+
+	mkdir -p $(ObjDir)
+	mkdir -p $(BinDir)
 
 .PHONEY: clean
 clean:
