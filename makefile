@@ -14,15 +14,17 @@ ObjDir = ./_obj
 #
 BinDir = ./bin
 
-CC       = gcc
+CC = gcc
 # compiling flags here
-CFLAGS   = -std=c99 -g3 -ggdb3 -Wall
+CFLAGS = -c -std=c99 -g3 -ggdb3 -Wall
 
-LINK   = $(CC) -o
+LINK = $(CC)
 # linking flags here
-LFLAGS   = -Wall -I. -lm
+LINKFLAGS = -Wall -lrt
 
-
+#
+# Directory names for sources files
+#
 SrcDirs = ./src/mainApp
 SrcDirs += ./src/structDefs
 SrcDirs += ./src/fetchStage
@@ -36,7 +38,7 @@ SrcDirs += ./src/utilities/branchPrediction
 SrcDirs += ./src/utilities/cacheController
 SrcDirs += ./src/utilities/commandLine
 
-CINCLUDE += $(addprefix -I, $(SrcDirs))
+
 
 #
 ##############################################################################
@@ -44,6 +46,8 @@ CINCLUDE += $(addprefix -I, $(SrcDirs))
 # Makefile targets
 #
 ##############################################################################
+CINCLUDE += $(addprefix -I, $(SrcDirs)) -I/usr/include
+
 # to search in implicit rules 
 VPATH := $(SrcDirs)
 
@@ -51,7 +55,8 @@ search_wildcards := $(addsuffix /*.c, $(SrcDirs))
 
 CSrc  = $(wildcard $(search_wildcards))
 Objs    = $(addprefix $(ObjDir)/, $(notdir $(patsubst %.c, %.o, $(CSrc))))
-rm       = rm -f
+
+##############################################################################
 
 all : prepare build
 
@@ -66,7 +71,7 @@ build : prepare $(BinDir)/$(BinName)
 
 	
 $(BinDir)/$(BinName) : $(Objs)
-	$(LINKER) $^ $(LINKFLAGS) $(LIBS) -o $@
+	$(LINK) $^ $(LINKFLAGS) -o $@
 
 $(ObjDir)/%.o: %.c 
 	$(CC) $(CFLAGS) $(CINCLUDE) -o $@ $< 
@@ -81,10 +86,11 @@ prepare :
 
 .PHONEY: clean
 clean:
-	@$(rm) $(OBJECTS)
+	rm -r -f $(ObjDir)
+	rm -r -f $(BinDir)
 	@echo "Cleanup complete!"
 
 .PHONEY: remove
 remove: clean
-	@$(rm) $(BINDIR)/$(TARGET)
+	rm -r -f $(BinDir)/$(BinName)
 	@echo "Executable removed!"
