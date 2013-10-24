@@ -15,15 +15,12 @@
 
 
 
-int runSimulation()
-{
+int runSimulation() {
 
 	return 1;
 }
 
-int main(int argc, char** argv)
-{
-
+int main(int argc, char** argv) {
 	int returnVal = 0;
 	int superScalarFactor = 0;
 	int btbSize = 0;
