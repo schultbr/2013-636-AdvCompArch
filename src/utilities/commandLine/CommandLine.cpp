@@ -57,6 +57,8 @@ int processCommandLine(int argc, char **argv,
 						char *inputTrace) {
 	int opt = 0;
 	int long_index = 0;
+	int foundCount = 0;
+	int targetFound = 11;
 
 	printf("Processing command line for %d options\n", argc);
 
@@ -67,46 +69,57 @@ int processCommandLine(int argc, char **argv,
 			 case 's' :
 				 printf("Found s\n");
 				 *superScalarFactor = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'b' :
 				 printf("Found b\n");
 				 *btbSize = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'r' :
 				 printf("Found r\n");
 				 *rsEntries = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'f' :
 				 printf("Found f\n");
 				 *fuCount = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'n' :
 				 printf("Found n\n");
 				 *renameTableEntries = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'o' :
 				 printf("Found o\n");
 				 *reorderBufferEntries = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case '1' :
 				 printf("Found 1\n");
 				 *level1CacheHitRate = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'a' :
 				 printf("Found a\n");
 				 *level1CacheAccessTime = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case '2' :
 				 printf("Found 2\n");
 				 *level2CacheHitRate = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 'c' :
 				 printf("Found c\n");
 				 *level2CacheAccessTime = atoi(optarg);
+				 foundCount++;
 				 break;
 			 case 't' :
 				 printf("Found t\n");
 				 inputTrace = optarg;
+				 foundCount++;
 				 break;
 			 default:
 				 printf("Found default\n");
@@ -115,8 +128,8 @@ int processCommandLine(int argc, char **argv,
 		}
 	}
 
-	if(opt == -1) {
-		printf("Found opt=%d\n", opt);
+	if(opt == -1 && foundCount != targetFound) {
+		printf("Found opt=%d\t %d of %d required flags found\n", opt, foundCount, targetFound);
 		print_usage();
 		exit(EXIT_FAILURE);
 	}
