@@ -16,7 +16,7 @@ void print_usage() {
     printf("                 --fu NUM --rnt NUM --rob NUM \n");
     printf("                 --l1hr NUM --l1at NUM --l2hr NUM \n");
     printf("                 --l2at NUM --trace TRACE_FILE\n");
-    printf("Key:\n")
+    printf("Key:\n");
     printf("--ss = SuperScalar Count --btb = BTB Size --rs = ReservationStation Size");
     printf("--fu = FunctionalUnit Count --rnt = RenameTable Size --rob = ReorderBuffer Size \n");
     printf("--l1hr = Level 1 Hit Rate --l1at = Level 1 Access Time --l2hr = Level 2 Hit Rate \n");
