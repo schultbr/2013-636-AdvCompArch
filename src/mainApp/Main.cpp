@@ -13,9 +13,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "FetchStage.h"
 
 
 int runSimulation() {
+
+//	simulateCompleteCycle();
+//	simulateExecuteCycle();
+//	simulateIssueCycle();
+//	simulateDispatchCycle();
+//	simulateDecodeCycle();
+	simulateFetchCycle();
 
 	return 1;
 }

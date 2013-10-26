@@ -1,0 +1,29 @@
+/*
+ * TraceReader.h
+ *
+ *  Created on: Oct 26, 2013
+ *      Author: brian
+ */
+
+#ifndef TRACEREADER_H_
+#define TRACEREADER_H_
+
+#include <fstream>
+#include <string.h>
+#include "StructureDefs.h"
+
+class TraceReader {
+public:
+	TraceReader();
+	virtual ~TraceReader();
+
+	Instruction getNextInstruction();
+	std::string getNextTraceLine();
+
+	int openTrace(char *traceName);
+
+private:
+	std::ifstream *traceFile;
+};
+
+#endif /* TRACEREADER_H_ */
