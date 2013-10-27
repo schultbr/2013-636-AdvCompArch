@@ -34,7 +34,7 @@ Instruction* simulateFetchCycle() {
 
 		//Look up the condition that would cause the fetch to stall...
 		//I can't remember what it is though.
-//		if(something)
+//		if(fetchedInstructions[i] == something)
 //			break;
 	}
 

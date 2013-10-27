@@ -9,6 +9,8 @@
 int superScalarSize;
 TraceReader instructionTrace;
 
+//these setters are totally unnecessary but, meh. theyre already here.
+//kinda the right thing to do... sometimes
 void setSuperScalarSize(int size) {
 	superScalarSize = size;
 }
