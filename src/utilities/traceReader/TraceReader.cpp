@@ -7,7 +7,6 @@
 
 #include "TraceReader.h"
 
-
 using namespace std;
 
 TraceReader::TraceReader() {
@@ -23,9 +22,7 @@ TraceReader::~TraceReader() {
 }
 
 string TraceReader::getNextTraceLine(){
-	char line[1024];
-
-	memset(line, 0, 1024*sizeof(char));
+	string line;
 
 	//if the trace file is not open... return
 	//now before trying to read
@@ -33,7 +30,7 @@ string TraceReader::getNextTraceLine(){
 		return line;
 
 	//get next line from trace
-//	traceFile->read()
+	getline((*traceFile), line);
 
 
 	return line;
