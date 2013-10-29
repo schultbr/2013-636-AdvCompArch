@@ -39,6 +39,7 @@ SrcDirs += ./src/utilities/cacheController
 SrcDirs += ./src/utilities/commandLine
 SrcDirs += ./src/utilities/globalVariables
 SrcDirs += ./src/utilities/traceReader
+SrcDirs += ./src/utilities/instruction
 
 
 

@@ -16,7 +16,6 @@ TraceReader::TraceReader() {
 
 TraceReader::~TraceReader() {
 	// TODO Auto-generated destructor stub
-
 	traceFile->close();
 	delete traceFile;
 }
@@ -41,6 +40,8 @@ Instruction TraceReader::getNextInstruction(){
 	Instruction ret;
 
 	line = getNextTraceLine();
+
+	printf("Line:\t%s\n", line.c_str());
 
 	//replace the following code with the proper parsers...
 	ret.PC = -1;
