@@ -37,6 +37,8 @@ SrcDirs += ./src/functionalUnits
 SrcDirs += ./src/utilities/branchPrediction
 SrcDirs += ./src/utilities/cacheController
 SrcDirs += ./src/utilities/commandLine
+SrcDirs += ./src/utilities/globalVariables
+SrcDirs += ./src/utilities/traceReader
 
 
 

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
 
 void print_usage() {
@@ -17,7 +18,7 @@ void print_usage() {
     printf("                 --l1hr NUM --l1at NUM --l2hr NUM \n");
     printf("                 --l2at NUM --trace TRACE_FILE\n");
     printf("Key:\n");
-    printf("--ss = SuperScalar Count --btb = BTB Size --rs = ReservationStation Size");
+    printf("--ss = SuperScalar Count --btb = BTB Size --rs = ReservationStation Size\n");
     printf("--fu = FunctionalUnit Count --rnt = RenameTable Size --rob = ReorderBuffer Size \n");
     printf("--l1hr = Level 1 Hit Rate --l1at = Level 1 Access Time --l2hr = Level 2 Hit Rate \n");
     printf("--l2at = Level 2 Access Time --trace = Path to Target Trace File\n");
@@ -44,16 +45,16 @@ static struct option long_options[] = {
 
 
 int processCommandLine(int argc, char **argv,
-						int *superScalarFactor,
-						int *btbSize,
-						int *rsEntries,
-						int *fuCount,
-						int *renameTableEntries,
-						int *reorderBufferEntries,
-						float *level1CacheHitRate,
-						int *level1CacheAccessTime,
-						float *level2CacheHitRate,
-						int *level2CacheAccessTime,
+						int &superScalarFactor,
+						int &btbSize,
+						int &rsEntries,
+						int &fuCount,
+						int &renameTableEntries,
+						int &reorderBufferEntries,
+						float &level1CacheHitRate,
+						int &level1CacheAccessTime,
+						float &level2CacheHitRate,
+						int &level2CacheAccessTime,
 						char *inputTrace) {
 	int opt = 0;
 	int long_index = 0;
@@ -68,57 +69,58 @@ int processCommandLine(int argc, char **argv,
 		switch (opt) {
 			 case 's' :
 				 printf("Found s\n");
-				 *superScalarFactor = atoi(optarg);
+				 superScalarFactor = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'b' :
 				 printf("Found b\n");
-				 *btbSize = atoi(optarg);
+				 btbSize = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'r' :
 				 printf("Found r\n");
-				 *rsEntries = atoi(optarg);
+				 rsEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'f' :
 				 printf("Found f\n");
-				 *fuCount = atoi(optarg);
+				 fuCount = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'n' :
 				 printf("Found n\n");
-				 *renameTableEntries = atoi(optarg);
+				 renameTableEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'o' :
 				 printf("Found o\n");
-				 *reorderBufferEntries = atoi(optarg);
+				 reorderBufferEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '1' :
 				 printf("Found 1\n");
-				 *level1CacheHitRate = atoi(optarg);
+				 level1CacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'a' :
 				 printf("Found a\n");
-				 *level1CacheAccessTime = atoi(optarg);
+				 level1CacheAccessTime = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '2' :
 				 printf("Found 2\n");
-				 *level2CacheHitRate = atoi(optarg);
+				 level2CacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'c' :
 				 printf("Found c\n");
-				 *level2CacheAccessTime = atoi(optarg);
+				 level2CacheAccessTime = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 't' :
-				 printf("Found t\n");
-				 inputTrace = optarg;
+				 printf("Found t (%s)\n", optarg);
+//				 inputTrace = optarg;
+				 memcpy(inputTrace, optarg, sizeof(&optarg));
 				 foundCount++;
 				 break;
 			 default:
