@@ -6,6 +6,7 @@
  */
 
 #include "FetchStage.h"
+#include "TraceReader.h"
 #include "GlobalVars.h"
 #include <unistd.h>
 #include <stdio.h>

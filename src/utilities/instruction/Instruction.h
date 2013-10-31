@@ -31,7 +31,7 @@ private:
     int imm;
     int dest;
 
-    std::map<std::string, int> instructionMap;
+    static std::map<std::string, int> instructionMap;
 
     int OpcodeLookup(std::string code);
     void ParseRegisters(std::vector<std::string> tokens);

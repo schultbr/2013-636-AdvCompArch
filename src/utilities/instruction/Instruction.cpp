@@ -6,7 +6,7 @@
  */
 
 #include "Instruction.h"
-
+#include "GlobalVars.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -14,6 +14,8 @@
 #include <iterator>
 
 using namespace std;
+
+std::map<std::string, int> Instruction::instructionMap;
 
 Instruction::Instruction() {
     PC = -1;
@@ -56,12 +58,12 @@ Instruction::~Instruction() {
 }
 
 void Instruction::Print() {
-    printf("PC:\t%d\n", PC);
-    printf("dest:\t%d\n", dest);
-    printf("imm:\t%d\n", imm);
-    printf("op:\t%d\n", opCode);
-    printf("src1:\t%d\n", src1);
-    printf("src2:\t%d\n", src2);
+    cout << "PC:\t%" << PC << endl;
+    cout << "dest:\t" << dest << endl;
+    cout << "imm:\t" << imm << endl;
+    cout << "op:\t" << opCode << endl;
+    cout << "src1:\t" << src1 << endl;
+    cout << "src2:\t" << src2 << endl;
 }
 
 
