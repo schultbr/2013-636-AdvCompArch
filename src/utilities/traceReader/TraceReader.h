@@ -10,7 +10,7 @@
 
 #include <fstream>
 #include <string.h>
-#include "StructureDefs.h"
+#include "Instruction.h"
 
 class TraceReader {
 public:
@@ -19,6 +19,7 @@ public:
 
 	Instruction getNextInstruction();
 	std::string getNextTraceLine();
+	bool isTraceOpen();
 
 	int openTrace(char *traceName);
 

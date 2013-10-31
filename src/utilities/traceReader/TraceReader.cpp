@@ -37,21 +37,25 @@ string TraceReader::getNextTraceLine(){
 
 Instruction TraceReader::getNextInstruction(){
 	string line;
-	Instruction ret;
-
 	line = getNextTraceLine();
 
 	printf("Line:\t%s\n", line.c_str());
 
+	Instruction ret(line);
+
 	//replace the following code with the proper parsers...
-	ret.PC = -1;
-	ret.dest = -1;
-	ret.imm = -1;
-	ret.opCode = -1;
-	ret.src1 = -1;
-	ret.src2 = -1;
+//	ret.PC = -1;
+//	ret.dest = -1;
+//	ret.imm = -1;
+//	ret.opCode = -1;
+//	ret.src1 = -1;
+//	ret.src2 = -1;
 
 	return ret;
+}
+
+bool TraceReader::isTraceOpen() {
+	return traceFile->is_open();
 }
 
 //returns 	0 for success
