@@ -11,46 +11,52 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//int superScalarSize = 0;
-int fetchedInstructionCount = 0;
-//Instruction *fetchedInstructions;
-
 using namespace std;
+
+int fetchedInstructionCount = 0;
+TraceReader instructionTrace;
+
+int cacheMissWaitTimeRemaining = 0;
 
 //pull in n instructions
 //process from strings into instruction types? or should they be in them already from the reader? derp.
 //
-Instruction* simulateFetchCycle() {
-	Instruction *fetchedInstructions;
-	string lineToProcess = "";
+std::queue<Instruction> simulateFetchCycle() {
+	queue<Instruction> fetchedInstructions;
+	int cacheHitRoll = 0;
 
-	if(fetchedInstructions == NULL)
-		fetchedInstructions = new Instruction[superScalarSize]();
+	//did we previously miss a cache hit?
+	//check to we're still paying any penalty
+	if(cacheMissWaitTimeRemaining > 0) {
+		cacheMissWaitTimeRemaining--;
+		return fetchedInstructions;
+	}
 
-	for(int i = 0; i < superScalarSize; i++) {
+	if(!instructionTrace.isTraceOpen())
+		instructionTrace.openTrace(inputTrace);
 
-//		lineToProcess = instructionTrace.getNextTraceLine();
-		fetchedInstructions[i] = instructionTrace.getNextInstruction();
+	for(int i = 0; i < ::superScalarFactor; i++) {
+		//check to see if we get a hit in instruction cache...
+		cacheHitRoll = rand() % 100;
+		if(cacheHitRoll <= instrCacheHitRate ) { //successful cache hit
 
-		//Look up the condition that would cause the fetch to stall...
-		//I can't remember what it is though.
-//		if(fetchedInstructions[i] == something)
-//			break;
+			cacheMissWaitTimeRemaining = 0; //successfull hit the cache, so just reset the wait time to be safe..
+
+			fetchedInstructions.push(instructionTrace.getNextInstruction());
+		}
+		else { //failed level 1 instruction cache hit... try again
+			cacheMissWaitTimeRemaining += instrCacheAccessTime;
+
+			//check level 2 and hope we don't miss
+			cacheHitRoll = rand() % 100;
+			if(cacheHitRoll > level2CacheHitRate ) {
+				//we missed the second cache hit.. wait the full amount
+				cacheMissWaitTimeRemaining += level2CacheAccessTime;
+			}
+
+			return fetchedInstructions;
+		}
 	}
 
 	return fetchedInstructions;
 }
-
-//Instruction getEmptyInstructon(){
-//	Instruction ret;
-//
-//	ret.PC = -1;
-//	ret.dest = -1;
-//	ret.imm = -1;
-//	ret.opCode = -1;
-//	ret.src1 = -1;
-//	ret.src2 = -1;
-//
-//	return ret;
-//}
-

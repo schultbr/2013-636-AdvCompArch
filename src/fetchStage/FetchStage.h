@@ -8,10 +8,11 @@
 #ifndef FETCHSTAGE_H_
 #define FETCHSTAGE_H_
 
-#include "StructureDefs.h"
+#include "Instruction.h"
+#include <queue>
 
 extern int superScalarSize;
 
-Instruction* simulateFetchCycle();
+std::queue<Instruction> simulateFetchCycle();
 
 #endif /* FETCHSTAGE_H_ */

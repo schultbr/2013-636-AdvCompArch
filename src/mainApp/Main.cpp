@@ -11,10 +11,13 @@
 #include "CommandLine.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 
 #include "FetchStage.h"
+#include "GlobalVars.h"
 
+using namespace std;
 
 int runSimulation() {
 
@@ -28,80 +31,44 @@ int runSimulation() {
 	return 1;
 }
 
-void printRunningParameters(int &superScalarFactor,
-		int &btbSize,
-		int &rsEntries,
-		int &fuCount,
-		int &renameTableEntries,
-		int &reorderBufferEntries,
-		float &level1CacheHitRate,
-		int &level1CacheAccessTime,
-		float &level2CacheHitRate,
-		int &level2CacheAccessTime,
-		char *inputTrace)
+void printRunningParameters()
 {
-    printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    printf("**** Running parameters found:\t****\n");
-    printf("Target Trace File:\t\t%s\n", inputTrace);
-    printf("Superscalar Factor:\t\t%d\n", superScalarFactor);
-    printf("BTB Size:\t\t\t%d\n", btbSize);
-    printf("Reservation Station Size:\t%d\n", rsEntries);
-    printf("Functional Unit Count:\t\t%d\n", fuCount);
-    printf("Rename Table Entries:\t\t%d\n", renameTableEntries);
-    printf("Level 1 Cache Hit Rate:\t\t%f\n", level1CacheHitRate);
-    printf("Level 1 Cache Access Time:\t%d\n", level1CacheAccessTime);
-    printf("Level 2 Cache Hit Rate:\t\t%f\n", level2CacheHitRate);
-    printf("Level 2 Cache Access Time:\t%d\n", level2CacheAccessTime);
-    printf("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n");
+    cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    cout << "**** Running parameters found:\t****\n";
+    cout << "Target Trace File:\t\t" <<  ::inputTrace;
+    cout << "Superscalar Factor:\t\t" << ::superScalarFactor;
+    cout << "BTB Size:\t\t\t" << ::btbSize;
+    cout << "Reservation Station Size:\t" << ::rsEntries;
+    cout << "Functional Unit Count:\t\t" << ::fuCount;
+    cout << "Rename Table Entries:\t\t" << ::renameTableEntries;
+    cout << "Level 1 Instruction Cache Hit Rate:\t" << ::instrCacheHitRate;
+    cout << "Level 1 Instruction Cache Access Time:\t" << ::instrCacheAccessTime;
+    cout << "Level 1 Cache Hit Rate:\t\t" << ::level1CacheHitRate;
+    cout << "Level 1 Cache Access Time:\t" << ::level1CacheAccessTime;
+    cout << "Level 2 Cache Hit Rate:\t\t" << ::level2CacheHitRate;
+    cout << "Level 2 Cache Access Time:\t" << ::level2CacheAccessTime;
+    cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
 }
 
 int main(int argc, char** argv) {
-	int returnVal = 0;
-	int superScalarFactor = 0;
-	int btbSize = 0;
-	int rsEntries = 0;
-	int fuCount = 0;
-	int renameTableEntries = 0;
-	int reorderBufferEntries = 0;
-	float level1CacheHitRate = 0.0;
-	int level1CacheAccessTime = 0.0;
-	float level2CacheHitRate = 0.0;
-	int level2CacheAccessTime = 0.0;
-	char inputTrace[50];
 
+	int returnVal = 0;
+
+	//set up global register collections
+	registers.resize(32);
+	fpRegisters.resize(31);
 
 	//process command line options to handle inputs
-	processCommandLine(argc, argv,
-						superScalarFactor,
-						btbSize,
-						rsEntries,
-						fuCount,
-						renameTableEntries,
-					    reorderBufferEntries,
-						level1CacheHitRate,
-						level1CacheAccessTime,
-						level2CacheHitRate,
-						level2CacheAccessTime,
-						inputTrace);
+	processCommandLine(argc, argv);
 
-	printRunningParameters(superScalarFactor,
-	                       btbSize,
-	                       rsEntries,
-	                       fuCount,
-	                       renameTableEntries,
-	                       reorderBufferEntries,
-	                       level1CacheHitRate,
-	                       level1CacheAccessTime,
-	                       level2CacheHitRate,
-	                       level2CacheAccessTime,
-	                       inputTrace);
+	printRunningParameters();
 
 
 	//run simulation
 	returnVal = runSimulation();
 
-	printf("Return code from simulation: %d\n\n", returnVal);
-	printf("Exiting.\n");
+	cout << "Return code from simulation: " <<  returnVal << endl << endl;
+	cout << "Exiting.\n";
 
 	return 0;
 }
