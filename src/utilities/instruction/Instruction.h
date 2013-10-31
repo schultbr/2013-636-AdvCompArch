@@ -9,6 +9,8 @@
 #define INSTRUCTION_H_
 
 #include <string>
+#include <map>
+#include <vector>
 
 class Instruction {
 public:
@@ -22,11 +24,18 @@ public:
 
 private:
     int PC;
-    int opCode;
+    int opCodeType;
+    std::string opCode;
     int src1;
     int src2;
     int imm;
     int dest;
+
+    std::map<std::string, int> instructionMap;
+
+    int OpcodeLookup(std::string code);
+    void ParseRegisters(std::vector<std::string> tokens);
+    void FillMap();
 };
 
 #endif /* INSTRUCTION_H_ */
