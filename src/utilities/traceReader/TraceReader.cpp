@@ -65,13 +65,15 @@ bool TraceReader::isTraceOpen() {
 
 //returns 	0 for success
 //			-1 for failure to open
-int TraceReader::openTrace(char *traceName){
+int TraceReader::openTrace(std::string traceName){
 	cout << "Opening file: " << traceName  << endl;
-	traceFile->open(traceName);
+	traceFile->open(traceName.c_str());
 
 	//check to make sure it's actually open..
-	if(!(traceFile->is_open()))
+	if(!(traceFile->is_open())) {
+		cout << "ERROR: unable to open file.\n";
 		return -1;
+	}
 
 	return 0;
 }

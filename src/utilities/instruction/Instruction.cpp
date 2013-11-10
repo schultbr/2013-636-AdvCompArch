@@ -60,7 +60,7 @@ bool Instruction::IsBranchOrJump(){
 }
 
 void Instruction::Print() {
-    cout << "PC:\t%" << PC << endl;
+    cout << "PC:\t" << PC << endl;
     cout << "dest:\t" << dest << endl;
     cout << "imm:\t" << imm << endl;
     cout << "op:\t" << opCode << endl;

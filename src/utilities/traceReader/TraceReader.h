@@ -21,7 +21,7 @@ public:
 	std::string getNextTraceLine();
 	bool isTraceOpen();
 	int peekNextPC();
-	int openTrace(char *traceName);
+	int openTrace(std::string traceName);
 
 private:
 	std::ifstream *traceFile;

@@ -123,9 +123,16 @@ int processCommandLine(int argc, char **argv) {
 				 foundCount++;
 				 break;
 			 case 't' :
-				 cout << "Found t (" << optarg << ")\n";
+			 {
+				 cout << "Found t (" << optarg << ") size: " << sizeof(&optarg);
 //				 inputTrace = optarg;
-				 memcpy(::inputTrace, optarg, sizeof(&optarg));
+//				 memcpy(::inputTrace, optarg, sizeof(&optarg));
+//				 char *inFile;
+//				 inFile = strdup(optarg);
+				 std::string tempString(optarg);
+				 ::inputTraceFile = tempString;
+				 cout << "EX: " << ::inputTraceFile << endl;
+			}
 				 foundCount++;
 				 break;
 			 default:

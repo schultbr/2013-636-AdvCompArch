@@ -20,13 +20,21 @@
 using namespace std;
 
 int runSimulation() {
+	bool notDone = true;
+	int i = 0;
+	int max = 50;
+	while(notDone) {
+	//	simulateCompleteCycle();
+	//	simulateExecuteCycle();
+	//	simulateIssueCycle();
+	//	simulateDispatchCycle();
+	//	simulateDecodeCycle();
+		simulateFetchCycle();
 
-//	simulateCompleteCycle();
-//	simulateExecuteCycle();
-//	simulateIssueCycle();
-//	simulateDispatchCycle();
-//	simulateDecodeCycle();
-	simulateFetchCycle();
+		i++;
+		if(i == max)
+			notDone = false;
+	}
 
 	return 1;
 }
@@ -35,7 +43,7 @@ void printRunningParameters()
 {
     cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
     cout << "**** Running parameters found:\t****\n";
-    cout << "Target Trace File:\t\t" <<  ::inputTrace << endl;
+    cout << "Target Trace File:\t\t" <<  ::inputTraceFile << endl;
     cout << "Superscalar Factor:\t\t" << ::superScalarFactor << endl;
     cout << "BTB Size:\t\t\t" << ::btbSize << endl;
     cout << "Reservation Station Size:\t" << ::rsEntries << endl;
@@ -55,8 +63,8 @@ int main(int argc, char** argv) {
 	int returnVal = 0;
 
 	//set up global register collections
-	registers.resize(32);
-	fpRegisters.resize(31);
+	registers.resize(32+31);
+//	fpRegisters.resize(31);
 
 	//process command line options to handle inputs
 	processCommandLine(argc, argv);

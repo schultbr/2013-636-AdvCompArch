@@ -21,10 +21,9 @@ float level1CacheHitRate = -1;
 int level1CacheAccessTime = -1;
 float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
-char inputTrace[50];
+std::string inputTraceFile;
 
-std::vector<int> registers;
-std::vector<int> fpRegisters;
+std::vector<ARF_Element> registers;
 int regHILO = 0;
 int regFCC = 0;
 

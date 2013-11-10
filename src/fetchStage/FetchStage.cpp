@@ -11,6 +11,7 @@
 #include "CacheController.h"
 #include <unistd.h>
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 
 using namespace std;
@@ -24,6 +25,7 @@ int cacheMissWaitTimeRemaining = 0;
 //process from strings into instruction types? or should they be in them already from the reader? derp.
 //
 std::queue<Instruction> simulateFetchCycle() {
+	cout << "FETCHING\n";
 	queue<Instruction> fetchedInstructions;
 	int penaltyTime = 0;
 
@@ -31,11 +33,12 @@ std::queue<Instruction> simulateFetchCycle() {
 	//check to we're still paying any penalty
 	if(cacheMissWaitTimeRemaining > 0) {
 		cacheMissWaitTimeRemaining--;
+		cout << "Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining.\n";
 		return fetchedInstructions;
 	}
 
 	if(!instructionTrace.isTraceOpen())
-		instructionTrace.openTrace(inputTrace);
+		instructionTrace.openTrace(::inputTraceFile);
 
 	for(int i = 0; i < ::superScalarFactor; i++) {
 		//check to see if we get a hit in instruction cache...
@@ -47,6 +50,7 @@ std::queue<Instruction> simulateFetchCycle() {
 			fetchedInstructions.push(instructionTrace.getNextInstruction());
 		}
 		else { //failed level 1 instruction cache hit... try again
+			cout << "Cache hit missed. Checking level 2 to see how bad the penalty is.\n";
 			cacheMissWaitTimeRemaining += penaltyTime;
 
 			//check level 2 and hope we don't miss

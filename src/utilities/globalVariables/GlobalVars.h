@@ -9,7 +9,9 @@
 #define GLOBALVARS_H_
 
 //#include "TraceReader.h"
+#include <string>
 #include <vector>
+#include "StructureDefs.h"
 
 extern int superScalarFactor;
 extern int btbSize;
@@ -23,11 +25,10 @@ extern float level1CacheHitRate;
 extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
-extern char inputTrace[50];
+extern std::string inputTraceFile;
 
 
-extern std::vector<int> registers;
-extern std::vector<int> fpRegisters;
+extern std::vector<ARF_Element> registers;
 extern int regHILO;
 extern int regFCC;
 
