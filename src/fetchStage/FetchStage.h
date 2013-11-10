@@ -11,8 +11,8 @@
 #include "Instruction.h"
 #include <queue>
 
-extern int superScalarSize;
+//extern int superScalarSize;
 
-std::queue<Instruction> simulateFetchCycle();
+void simulateFetchCycle(std::queue<Instruction> &fetchedInstructions);
 
 #endif /* FETCHSTAGE_H_ */

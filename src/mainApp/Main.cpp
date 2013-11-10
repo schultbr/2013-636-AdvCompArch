@@ -19,6 +19,20 @@
 
 using namespace std;
 
+std::queue<Instruction> fetchDecodeBuffer;
+
+void determineStatistics(){
+	//replace this with IPC calculations and whatnot
+
+	cout << "Instruction count: " << instructionCount << endl;
+	cout << "Cycle count: " << cyclesCompleted << endl;
+}
+
+void clearQueue(){
+	while(fetchDecodeBuffer.size() > 0)
+		fetchDecodeBuffer.pop();
+}
+
 int runSimulation() {
 	bool notDone = true;
 	int i = 0;
@@ -29,11 +43,16 @@ int runSimulation() {
 	//	simulateIssueCycle();
 	//	simulateDispatchCycle();
 	//	simulateDecodeCycle();
-		simulateFetchCycle();
+		simulateFetchCycle(fetchDecodeBuffer);
+
+		cyclesCompleted++;
 
 		i++;
 		if(i == max)
 			notDone = false;
+
+		//todo: remove when done testing fetch
+		clearQueue();
 	}
 
 	return 1;
@@ -71,9 +90,10 @@ int main(int argc, char** argv) {
 
 	printRunningParameters();
 
-
 	//run simulation
 	returnVal = runSimulation();
+
+	determineStatistics();
 
 	cout << "Return code from simulation: " <<  returnVal << endl << endl;
 	cout << "Exiting.\n";

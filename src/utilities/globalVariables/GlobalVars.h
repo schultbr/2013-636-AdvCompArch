@@ -32,6 +32,12 @@ extern std::vector<ARF_Element> registers;
 extern int regHILO;
 extern int regFCC;
 
+extern int cyclesCompleted;
+extern int instructionCount;
+
+extern int fetchStalledInstrPC;
+extern bool fetchStalled;
+
 
 //
 //void setSuperScalarSize(int size);

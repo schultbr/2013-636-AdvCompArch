@@ -27,6 +27,13 @@ std::vector<ARF_Element> registers;
 int regHILO = 0;
 int regFCC = 0;
 
+int cyclesCompleted = 0;
+int instructionCount = 0;
+
+
+int fetchStalledInstrPC = 0;
+bool fetchStalled = false;
+
 
 ////these setters are totally unnecessary but, meh. theyre already here.
 ////kinda the right thing to do... sometimes
