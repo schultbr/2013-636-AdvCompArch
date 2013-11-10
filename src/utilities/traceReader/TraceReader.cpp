@@ -6,6 +6,9 @@
  */
 
 #include "TraceReader.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <iostream>
 
 using namespace std;
 
@@ -51,6 +54,8 @@ Instruction TraceReader::getNextInstruction(){
 //	ret.src1 = -1;
 //	ret.src2 = -1;
 
+	ret.Print();
+
 	return ret;
 }
 
@@ -61,6 +66,7 @@ bool TraceReader::isTraceOpen() {
 //returns 	0 for success
 //			-1 for failure to open
 int TraceReader::openTrace(char *traceName){
+	cout << "Opening file: " << traceName  << endl;
 	traceFile->open(traceName);
 
 	//check to make sure it's actually open..
@@ -68,5 +74,21 @@ int TraceReader::openTrace(char *traceName){
 		return -1;
 
 	return 0;
+}
+
+
+int TraceReader::peekNextPC() {
+	Instruction nextInstr;
+
+	//capture current position
+	streampos bookmark = traceFile->tellg();
+
+	//bring in the next instruction
+	nextInstr = getNextInstruction();
+
+	//return input reader to our original position...
+	traceFile->seekg(bookmark);
+
+	return nextInstr.PC;
 }
 

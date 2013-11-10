@@ -123,7 +123,7 @@ int processCommandLine(int argc, char **argv) {
 				 foundCount++;
 				 break;
 			 case 't' :
-				 cout << "Found t (" << optarg << endl;
+				 cout << "Found t (" << optarg << ")\n";
 //				 inputTrace = optarg;
 				 memcpy(::inputTrace, optarg, sizeof(&optarg));
 				 foundCount++;

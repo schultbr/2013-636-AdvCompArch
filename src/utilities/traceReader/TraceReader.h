@@ -20,7 +20,7 @@ public:
 	Instruction getNextInstruction();
 	std::string getNextTraceLine();
 	bool isTraceOpen();
-
+	int peekNextPC();
 	int openTrace(char *traceName);
 
 private:

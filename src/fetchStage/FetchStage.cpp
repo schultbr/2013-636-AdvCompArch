@@ -8,6 +8,7 @@
 #include "FetchStage.h"
 #include "TraceReader.h"
 #include "GlobalVars.h"
+#include "CacheController.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,7 +25,7 @@ int cacheMissWaitTimeRemaining = 0;
 //
 std::queue<Instruction> simulateFetchCycle() {
 	queue<Instruction> fetchedInstructions;
-	int cacheHitRoll = 0;
+	int penaltyTime = 0;
 
 	//did we previously miss a cache hit?
 	//check to we're still paying any penalty
@@ -38,22 +39,21 @@ std::queue<Instruction> simulateFetchCycle() {
 
 	for(int i = 0; i < ::superScalarFactor; i++) {
 		//check to see if we get a hit in instruction cache...
-		cacheHitRoll = rand() % 100;
-		if(cacheHitRoll <= instrCacheHitRate ) { //successful cache hit
+		penaltyTime = checkCache(instrCacheHitRate, instrCacheAccessTime);
+		if(penaltyTime == 0) { //successful cache hit
 
 			cacheMissWaitTimeRemaining = 0; //successfull hit the cache, so just reset the wait time to be safe..
 
 			fetchedInstructions.push(instructionTrace.getNextInstruction());
 		}
 		else { //failed level 1 instruction cache hit... try again
-			cacheMissWaitTimeRemaining += instrCacheAccessTime;
+			cacheMissWaitTimeRemaining += penaltyTime;
 
 			//check level 2 and hope we don't miss
-			cacheHitRoll = rand() % 100;
-			if(cacheHitRoll > level2CacheHitRate ) {
-				//we missed the second cache hit.. wait the full amount
-				cacheMissWaitTimeRemaining += level2CacheAccessTime;
-			}
+			penaltyTime = checkCache(level2CacheHitRate, level2CacheAccessTime);
+
+			if(penaltyTime > 0)
+				cacheMissWaitTimeRemaining +=  penaltyTime;
 
 			return fetchedInstructions;
 		}

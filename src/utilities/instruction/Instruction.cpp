@@ -15,16 +15,21 @@
 
 using namespace std;
 
-std::map<std::string, int> Instruction::instructionMap;
+std::map<std::string, OpcodeType> Instruction::opcodeTypeMap;
+std::map<std::string, int> Instruction::instructionTypeMap;
 
 Instruction::Instruction() {
     PC = -1;
     dest = -1;
     imm = -1;
-    opCode = "";
+    opCodeStr = "";
     opCodeType = -1;
     src1 = -1;
     src2 = -1;
+    offset = 0;
+    isBranchOrJump = false;
+    branchPredictorAddress = -1;
+    opCode = NOP;
 
 }
 
@@ -33,28 +38,25 @@ Instruction::Instruction(string line) {
 	PC = -1;
     dest = -1;
     imm = -1;
-    opCode = "";
+    opCodeStr = "";
     opCodeType = -1;
     src1 = -1;
     src2 = -1;
-
-	istringstream splitLine(line);
-	vector<string> tokens;
-	copy(istream_iterator<string>(splitLine),
-		istream_iterator<string>(),
-		back_inserter<vector<string> >(tokens));
-
-	PC = atoi(tokens[0].c_str());
-	opCode = tokens[1];
-	opCodeType = OpcodeLookup(opCode);
-
-	ParseRegisters(tokens);
+    offset = 0;
+    branchPredictorAddress = -1;
+    isBranchOrJump = false;
+    opCode = NOP; //initial opCode. Gets set in decode.
 
 
+    SplitPCandString(line);
 }
 
 Instruction::~Instruction() {
     // TODO Auto-generated destructor stub
+}
+
+bool Instruction::IsBranchOrJump(){
+	return isBranchOrJump;
 }
 
 void Instruction::Print() {
@@ -80,15 +82,56 @@ string Instruction::ToString() {
     return stream.str();
 }
 
+//not reaaaally used...
+int Instruction::OpcodeTypeLookup(string code) {
 
-int Instruction::OpcodeLookup(string code) {
-
-	return 0;
+	return opcodeTypeMap[code];
 }
 
-void Instruction::ParseRegisters(vector<string> tokens){
+//not reaaaally used...
+int Instruction::InstructionTypeLookup(string code) {
 
-	/* Opcode input types
+	return instructionTypeMap[code];
+}
+
+void Instruction::SplitPCandString(string line) {
+	string::size_type spacePos;
+	string pcStr;
+	string instStr;
+
+	spacePos = line.find_first_of(" ");
+	if(spacePos == string::npos) //if we mess this up, everythings screwed up.
+		exit(-1);
+
+	pcStr =line.substr(0,spacePos);
+
+	instructionLine = line.substr(spacePos+1);
+
+	//partial decode to know if we need to hit a predictor
+	if(instructionLine.find("br") != string::npos)
+		isBranchOrJump = true;
+
+	PC = atoi(pcStr.c_str());
+
+}
+
+void Instruction::DecodeInstructionString() {
+	istringstream splitLine(instructionLine);
+		vector<string> tokens;
+		copy(istream_iterator<string>(splitLine),
+			istream_iterator<string>(),
+			back_inserter<vector<string> >(tokens));
+
+//		PC = atoi(tokens[0].c_str()); // PC is decoded in fetch stage
+		opCodeStr = tokens[0];
+		opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
+		DecodeRegisters(tokens);
+}
+
+
+void Instruction::DecodeRegisters(vector<string> tokens){
+
+	/* Opcode input instruction types
 	 imm only 		= 1
 	 s1 only 		= 2
 	 s1, dest		= 3
@@ -104,125 +147,228 @@ void Instruction::ParseRegisters(vector<string> tokens){
 	 s1= FCC, imm 		= 11
 	 s1, dest= FCC 		= 12
 	*/
-	switch(opCodeType) {
+	switch(instructionTypeMap[opCodeStr]) {
 	case 1: //imm only
-		imm = atoi(tokens[2].c_str());
+		imm = atoi(tokens[1].c_str());
 		break;
 	case 2: // s1 only
-		src1 = atoi(tokens[2].c_str());
+		src1 = atoi(tokens[1].c_str());
 		break;
 	case 3: //s1 & dest
-		src1 = atoi(tokens[2].c_str());
-		dest = atoi(tokens[3].c_str());
+		src1 = atoi(tokens[1].c_str());
+		dest = atoi(tokens[2].c_str());
 		break;
 	case 4: //s1 & imm
-		src1 = atoi(tokens[2].c_str());
-		imm = atoi(tokens[3].c_str());
+		src1 = atoi(tokens[1].c_str());
+		imm = atoi(tokens[2].c_str());
 		break;
 	case 5: // s1 & imm & dest
-		src1 = atoi(tokens[2].c_str());
-		imm = atoi(tokens[3].c_str());
-		dest = atoi(tokens[4].c_str());
-		break;
-	case 6: //s1 & s2 & imm
-		src1 = atoi(tokens[2].c_str());
-		src2 = atoi(tokens[3].c_str());
-		imm = atoi(tokens[4].c_str());
-		break;
-	case 7://s1 & s2 & dest
-		src1 = atoi(tokens[2].c_str());
-		src2 = atoi(tokens[3].c_str());
-		dest = atoi(tokens[4].c_str());
-		break;
-	case 8: //imm & dest
+		src1 = atoi(tokens[1].c_str());
 		imm = atoi(tokens[2].c_str());
 		dest = atoi(tokens[3].c_str());
 		break;
+	case 6: //s1 & s2 & imm
+		src1 = atoi(tokens[1].c_str());
+		src2 = atoi(tokens[2].c_str());
+		imm = atoi(tokens[3].c_str());
+		break;
+	case 7://s1 & s2 & dest
+		src1 = atoi(tokens[1].c_str());
+		src2 = atoi(tokens[2].c_str());
+		dest = atoi(tokens[3].c_str());
+		break;
+	case 8: //imm & dest
+		imm = atoi(tokens[1].c_str());
+		dest = atoi(tokens[2].c_str());
+		break;
 	case 9: //s1,s2, dest= HI_LO
-		src1 = atoi(tokens[2].c_str());
-		src2 = atoi(tokens[3].c_str());
+		src1 = atoi(tokens[1].c_str());
+		src2 = atoi(tokens[2].c_str());
 		dest = regHILO;
 		break;
 	case 10: //s1= HI_LO, dest
 		src1 = regHILO;
-		dest = atoi(tokens[2].c_str());
+		dest = atoi(tokens[1].c_str());
 		break;
 	case 11: //s1= FCC, imm
 		src1 = regFCC;
-		imm = atoi(tokens[2].c_str());
+		imm = atoi(tokens[1].c_str());
 		break;
 	case 12: //s1, dest= FCC
-		src1 = atoi(tokens[2].c_str());
+		src1 = atoi(tokens[1].c_str());
 		dest = regFCC;
 		break;
 	default:
 		break;
 	}
+
+
 }
 
-void Instruction::FillMap() {
+void Instruction::FillMaps() {
 //	instructionMap.insert()
-	instructionMap["j"] = 1;
-	instructionMap["jal"] = 1;
-	instructionMap["jr"] = 1;
-	instructionMap["jalr"] = 3;
-	instructionMap["beq"] = 7;
-	instructionMap["bne"] = 7;
-	instructionMap["blez"] = 4;
-	instructionMap["bgtz"] = 4;
-	instructionMap["bltz"] = 4;
-	instructionMap["bgez"] = 4;
-	instructionMap["bc1f"] = 8;
-	instructionMap["bc1t"] = 8;
+	instructionTypeMap["j"] = 1;
+	instructionTypeMap["jal"] = 1;
+	instructionTypeMap["jr"] = 1;
+	instructionTypeMap["jalr"] = 3;
+	instructionTypeMap["beq"] = 7;
+	instructionTypeMap["bne"] = 7;
+	instructionTypeMap["blez"] = 4;
+	instructionTypeMap["bgtz"] = 4;
+	instructionTypeMap["bltz"] = 4;
+	instructionTypeMap["bgez"] = 4;
+	instructionTypeMap["bc1f"] = 8;
+	instructionTypeMap["bc1t"] = 8;
 
-	instructionMap["lb"] = 5;
-	instructionMap["lbu"] = 5;
-	instructionMap["lh"] = 5;
-	instructionMap["lhu"] = 5;
-	instructionMap["lw"] = 5;
-	instructionMap["l.s"] = 5;
-	instructionMap["l.d"] = 5;
+	instructionTypeMap["lb"] = 5;
+	instructionTypeMap["lbu"] = 5;
+	instructionTypeMap["lh"] = 5;
+	instructionTypeMap["lhu"] = 5;
+	instructionTypeMap["lw"] = 5;
+	instructionTypeMap["l.s"] = 5;
+	instructionTypeMap["l.d"] = 5;
 
-	instructionMap["sb"] = 6;
-	instructionMap["sh"] = 6;
-	instructionMap["sw"] = 6;
-	instructionMap["s.s"] = 6;
-	instructionMap["s.d"] = 6;
+	instructionTypeMap["sb"] = 6;
+	instructionTypeMap["sh"] = 6;
+	instructionTypeMap["sw"] = 6;
+	instructionTypeMap["s.s"] = 6;
+	instructionTypeMap["s.d"] = 6;
 
-	instructionMap["add"] = 7;
-	instructionMap["addi"] = 5;
-	instructionMap["addu"] = 7;
-	instructionMap["addiu"] = 5;
-	instructionMap["sub"] = 7;
-	instructionMap["subu"] = 7;
-	instructionMap["mult"] = 9;
-	instructionMap["div"] = 9;
-	instructionMap["divu"] = 9;
-	instructionMap["mfhi"] = 10;
-	instructionMap["mflo"] = 10;
-	instructionMap["lui"] = 8;
-	instructionMap["mfc1"] = 3;
-	instructionMap["dmfc1"] = 3;
-	instructionMap["mtc1"] = 3;
-	instructionMap["dmtc1"] = 3;
+	instructionTypeMap["add"] = 7;
+	instructionTypeMap["addi"] = 5;
+	instructionTypeMap["addu"] = 7;
+	instructionTypeMap["addiu"] = 5;
+	instructionTypeMap["sub"] = 7;
+	instructionTypeMap["subu"] = 7;
+	instructionTypeMap["mult"] = 9;
+	instructionTypeMap["div"] = 9;
+	instructionTypeMap["divu"] = 9;
+	instructionTypeMap["mfhi"] = 10;
+	instructionTypeMap["mflo"] = 10;
+	instructionTypeMap["lui"] = 8;
+	instructionTypeMap["mfc1"] = 3;
+	instructionTypeMap["dmfc1"] = 3;
+	instructionTypeMap["mtc1"] = 3;
+	instructionTypeMap["dmtc1"] = 3;
 
-	instructionMap["and"] = 7;
-	instructionMap["andi"] = 5;
-	instructionMap["or"] = 7;
-	instructionMap["ori"] = 5;
-	instructionMap["xor"] = 7;
-	instructionMap["xori"] = 5;
-	instructionMap["nor"] = 7;
-	instructionMap["sll"] = 5;
-	instructionMap["sllv"] = 7;
-	instructionMap["srl"] = 5;
-	instructionMap["srlv"] = 7;
-	instructionMap["sra"] = 5;
-	instructionMap["srav"] = 7;
-	instructionMap["slt"] = 7;
-	instructionMap["slti"] = 5;
-	instructionMap["sltu"] = 7;
-	instructionMap["sltiu"] = 5;
+	instructionTypeMap["and"] = 7;
+	instructionTypeMap["andi"] = 5;
+	instructionTypeMap["or"] = 7;
+	instructionTypeMap["ori"] = 5;
+	instructionTypeMap["xor"] = 7;
+	instructionTypeMap["xori"] = 5;
+	instructionTypeMap["nor"] = 7;
+	instructionTypeMap["sll"] = 5;
+	instructionTypeMap["sllv"] = 7;
+	instructionTypeMap["srl"] = 5;
+	instructionTypeMap["srlv"] = 7;
+	instructionTypeMap["sra"] = 5;
+	instructionTypeMap["srav"] = 7;
+	instructionTypeMap["slt"] = 7;
+	instructionTypeMap["slti"] = 5;
+	instructionTypeMap["sltu"] = 7;
+	instructionTypeMap["sltiu"] = 5;
+
+	instructionTypeMap["add.s"] = 7;
+	instructionTypeMap["add.d"] = 7;
+	instructionTypeMap["sub.s"] = 7;
+	instructionTypeMap["sub.d"] = 7;
+	instructionTypeMap["mul.s"] = 7;
+	instructionTypeMap["mul.d"] = 7;
+	instructionTypeMap["div.d"] = 7;
+	instructionTypeMap["mov.d"] = 3;
+	instructionTypeMap["neg.d"] = 3;
+	instructionTypeMap["cvt.s.d"] = 3;
+	instructionTypeMap["cvt.s.w"] = 3;
+	instructionTypeMap["cvt.d.s"] = 3;
+	instructionTypeMap["cvt.d.w"] = 3;
+	instructionTypeMap["cvt.w.d"] = 3;
+	instructionTypeMap["c.eq.d"] = 12;
+	instructionTypeMap["c.lt.d"] = 12;
+	instructionTypeMap["c.le.d"] = 12;
+	instructionTypeMap["sqrt.d"] = 3;
+
+
+	opcodeTypeMap["j"] = JUMP;
+	opcodeTypeMap["jal"] = JUMP;
+	opcodeTypeMap["jr"] = JUMP;
+	opcodeTypeMap["jalr"] = JUMP;
+	opcodeTypeMap["beq"] = BRANCH;
+	opcodeTypeMap["bne"] = BRANCH;
+	opcodeTypeMap["blez"] = BRANCH;
+	opcodeTypeMap["bgtz"] = BRANCH;
+	opcodeTypeMap["bltz"] = BRANCH;
+	opcodeTypeMap["bgez"] = BRANCH;
+	opcodeTypeMap["bc1f"] = BRANCH;
+	opcodeTypeMap["bc1t"] = BRANCH;
+
+	opcodeTypeMap["lb"] = LOAD;
+	opcodeTypeMap["lbu"] = LOAD;
+	opcodeTypeMap["lh"] = LOAD;
+	opcodeTypeMap["lhu"] = LOAD;
+	opcodeTypeMap["lw"] = LOAD;
+	opcodeTypeMap["l.s"] = LOAD;
+	opcodeTypeMap["l.d"] = LOAD;
+
+	opcodeTypeMap["sb"] = STORE;
+	opcodeTypeMap["sh"] = STORE;
+	opcodeTypeMap["sw"] = STORE;
+	opcodeTypeMap["s.s"] = STORE;
+	opcodeTypeMap["s.d"] = STORE;
+
+	opcodeTypeMap["add"] = ADD_SUB_I;
+	opcodeTypeMap["addi"] = ADD_SUB_I;
+	opcodeTypeMap["addu"] = ADD_SUB_I;
+	opcodeTypeMap["addiu"] = ADD_SUB_I;
+	opcodeTypeMap["sub"] = ADD_SUB_I;
+	opcodeTypeMap["subu"] = ADD_SUB_I;
+	opcodeTypeMap["mult"] = MULT_DIV_I;
+	opcodeTypeMap["div"] = MULT_DIV_I;
+	opcodeTypeMap["divu"] = MULT_DIV_I;
+	opcodeTypeMap["mfhi"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["mflo"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["lui"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["mfc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["dmfc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["mtc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+	opcodeTypeMap["dmtc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+
+	opcodeTypeMap["and"] = LOGICAL;
+	opcodeTypeMap["andi"] = LOGICAL;
+	opcodeTypeMap["or"] = LOGICAL;
+	opcodeTypeMap["ori"] = LOGICAL;
+	opcodeTypeMap["xor"] = LOGICAL;
+	opcodeTypeMap["xori"] = LOGICAL;
+	opcodeTypeMap["nor"] = LOGICAL;
+	opcodeTypeMap["sll"] = LOGICAL;
+	opcodeTypeMap["sllv"] = LOGICAL;
+	opcodeTypeMap["srl"] = LOGICAL;
+	opcodeTypeMap["srlv"] = LOGICAL;
+	opcodeTypeMap["sra"] = LOGICAL;
+	opcodeTypeMap["srav"] = LOGICAL;
+	opcodeTypeMap["slt"] = LOGICAL;
+	opcodeTypeMap["slti"] = LOGICAL;
+	opcodeTypeMap["sltu"] = LOGICAL;
+	opcodeTypeMap["sltiu"] = LOGICAL;
+
+	opcodeTypeMap["add.s"] = FLOATING_POINT;
+	opcodeTypeMap["add.d"] = FLOATING_POINT;
+	opcodeTypeMap["sub.s"] = FLOATING_POINT;
+	opcodeTypeMap["sub.d"] = FLOATING_POINT;
+	opcodeTypeMap["mul.s"] = FLOATING_POINT;
+	opcodeTypeMap["mul.d"] = FLOATING_POINT;
+	opcodeTypeMap["div.d"] = FLOATING_POINT;
+	opcodeTypeMap["mov.d"] = FLOATING_POINT;
+	opcodeTypeMap["neg.d"] = FLOATING_POINT;
+	opcodeTypeMap["cvt.s.d"] = FLOATING_POINT;
+	opcodeTypeMap["cvt.s.w"] = FLOATING_POINT;
+	opcodeTypeMap["cvt.d.s"] = FLOATING_POINT;
+	opcodeTypeMap["cvt.d.w"] = FLOATING_POINT;
+	opcodeTypeMap["cvt.w.d"] = FLOATING_POINT;
+	opcodeTypeMap["c.eq.d"] = FLOATING_POINT;
+	opcodeTypeMap["c.lt.d"] = FLOATING_POINT;
+	opcodeTypeMap["c.le.d"] = FLOATING_POINT;
+	opcodeTypeMap["sqrt.d"] = FLOATING_POINT;
 
 }
 
