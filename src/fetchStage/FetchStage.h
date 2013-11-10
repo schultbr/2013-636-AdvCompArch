@@ -13,6 +13,6 @@
 
 //extern int superScalarSize;
 
-void simulateFetchCycle(std::queue<Instruction> &fetchedInstructions);
+void simulateFetchStage(std::queue<Instruction> &fetchedInstructions);
 
 #endif /* FETCHSTAGE_H_ */

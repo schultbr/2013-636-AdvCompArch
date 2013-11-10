@@ -31,6 +31,8 @@ Instruction::Instruction() {
     branchPredictorAddress = -1;
     opCode = NOP;
 
+    if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
+    	FillMaps();
 }
 
 Instruction::Instruction(string line) {
@@ -47,6 +49,8 @@ Instruction::Instruction(string line) {
     isBranchOrJump = false;
     opCode = NOP; //initial opCode. Gets set in decode.
 
+    if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
+		FillMaps();
 
     SplitPCandString(line);
 }

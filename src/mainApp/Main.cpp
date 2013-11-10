@@ -15,10 +15,12 @@
 #include <stdlib.h>
 
 #include "FetchStage.h"
+#include "DecodeStage.h"
 #include "GlobalVars.h"
 
 using namespace std;
 
+std::queue<Instruction> decodeDispatchBuffer;
 std::queue<Instruction> fetchDecodeBuffer;
 
 void determineStatistics(){
@@ -29,8 +31,8 @@ void determineStatistics(){
 }
 
 void clearQueue(){
-	while(fetchDecodeBuffer.size() > 0)
-		fetchDecodeBuffer.pop();
+	while(decodeDispatchBuffer.size() > 0)
+		decodeDispatchBuffer.pop();
 }
 
 int runSimulation() {
@@ -38,12 +40,14 @@ int runSimulation() {
 	int i = 0;
 	int max = 50;
 	while(notDone) {
-	//	simulateCompleteCycle();
-	//	simulateExecuteCycle();
-	//	simulateIssueCycle();
-	//	simulateDispatchCycle();
-	//	simulateDecodeCycle();
-		simulateFetchCycle(fetchDecodeBuffer);
+		cout << "Simulating cycle " << cyclesCompleted << endl;
+	//	simulateCompleteStage();
+	//	simulateExecuteStage();
+	//	simulateIssueStage();
+	//	simulateDispatchStage();
+		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
+		simulateFetchStage(fetchDecodeBuffer);
+		cout << "Size: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 

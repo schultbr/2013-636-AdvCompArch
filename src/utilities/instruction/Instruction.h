@@ -19,7 +19,7 @@ public:
     Instruction(std::string line);
 
     bool IsBranchOrJump();
-
+    void DecodeInstructionString();
     virtual ~Instruction();
 
     void Print();
@@ -43,12 +43,11 @@ private:
 
     static std::map<std::string, int> instructionTypeMap;
     static std::map<std::string, OpcodeType> opcodeTypeMap;
-
     int InstructionTypeLookup(std::string code);
     int OpcodeTypeLookup(std::string code);
     void SplitPCandString(std::string line);
     void FillMaps();
-    void DecodeInstructionString();
+
     void DecodeRegisters(std::vector<std::string> tokens);
 
 //    bool CheckIfBranchOrJump();

@@ -49,6 +49,22 @@ static struct option long_options[] = {
 	{0,         0,                 0,  0   }
 };
 
+void promptForInt(std::string promptTextString, int &targetInt) {
+	cout <<  promptTextString;
+	cin >> targetInt;
+}
+
+void promptForFloat(std::string promptTextString, float &targetFloat) {
+	cout <<  promptTextString;
+	cin >> targetFloat;
+}
+
+void promptForString(std::string promptTextString, std::string &targetStr) {
+	cout <<  promptTextString;
+	cin >> targetStr;
+}
+
+
 
 int processCommandLine(int argc, char **argv) {
 	int opt = 0;
@@ -146,7 +162,38 @@ int processCommandLine(int argc, char **argv) {
 
 	if(opt == -1 && foundCount != targetFound) {
 		cout << "Found opt=" << opt << "\t" << foundCount << " of " << targetFound << " required flags found\n";
-		print_usage();
+//		print_usage();
+		if(::superScalarFactor == -1)
+			promptForInt("Enter Superscalar Width:\t", ::superScalarFactor);
+		if(::btbSize == -1)
+			promptForInt("Enter BTB Size:\t", ::btbSize);
+		if(::rsEntries == -1)
+			promptForInt("Enter # of RS Entries:\t", ::rsEntries);
+		if(::fuCount == -1)
+			promptForInt("Enter # of Functional Units:\t", ::fuCount);
+		if(::renameTableEntries == -1)
+			promptForInt("Enter Rename Table size:\t", ::renameTableEntries);
+		if(::reorderBufferEntries == -1)
+			promptForInt("Enter ROB Size:\t", ::reorderBufferEntries);
+
+		if(::instrCacheHitRate == -1)
+			promptForFloat("Enter Instruction Cache Hit Rate:\t", ::instrCacheHitRate);
+		if(::instrCacheAccessTime == -1)
+			promptForInt("Enter Instruction Cache Access Time:\t", ::instrCacheAccessTime);
+
+		if(::level1CacheHitRate == -1)
+			promptForFloat("Enter L1 Cache Hit Rate:\t", ::level1CacheHitRate);
+		if(::level1CacheAccessTime == -1)
+			promptForInt("Enter L1 Cache Access Time:\t", ::level1CacheAccessTime);
+
+		if(::level2CacheHitRate == -1)
+			promptForFloat("Enter L2 Cache Hit Rate:\t", ::level2CacheHitRate);
+		if(::level2CacheAccessTime == -1)
+			promptForInt("Enter L2 Cache Access Time:\t", ::level2CacheAccessTime);
+
+		if(::inputTraceFile.size() == 0)
+					promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
+
 	}
 
 	//check for any remaining vars now and prompt for them

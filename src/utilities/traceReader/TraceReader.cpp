@@ -42,19 +42,12 @@ Instruction TraceReader::getNextInstruction(){
 	string line;
 	line = getNextTraceLine();
 
-	printf("Line:\t%s\n", line.c_str());
+	cout<< "Line:\t" <<  line << endl;
 
 	Instruction ret(line);
-
-	//replace the following code with the proper parsers...
-//	ret.PC = -1;
-//	ret.dest = -1;
-//	ret.imm = -1;
-//	ret.opCode = -1;
-//	ret.src1 = -1;
-//	ret.src2 = -1;
-
-	ret.Print();
+//
+//	cout<< "Read: ";
+//	ret.Print();
 
 	return ret;
 }

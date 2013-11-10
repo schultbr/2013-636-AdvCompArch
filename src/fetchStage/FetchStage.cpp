@@ -45,8 +45,8 @@ bool checkBranchPrediction(Instruction currentInstr){
 //pull in n instructions
 //process from strings into instruction types? or should they be in them already from the reader? derp.
 //
-void simulateFetchCycle(std::queue<Instruction> &fetchedInstructions) {
-	cout << "FETCHING\n";
+void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
+	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
 //	queue<Instruction> fetchedInstructions;
 	int penaltyTime = 0;
 	Instruction instrToAdd;
@@ -88,14 +88,21 @@ void simulateFetchCycle(std::queue<Instruction> &fetchedInstructions) {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
+	cout << "Grabbing  " << ::superScalarFactor << " instuctions\n";
+
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
 	//pause all together? todo: figure this out
-	for(int i = fetchedInstructions.size() - 1; i < ::superScalarFactor; i++) {
+	for(int i = fetchedInstructions.size(); i < ::superScalarFactor; i++) {
 		instrToAdd = instructionTrace.getNextInstruction();
+
+		cout<< "Fetched: ";
+		instrToAdd.Print();
+
 		fetchedInstructions.push(instrToAdd);
 		instructionCount++;
 
+		cout << "Size: " << fetchedInstructions.size() << endl;
 		//do branch checks here..
 		if(instrToAdd.IsBranchOrJump()){
 			if(!checkBranchPrediction(instrToAdd)){
