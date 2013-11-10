@@ -1,8 +1,8 @@
 /*
  * StructureDefs.h
  *
- *  Created on: Oct 22, 2013
- *      Author: brian
+ *  Created on: Oct 29, 2013
+ *      Author: jason cain
  */
 
 #ifndef STRUCTUREDEFS_H_
@@ -10,6 +10,67 @@
 
 
 enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT, LOGICAL, NOP };
+
+class Branch_Predictor{
+  public:
+  	short 	shiftReg;
+  	int 	predictionTable[1024];
+
+	Branch_Predictor();				//constructor
+	void	shift_left(bool bit);
+	short 	hash (int pc);
+	int	get_bp (int hashAddr);
+	void 	inc_state(int hashAddr);
+	void 	dec_state(int hashAddr);
+};
+
+//Reorder Buffer slot
+class ROB_Element {
+  public:
+	bool	busy;				//busy bit, this entry in use
+	bool	finished;			//out of FU, has finished execution
+	bool	valid;				//instr after a br are speculative, valid=0 by default
+	int	rename;				//Rename Register File tag
+	int	OP;				//opcode
+	//bool	issued;				//out of RS, has been issued
+	//int 	PC;				//PC
+
+	ROB_Element();				//constructor
+};
+
+//Architecture Register File slot
+class ARF_Element {
+public:
+	bool 	busy;
+	int	data;
+	int	rename;
+
+	ARF_Element();
+};
+
+//Rename Register File slot
+class RRF_Element {
+public:
+	bool		busy;
+	bool		valid;
+	int		data;
+	int		dest;
+
+	RRF_Element();
+};
+
+//Reservation Station slot
+class RS_Element {
+public:
+	bool		busy;
+	bool		valid1;
+	bool		valid2;
+	bool		ready;
+	int		op1;
+	int		op2;
+	int		reorder;
+	RS_Element();
+};
 
 
 
