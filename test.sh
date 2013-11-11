@@ -19,7 +19,7 @@ L2_AT=15
 
 $EXE --ss $SS_FACTOR --btb $BTB_SIZE --rs $RS_STATION_SIZE -fu $FU_COUNT \
 --rnt $RENAME_TABLE_SIZE --rob $ROB_SIZE --l1hr $L1_HR --l1at $L1_AT \
---l2hr $L2_HR --l2at $L2_AT --trace $TRACE --inshr $IC_HR --insat $IC_AT
+--l2hr $L2_HR --l2at $L2_AT --trace $TRACE --inshr $IC_HR --insat $IC_AT | tee run_output.log
 
 
 
