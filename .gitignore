@@ -17,3 +17,6 @@ _obj/
 *.lai
 *.la
 *.a
+
+# Log files
+*.log

@@ -147,6 +147,16 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	if(regName.length() == 0)
 		return 0;
 
+	if(regName == "HI_LO"){
+		cout << "Found HI_LO. Returning 63\n";
+		return 63;
+	}
+
+	if(regName == "FCC") {
+		cout << "Found FCC. Returning 64\n";
+		return 64;
+	}
+
 	charPos = regName.find('r');
 	if(charPos == string::npos) {
 		charPos = regName.find('f');
@@ -156,7 +166,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 		indexOffset = 32;
 	}
 
-	numberStr = regName.substr(charPos);
+	numberStr = regName.substr(charPos+1);
 	cout << "Found reg " << regName << " to be #" << numberStr << endl;
 
 	retVal = atoi(numberStr.c_str());
@@ -179,7 +189,8 @@ void Instruction::DecodeRegisters(std::string regStr){
 //		cout << "Adding " << tempChar << "\t";
 		*token << tempChar;
 		if(ss.peek() == ',' ||
-				ss.peek() == '(' ) {
+				ss.peek() == '(' ||
+				ss.peek() == ')') {
 			cout << "Found " << token->str() << endl;
 			regs.push_back(token->str());
 			ss.ignore();
@@ -187,169 +198,185 @@ void Instruction::DecodeRegisters(std::string regStr){
 			token = new std::stringstream();
 		}
 	}
-	cout << "Found " << token->str() << endl;
-	regs.push_back(token->str());
+	if(token->str().size() > 0) {
+		cout << "Found " << token->str() << endl;
+		regs.push_back(token->str());
+	}
 
 	cout << "Total of " << regs.size() << " tokens\n";
 
 	/* Opcode input instruction types
-	 imm only 		= 1
-	 s1 only 		= 2
-	 s1, dest		= 3
-	 s1, imm		= 4
-	 s1, imm, dest		= 5
-	 s1, s2, imm 		= 6
-	 s1, s2, dest		= 7
-	 imm, dest		= 8
-
-	 s1,s2, dest= HI_LO 	= 9
-	 s1= HI_LO, dest	= 10
-
-	 s1= FCC, imm 		= 11
-	 s1, dest= FCC 		= 12
+	 * 0 = IMM ONLY
+  	 * 1 = SRC1 ONLY
+  	 * 2 = SRC1 & SRC2
+  	 * 3 = SRC1 & SRC2 & OFFSET
+  	 * 4 = SRC1 & OFFSET
+  	 * 5 = IMM & SRC1=FCC
+  	 * 6 = DEST & IMM & SRC1 (in that order)
+  	 * 7 = DEST & SRC1 & SRC2
+  	 * 8 = DEST & SRC1 & IMM
+  	 * 9 = SRC1 & SRC2, DEST = HI_LO
+  	 * 10 = DEST && SRC1 = HI_LO
+  	 * 11 = DEST & IMM
+  	 * 12 = SRC1 & DEST
+  	 * 13 = SRC1 & SRC2, DEST=FCC
+  	 *
 	*/
 
 //	cout << "Switching " << instructionTypeMap[opCodeStr] << endl;
 	switch(instructionTypeMap[opCodeStr]) {
-	case 1: //imm only
+	case 0: //imm only
 		imm = atoi(regs[0].c_str());
 		break;
-	case 2: // s1 only
-//		src1 = atoi(regs[0].c_str());
+	case 1: //src1 only
 		src1Reg = regs[0];
 		break;
-	case 3: //s1 & dest
-//		src1 = atoi(regs[0].c_str());
-		src1Reg = regs[0];
-//		dest = atoi(regs[1].c_str());
-		destReg = regs[1];
+	case 2: //dest & src 1
+		destReg = regs[0];
+		src1Reg = regs[1];
 		break;
-	case 4: //s1 & imm
-//		src1 = atoi(regs[0].c_str());
+	case 3://src1 & src2 & offset
 		src1Reg = regs[0];
-		imm = atoi(regs[1].c_str());
-		break;
-	case 5: // s1 & imm & dest
-//		src1 = atoi(regs[0].c_str());
-		src1Reg = regs[0];
-		imm = atoi(regs[1].c_str());
-//		dest = atoi(regs[2].c_str());
-		destReg = regs[2];
-		break;
-	case 6: //s1 & s2 & imm
-//		src1 = atoi(regs[0].c_str());
-		src1Reg = regs[0];
-//		src2 = atoi(regs[1].c_str());
 		src2Reg = regs[1];
+		offset = atoi(regs[2].c_str());
+		break;
+	case 4: //src1 & offset
+		src1Reg = regs[0];
+		offset = atoi(regs[1].c_str());
+		break;
+	case 5: // IMM & SRC1=FCC
+		src1Reg = "FCC";
+		imm = atoi(regs[0].c_str());
+		break;
+	case 6: //DEST & IMM & SRC1 (in that order)
+		destReg = regs[0];
+		imm = atoi(regs[1].c_str());
+		src1Reg = regs[2];
+		break;
+	case 7://DEST & SRC1 & SRC2
+		destReg = regs[0];
+		src1Reg = regs[1];
+		src2Reg = regs[2];
+		break;
+	case 8: //DEST & SRC1 & IMM
+		destReg = regs[0];
+		src1Reg = regs[1];
 		imm = atoi(regs[2].c_str());
 		break;
-	case 7://s1 & s2 & dest
-//		src1 = atoi(regs[0].c_str());
+	case 9: //SRC1 & SRC2, DEST = HI_LO
 		src1Reg = regs[0];
-//		src2 = atoi(regs[1].c_str());
 		src2Reg = regs[1];
-//		dest = atoi(regs[2].c_str());
-		destReg = regs[2];
-		break;
-	case 8: //imm & dest
-		imm = atoi(regs[0].c_str());
-//		dest = atoi(regs[1].c_str());
-		destReg = regs[1];
-		break;
-	case 9: //s1,s2, dest= HI_LO
-//		src1 = atoi(regs[0].c_str());
-		src1Reg = regs[0];
-//		src2 = atoi(regs[1].c_str());
-		src2Reg = regs[1];
-		dest = regHILO;
+		destReg = "HI_LO";
 		break;
 	case 10: //s1= HI_LO, dest
-		src1 = regHILO;
-//		dest = atoi(regs[0].c_str());
+		src1Reg = "HI_LO";
 		destReg = regs[0];
 		break;
-	case 11: //s1= FCC, imm
-		src1 = regFCC;
-		imm = atoi(regs[0].c_str());
+	case 11: //DEST & IMM
+		destReg = regs[0];
+		imm = atoi(regs[1].c_str());
 		break;
-	case 12: //s1, dest= FCC
-//		src1 = atoi(regs[0].c_str());
+	case 12: //SRC1 & DEST
 		src1Reg = regs[0];
-		dest = regFCC;
+		destReg = regs[1];
+		break;
+	case 13: //SRC1 & SRC2, DEST=FCC
+		src1Reg = regs[0];
+		src2Reg = regs[1];
+		destReg = "FCC";
 		break;
 	default:
 		break;
 	}
 //
-//	src1 = GetRegisterIndexFromName(src1Reg);
-//	src2 = GetRegisterIndexFromName(src2Reg);
-//	dest = GetRegisterIndexFromName(destReg);
+	src1 = GetRegisterIndexFromName(src1Reg);
+	src2 = GetRegisterIndexFromName(src2Reg);
+	dest = GetRegisterIndexFromName(destReg);
 }
 
 void Instruction::FillMaps() {
 //	instructionMap.insert()
-	instructionTypeMap["j"] = 1;
-	instructionTypeMap["jal"] = 1;
+
+	/* Opcode input instruction types
+	 * 0 = IMM ONLY
+  	 * 1 = SRC1 ONLY
+  	 * 2 = SRC1 & SRC2
+  	 * 3 = SRC1 & SRC2 & OFFSET
+  	 * 4 = SRC1 & OFFSET
+  	 * 5 = IMM & SRC1=FCC
+  	 * 6 = DEST & IMM & SRC1 (in that order)
+  	 * 7 = DEST & SRC1 & SRC2
+  	 * 8 = DEST & SRC1 & IMM
+  	 * 9 = SRC1 & SRC2, DEST = HI_LO
+  	 * 10 = DEST && SRC1 = HI_LO
+  	 * 11 = DEST & IMM
+  	 * 12 = SRC1 & DEST
+  	 * 13 = SRC1 & SRC2, DEST=FCC
+  	 *
+	*/
+
+	//0 = IMM ONLY
+	instructionTypeMap["j"] = 0;
+	instructionTypeMap["jal"] = 0;
+
+	//1 = SRC1 ONLY
 	instructionTypeMap["jr"] = 1;
-	instructionTypeMap["jalr"] = 3;
-	instructionTypeMap["beq"] = 7;
-	instructionTypeMap["bne"] = 7;
+
+	//2 = DEST & SRC1
+	instructionTypeMap["jalr"] = 2;
+	instructionTypeMap["mfc1"] = 2;
+	instructionTypeMap["dmfc1"] = 2;
+	instructionTypeMap["mov.d"] = 2;
+	instructionTypeMap["neg.d"] = 2;
+	instructionTypeMap["cvt.s.d"] = 2;
+	instructionTypeMap["cvt.s.w"] = 2;
+	instructionTypeMap["cvt.d.s"] = 2;
+	instructionTypeMap["cvt.d.w"] = 2;
+	instructionTypeMap["cvt.w.d"] = 2;
+	instructionTypeMap["sqrt.d"] = 2;
+
+	//3 = SRC1 & SRC2 & OFFSET
+	instructionTypeMap["beq"] = 3;
+	instructionTypeMap["bne"] = 3;
+
+	//4 = SRC1 & OFFSET
 	instructionTypeMap["blez"] = 4;
 	instructionTypeMap["bgtz"] = 4;
 	instructionTypeMap["bltz"] = 4;
 	instructionTypeMap["bgez"] = 4;
-	instructionTypeMap["bc1f"] = 8;
-	instructionTypeMap["bc1t"] = 8;
 
-	instructionTypeMap["lb"] = 5;
-	instructionTypeMap["lbu"] = 5;
-	instructionTypeMap["lh"] = 5;
-	instructionTypeMap["lhu"] = 5;
-	instructionTypeMap["lw"] = 5;
-	instructionTypeMap["l.s"] = 5;
-	instructionTypeMap["l.d"] = 5;
+	//5 = IMM & SRC1=FCC
+	instructionTypeMap["bc1f"] = 5;
+	instructionTypeMap["bc1t"] = 5;
 
+	//6 = DEST & IMM & SRC1 (in that order)
+	instructionTypeMap["lb"] = 6;
+	instructionTypeMap["lbu"] = 6;
+	instructionTypeMap["lh"] = 6;
+	instructionTypeMap["lhu"] = 6;
+	instructionTypeMap["lw"] = 6;
+	instructionTypeMap["l.s"] = 6;
+	instructionTypeMap["l.d"] = 6;
 	instructionTypeMap["sb"] = 6;
 	instructionTypeMap["sh"] = 6;
 	instructionTypeMap["sw"] = 6;
 	instructionTypeMap["s.s"] = 6;
 	instructionTypeMap["s.d"] = 6;
 
+	//7 = DEST & SRC1 & SRC2
 	instructionTypeMap["add"] = 7;
-	instructionTypeMap["addi"] = 5;
 	instructionTypeMap["addu"] = 7;
-	instructionTypeMap["addiu"] = 5;
 	instructionTypeMap["sub"] = 7;
 	instructionTypeMap["subu"] = 7;
-	instructionTypeMap["mult"] = 9;
-	instructionTypeMap["div"] = 9;
-	instructionTypeMap["divu"] = 9;
-	instructionTypeMap["mfhi"] = 10;
-	instructionTypeMap["mflo"] = 10;
-	instructionTypeMap["lui"] = 8;
-	instructionTypeMap["mfc1"] = 3;
-	instructionTypeMap["dmfc1"] = 3;
-	instructionTypeMap["mtc1"] = 3;
-	instructionTypeMap["dmtc1"] = 3;
-
 	instructionTypeMap["and"] = 7;
-	instructionTypeMap["andi"] = 5;
 	instructionTypeMap["or"] = 7;
-	instructionTypeMap["ori"] = 5;
 	instructionTypeMap["xor"] = 7;
-	instructionTypeMap["xori"] = 5;
 	instructionTypeMap["nor"] = 7;
-	instructionTypeMap["sll"] = 5;
 	instructionTypeMap["sllv"] = 7;
-	instructionTypeMap["srl"] = 5;
 	instructionTypeMap["srlv"] = 7;
-	instructionTypeMap["sra"] = 5;
 	instructionTypeMap["srav"] = 7;
 	instructionTypeMap["slt"] = 7;
-	instructionTypeMap["slti"] = 5;
 	instructionTypeMap["sltu"] = 7;
-	instructionTypeMap["sltiu"] = 5;
-
 	instructionTypeMap["add.s"] = 7;
 	instructionTypeMap["add.d"] = 7;
 	instructionTypeMap["sub.s"] = 7;
@@ -357,17 +384,40 @@ void Instruction::FillMaps() {
 	instructionTypeMap["mul.s"] = 7;
 	instructionTypeMap["mul.d"] = 7;
 	instructionTypeMap["div.d"] = 7;
-	instructionTypeMap["mov.d"] = 3;
-	instructionTypeMap["neg.d"] = 3;
-	instructionTypeMap["cvt.s.d"] = 3;
-	instructionTypeMap["cvt.s.w"] = 3;
-	instructionTypeMap["cvt.d.s"] = 3;
-	instructionTypeMap["cvt.d.w"] = 3;
-	instructionTypeMap["cvt.w.d"] = 3;
-	instructionTypeMap["c.eq.d"] = 12;
-	instructionTypeMap["c.lt.d"] = 12;
-	instructionTypeMap["c.le.d"] = 12;
-	instructionTypeMap["sqrt.d"] = 3;
+
+	//8 = DEST & SRC1 & IMM
+	instructionTypeMap["addi"] = 8;
+	instructionTypeMap["addiu"] = 8;
+	instructionTypeMap["andi"] = 8;
+	instructionTypeMap["ori"] = 8;
+	instructionTypeMap["xori"] = 8;
+	instructionTypeMap["sll"] = 8;
+	instructionTypeMap["srl"] = 8;
+	instructionTypeMap["sra"] = 8;
+	instructionTypeMap["slti"] = 8;
+	instructionTypeMap["sltiu"] = 8;
+
+
+	//9 = SRC1 & SRC2, DEST = HI_LO
+	instructionTypeMap["mult"] = 9;
+	instructionTypeMap["div"] = 9;
+	instructionTypeMap["divu"] = 9;
+
+	//10 = DEST && SRC1 = HI_LO
+	instructionTypeMap["mfhi"] = 10;
+	instructionTypeMap["mflo"] = 10;
+
+	//11 = DEST & IMM
+	instructionTypeMap["lui"] = 11;
+
+	//12 = SRC1 & DEST
+	instructionTypeMap["mtc1"] = 12;
+	instructionTypeMap["dmtc1"] = 12;
+
+	//13 = SRC1 & SRC2, DEST=FCC
+	instructionTypeMap["c.eq.d"] = 13;
+	instructionTypeMap["c.lt.d"] = 13;
+	instructionTypeMap["c.le.d"] = 13;
 
 
 	opcodeTypeMap["j"] = JUMP;
