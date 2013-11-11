@@ -41,13 +41,14 @@ int runSimulation() {
 	int max = 50;
 	while(notDone) {
 		cout << "Simulating cycle " << cyclesCompleted << endl;
+		cout << "Size3: " << fetchDecodeBuffer.size() << endl;
 	//	simulateCompleteStage();
 	//	simulateExecuteStage();
 	//	simulateIssueStage();
 	//	simulateDispatchStage();
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
-		cout << "Size: " << fetchDecodeBuffer.size() << endl;
+		cout << "Size2: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 

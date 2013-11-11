@@ -39,11 +39,14 @@ Instruction::Instruction(string line) {
     //init everything to -1
 	PC = -1;
     dest = -1;
+//    destReg = "";
     imm = -1;
     opCodeStr = "";
     opCodeType = -1;
     src1 = -1;
+//    src1Reg = "";
     src2 = -1;
+//    src2Reg = "";
     offset = 0;
     branchPredictorAddress = -1;
     isBranchOrJump = false;
@@ -65,11 +68,11 @@ bool Instruction::IsBranchOrJump(){
 
 void Instruction::Print() {
     cout << "PC:\t" << PC << endl;
-    cout << "dest:\t" << dest << endl;
+    cout << "dest:\t" << dest <<  endl;//"\t destStr:\t" << destReg << endl;
     cout << "imm:\t" << imm << endl;
     cout << "op:\t" << opCode << endl;
-    cout << "src1:\t" << src1 << endl;
-    cout << "src2:\t" << src2 << endl;
+    cout << "src1:\t" << src1 << endl;//"\t src1Str:\t" << src1Reg << endl;
+    cout << "src2:\t" << src2 << endl;//"\t src2Str:\t" << src2Reg << endl;
 }
 
 
@@ -120,20 +123,74 @@ void Instruction::SplitPCandString(string line) {
 }
 
 void Instruction::DecodeInstructionString() {
+	cout << "DECODING " << instructionLine << endl;
 	istringstream splitLine(instructionLine);
-		vector<string> tokens;
-		copy(istream_iterator<string>(splitLine),
-			istream_iterator<string>(),
-			back_inserter<vector<string> >(tokens));
+	vector<string> tokens;
+	copy(istream_iterator<string>(splitLine),
+		istream_iterator<string>(),
+		back_inserter<vector<string> >(tokens));
 
 //		PC = atoi(tokens[0].c_str()); // PC is decoded in fetch stage
-		opCodeStr = tokens[0];
-		opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
-		DecodeRegisters(tokens);
+	opCodeStr = tokens[0];
+	opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
+	DecodeRegisters(tokens[1]);
+}
+
+int Instruction::GetRegisterIndexFromName(std::string regName){
+	int retVal = 0;
+	int charPos = 0;
+	int indexOffset = 0;
+	string numberStr;
+
+	cout << "Translating " << regName << " to a vector index" << endl;
+
+	if(regName.length() == 0)
+		return 0;
+
+	charPos = regName.find('r');
+	if(charPos == string::npos) {
+		charPos = regName.find('f');
+		if(charPos == string::npos)
+			return -1; //we didnt find a r or f in the string... wat
+
+		indexOffset = 32;
+	}
+
+	numberStr = regName.substr(charPos);
+	cout << "Found reg " << regName << " to be #" << numberStr << endl;
+
+	retVal = atoi(numberStr.c_str());
+
+	cout << "Return val is " << retVal << " plus " << indexOffset << endl;
+
+	retVal += indexOffset;
+
+	return retVal;
 }
 
 
-void Instruction::DecodeRegisters(vector<string> tokens){
+//void Instruction::DecodeRegisters(vector<string> tokens){
+void Instruction::DecodeRegisters(std::string regStr){
+	vector<string> regs;
+	std::stringstream ss(regStr);
+	char tempChar;
+	std::stringstream *token = new std::stringstream();
+	while(ss >> tempChar) {
+//		cout << "Adding " << tempChar << "\t";
+		*token << tempChar;
+		if(ss.peek() == ',' ||
+				ss.peek() == '(' ) {
+			cout << "Found " << token->str() << endl;
+			regs.push_back(token->str());
+			ss.ignore();
+			delete token;
+			token = new std::stringstream();
+		}
+	}
+	cout << "Found " << token->str() << endl;
+	regs.push_back(token->str());
+
+	cout << "Total of " << regs.size() << " tokens\n";
 
 	/* Opcode input instruction types
 	 imm only 		= 1
@@ -151,62 +208,82 @@ void Instruction::DecodeRegisters(vector<string> tokens){
 	 s1= FCC, imm 		= 11
 	 s1, dest= FCC 		= 12
 	*/
+
+//	cout << "Switching " << instructionTypeMap[opCodeStr] << endl;
 	switch(instructionTypeMap[opCodeStr]) {
 	case 1: //imm only
-		imm = atoi(tokens[1].c_str());
+		imm = atoi(regs[0].c_str());
 		break;
 	case 2: // s1 only
-		src1 = atoi(tokens[1].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
 		break;
 	case 3: //s1 & dest
-		src1 = atoi(tokens[1].c_str());
-		dest = atoi(tokens[2].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+//		dest = atoi(regs[1].c_str());
+		destReg = regs[1];
 		break;
 	case 4: //s1 & imm
-		src1 = atoi(tokens[1].c_str());
-		imm = atoi(tokens[2].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+		imm = atoi(regs[1].c_str());
 		break;
 	case 5: // s1 & imm & dest
-		src1 = atoi(tokens[1].c_str());
-		imm = atoi(tokens[2].c_str());
-		dest = atoi(tokens[3].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+		imm = atoi(regs[1].c_str());
+//		dest = atoi(regs[2].c_str());
+		destReg = regs[2];
 		break;
 	case 6: //s1 & s2 & imm
-		src1 = atoi(tokens[1].c_str());
-		src2 = atoi(tokens[2].c_str());
-		imm = atoi(tokens[3].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+//		src2 = atoi(regs[1].c_str());
+		src2Reg = regs[1];
+		imm = atoi(regs[2].c_str());
 		break;
 	case 7://s1 & s2 & dest
-		src1 = atoi(tokens[1].c_str());
-		src2 = atoi(tokens[2].c_str());
-		dest = atoi(tokens[3].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+//		src2 = atoi(regs[1].c_str());
+		src2Reg = regs[1];
+//		dest = atoi(regs[2].c_str());
+		destReg = regs[2];
 		break;
 	case 8: //imm & dest
-		imm = atoi(tokens[1].c_str());
-		dest = atoi(tokens[2].c_str());
+		imm = atoi(regs[0].c_str());
+//		dest = atoi(regs[1].c_str());
+		destReg = regs[1];
 		break;
 	case 9: //s1,s2, dest= HI_LO
-		src1 = atoi(tokens[1].c_str());
-		src2 = atoi(tokens[2].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
+//		src2 = atoi(regs[1].c_str());
+		src2Reg = regs[1];
 		dest = regHILO;
 		break;
 	case 10: //s1= HI_LO, dest
 		src1 = regHILO;
-		dest = atoi(tokens[1].c_str());
+//		dest = atoi(regs[0].c_str());
+		destReg = regs[0];
 		break;
 	case 11: //s1= FCC, imm
 		src1 = regFCC;
-		imm = atoi(tokens[1].c_str());
+		imm = atoi(regs[0].c_str());
 		break;
 	case 12: //s1, dest= FCC
-		src1 = atoi(tokens[1].c_str());
+//		src1 = atoi(regs[0].c_str());
+		src1Reg = regs[0];
 		dest = regFCC;
 		break;
 	default:
 		break;
 	}
-
-
+//
+//	src1 = GetRegisterIndexFromName(src1Reg);
+//	src2 = GetRegisterIndexFromName(src2Reg);
+//	dest = GetRegisterIndexFromName(destReg);
 }
 
 void Instruction::FillMaps() {
@@ -375,146 +452,3 @@ void Instruction::FillMaps() {
 	opcodeTypeMap["sqrt.d"] = FLOATING_POINT;
 
 }
-
-
-
-
-
-//#define		j	1
-//#define		jal	1
-//#define		jr	1
-//#define		jalr	3
-//#define		beq	7
-//#define		bne	7
-//#define		blez	4
-//#define		bgtz	4
-//#define		bltz	4
-//#define		bgez	4
-//#define		bc1f	8
-//#define		bc1t	8
-//
-//#define		lb	5
-//#define		lbu	5
-//#define		lh	5
-//#define		lhu	5
-//#define		lw	5
-////#define		l.s	5
-////#define		l.d	5
-//
-//#define		sb	6
-//#define		sh	6
-//#define		sw	6
-////#define		s.s	6
-////#define		s.d	6
-//
-//#define		add	7
-//#define		addi	5
-//#define		addu	7
-//#define		addiu	5
-//#define		sub	7
-//#define		subu	7
-//#define		mult	9
-//#define		div	9
-//#define		divu	9
-//#define		mfhi	10
-//#define		mflo	10
-//#define		lui	8
-//#define		mfc1	3
-//#define		dmfc1	3
-//#define		mtc1	3
-//#define		dmtc1	3
-//
-//#define		and	7
-//#define		andi	5
-//#define		or	7
-//#define		ori	5
-//#define		xor	7
-//#define		xori	5
-//#define		nor	7
-//#define		sll	5
-//#define		sllv	7
-//#define		srl	5
-//#define		srlv	7
-//#define		sra	5
-//#define		srav	7
-//#define		slt	7
-//#define		slti	5
-//#define		sltu	7
-//#define		sltiu	5
-//
-////#define		add.s	all floating point use .s/.d
-//
-//
-//#define R0	0
-//#define R1	1
-//#define R2	2
-//#define R3	3
-//#define R4	4
-//#define R5	5
-//#define R6	6
-//#define R7	7
-//#define R8	8
-//#define R9	9
-//
-//#define R10	10
-//#define R11	11
-//#define R12	12
-//#define R13	13
-//#define R14	14
-//#define R15	15
-//#define R16	16
-//#define R17	17
-//#define R18	18
-//#define R19	19
-//
-//#define R20	20
-//#define R21	21
-//#define R22	22
-//#define R23	23
-//#define R24	24
-//#define R25	25
-//#define R26	26
-//#define R27	27
-//#define R28	28
-//#define R29	29
-//
-//#define R30	30
-//#define R31	31
-//
-//#define F0	32
-//#define F1	33
-//#define F2	34
-//#define F3	35
-//#define F4	36
-//#define F5	37
-//#define F6	38
-//#define F7	39
-//#define F8	40
-//#define F9	41
-//
-//#define F10	42
-//#define F11	43
-//#define F12	44
-//#define F13	45
-//#define F14	46
-//#define F15	47
-//#define F16	48
-//#define F17	49
-//#define F18	50
-//#define F19	51
-//
-//#define F20	52
-//#define F21	53
-//#define F22	54
-//#define F23	55
-//#define F24	56
-//#define F25	57
-//#define F26	58
-//#define F27	59
-//#define F28	60
-//#define F29	61
-//
-//#define F30	62
-//
-//#define HI_LO	63
-//#define FCC	64

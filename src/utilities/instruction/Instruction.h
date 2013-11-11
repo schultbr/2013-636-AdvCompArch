@@ -17,11 +17,11 @@ class Instruction {
 public:
     Instruction();
     Instruction(std::string line);
+    virtual ~Instruction();
 
     bool IsBranchOrJump();
     void DecodeInstructionString();
-    virtual ~Instruction();
-
+    int GetRegisterIndexFromName(std::string regName);
     void Print();
     std::string ToString();
 
@@ -41,6 +41,10 @@ private:
     std::string opCodeStr;
     bool isBranchOrJump;
 
+    std::string src1Reg;
+    std::string src2Reg;
+    std::string destReg;
+
     static std::map<std::string, int> instructionTypeMap;
     static std::map<std::string, OpcodeType> opcodeTypeMap;
     int InstructionTypeLookup(std::string code);
@@ -48,7 +52,7 @@ private:
     void SplitPCandString(std::string line);
     void FillMaps();
 
-    void DecodeRegisters(std::vector<std::string> tokens);
+    void DecodeRegisters(std::string regStr);
 
 //    bool CheckIfBranchOrJump();
 };

@@ -46,7 +46,7 @@ bool checkBranchPrediction(Instruction currentInstr){
 //process from strings into instruction types? or should they be in them already from the reader? derp.
 //
 void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
-	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
+//	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
 //	queue<Instruction> fetchedInstructions;
 	int penaltyTime = 0;
 	Instruction instrToAdd;
@@ -88,7 +88,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
-	cout << "Grabbing  " << ::superScalarFactor << " instuctions\n";
+	cout << "Fetching  " << ::superScalarFactor << " instuctions\n";
 
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
