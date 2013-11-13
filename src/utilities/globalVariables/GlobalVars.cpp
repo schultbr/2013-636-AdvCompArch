@@ -27,6 +27,8 @@ std::vector<ARF_Element> registers;
 int regHILO = 0;
 int regFCC = 0;
 
+BranchPredictor branchPredictor;
+
 int cyclesCompleted = 0;
 int instructionCount = 0;
 

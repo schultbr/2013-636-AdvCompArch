@@ -30,6 +30,7 @@ Instruction::Instruction() {
     isBranchOrJump = false;
     branchPredictorAddress = -1;
     opCode = NOP;
+    wasPredictionCorrect = false;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
     	FillMaps();
@@ -50,6 +51,7 @@ Instruction::Instruction(string line) {
     offset = 0;
     branchPredictorAddress = -1;
     isBranchOrJump = false;
+    wasPredictionCorrect = false;
     opCode = NOP; //initial opCode. Gets set in decode.
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
@@ -64,6 +66,10 @@ Instruction::~Instruction() {
 
 bool Instruction::IsBranchOrJump(){
 	return isBranchOrJump;
+}
+
+bool Instruction::WasPredictionCorrect(){
+	return wasPredictionCorrect;
 }
 
 void Instruction::Print() {

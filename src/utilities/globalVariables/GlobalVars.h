@@ -11,6 +11,7 @@
 //#include "TraceReader.h"
 #include <string>
 #include <vector>
+#include "BranchPredictor.h"
 #include "StructureDefs.h"
 
 extern int superScalarFactor;
@@ -26,6 +27,8 @@ extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
 extern std::string inputTraceFile;
+
+extern BranchPredictor branchPredictor;
 
 
 extern std::vector<ARF_Element> registers;
