@@ -8,7 +8,12 @@
 #ifndef DISPATCHSTAGE_H_
 #define DISPATCHSTAGE_H_
 
+#include "GlobalVars.h"
+#include "StructureDefs.h"
+#include "Instruction.h"
+#include <queue>
 
+void simulateDispatchStage(std::queue<Instruction> &instrToDispatch);
 
 
 #endif /* DISPATCHSTAGE_H_ */

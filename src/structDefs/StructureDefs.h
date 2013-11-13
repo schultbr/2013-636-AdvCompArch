@@ -11,7 +11,10 @@
 
 enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT, LOGICAL, NOP };
 
-//moved to a class to better shape what this represents.
+//moved this guy to a class to better shape what this represents, and hide
+//some of the nitty-gritty (shifting and hashing ops) from the other
+//pieces. should just be a black box, basically.
+
 //class Branch_Predictor{
 //  public:
 //  	short 	shiftReg;
@@ -26,8 +29,8 @@ enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT
 //};
 
 
-//the following can just be structs with constructors... a quick-and-dirty class, essentially, since this
-//all we needed anyways.
+//the following can just be structs with constructors... a quick-and-dirty class,
+//essentially, since that's all we needed anyways.
 //Reorder Buffer slot
 struct ROB_Element {
 	bool	busy;				//busy bit, this entry in use
