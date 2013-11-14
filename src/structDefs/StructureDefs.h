@@ -33,13 +33,13 @@ enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT
 //essentially, since that's all we needed anyways.
 //Reorder Buffer slot
 struct ROB_Element {
-	bool	busy;				//busy bit, this entry in use
-	bool	finished;			//out of FU, has finished execution
-	bool	valid;				//instr after a br are speculative, valid=0 by default
-	int	rename;				//Rename Register File tag
-	int	OP;				//opcode
-	//bool	issued;				//out of RS, has been issued
-	//int 	PC;				//PC
+	bool busy;		//busy bit, this entry in use
+	bool finished;	//out of FU, has finished execution
+	bool valid;		//instr after a br are speculative, valid=0 by default
+	int	rename;		//Rename Register File tag
+	int	OP;			//opcode
+	//bool	issued;	//out of RS, has been issued
+	//int 	PC;		//PC
 
 	ROB_Element(){				//constructor
 		busy = 0;

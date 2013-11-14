@@ -32,6 +32,12 @@ extern BranchPredictor branchPredictor;
 
 
 extern std::vector<ARF_Element> registers;
+extern std::vector<ROB_Element> reOrderBuffer;
+extern std::vector<RRF_Element> renameRegisterFile;
+extern std::vector<RRF_Element> renameRegisterFile;
+
+
+
 extern int regHILO;
 extern int regFCC;
 
