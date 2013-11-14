@@ -11,95 +11,115 @@
 
 enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT, LOGICAL, NOP };
 
-class Branch_Predictor{
-  public:
-  	short 	shiftReg;
-  	int 	predictionTable[1024];
+//moved this guy to a class to better shape what this represents, and hide
+//some of the nitty-gritty (shifting and hashing ops) from the other
+//pieces. should just be a black box, basically.
 
-	Branch_Predictor();				//constructor
-	void	shift_left(bool bit);
-	short 	hash (int pc);
-	int	get_bp (int hashAddr);
-	void 	inc_state(int hashAddr);
-	void 	dec_state(int hashAddr);
-};
+//class Branch_Predictor{
+//  public:
+//  	short 	shiftReg;
+//  	int 	predictionTable[1024];
+//
+//	Branch_Predictor();				//constructor
+//	void	shift_left(bool bit);
+//	short 	hash (int pc);
+//	int	get_bp (int hashAddr);
+//	void 	inc_state(int hashAddr);
+//	void 	dec_state(int hashAddr);
+//};
 
+
+//the following can just be structs with constructors... a quick-and-dirty class,
+//essentially, since that's all we needed anyways.
 //Reorder Buffer slot
-class ROB_Element {
-  public:
-	bool		busy;				//busy bit, this entry in use
-	bool		finished;			//out of FU, has finished execution
-	bool		valid;				//instr after a br are speculative, valid=0 by default
-	int		rename;				//Rename Register File tag
-	OpcodeType	OP;				//opcode
-	//bool		issued;				//out of RS, has been issued
-	//int 		PC;				//PC
 
-	ROB_Element();					//constructor
+struct ROB_Element {
+	bool 		busy;		//busy bit, this entry in use
+	bool 		finished;	//out of FU, has finished execution
+	bool 		valid;		//instr after a br are speculative, valid=0 by default
+	int		rename;		//Rename Register File tag
+	OpcodeType	code;		//opcode
+	//bool	issued;			//out of RS, has been issued
+	//int 	PC;			//PC
+
+	ROB_Element(){			//constructor
+		busy = 0;
+		finished = 0;
+		valid = 0;
+		rename = -1;
+		code = NOP;	
 };
 
 //Architecture Register File slot
-class ARF_Element {
-public:
-	bool 	busy;
+struct ARF_Element {
+	bool busy;
 	int	data;
 	int	rename;
 
-	ARF_Element();
+	ARF_Element() {
+		busy = 0;
+		data = -1;
+		rename = -1;
+	}
 };
 
 //Rename Register File slot
-class RRF_Element {
-public:
-	bool		busy;
-	bool		valid;
-	int		data;
-	int		dest;
+struct RRF_Element {
+	bool busy;
+	bool valid;
+	int	data;
+	int	dest;
 
-	RRF_Element();
+	RRF_Element() {
+		busy = 0;
+		valid = 0;
+		data = 0;
+		dest = 0;
+	}
 };
 
 //Reservation Station slot
-class RS_Element {
-public:
-	bool		busy;
-	bool		valid1;
-	bool		valid2;
-	bool		ready;
-	int		op1;
-	int		op2;
-	int		reorder;
-	RS_Element();
+struct RS_Element {
+	bool busy;
+	bool valid1;
+	bool valid2;
+	bool ready;
+	int op1;
+	int op2;
+	int reorder;
+	OpcodeType	code;		//opcode
+
+	RS_Element() {
+		busy = 0;
+		valid1 = 0;
+		valid2 = 0;
+		ready = 0;
+		op1 = -1;
+		op2	= -1;
+		reorder	= -1;
+		code = NOP;
+	}
 };
 
+//Functional Unit slot
+struct FU_Element {
+	bool ready;
+	int count;
+	int op1;
+	int op2;
+	int	reorder;
+	OpcodeType	code;		//opcode
 
-
-//define any generic structures here
-//struct Instruction {
-//	int PC;
-//	int opCode;
-//	int src1;
-//	int src2;
-//	int imm;
-//	int dest;
-//
-//	Instruction() {
-//		PC = -1;
-//		dest = -1;
-//		imm = -1;
-//		opCode = -1;
-//		src1 = -1;
-//		src2 = -1;
-//	}
-//
-//	void ToString() {
-//	    printf("PC:\t%d\n", PC);
-//	    printf("dest:\t%d\n", dest);
-//	    printf("imm:\t%d\n", imm);
-//	    printf("op:\t%d\n", opCode);
-//	    printf("src1:\t%d\n", src1);
-//	    printf("src2:\t%d\n", src2);
-//	}
-//};
-
+	FU_Element() {
+		busy = 0;
+		count = 0;
+		valid1 = 0;
+		valid2 = 0;
+		ready = 0;
+		op1 = -1;
+		op2	= -1;
+		reorder	= -1;
+		code = NOP;
+	}
+};
 #endif /* STRUCTUREDEFS_H_ */

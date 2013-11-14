@@ -20,6 +20,7 @@ public:
     virtual ~Instruction();
 
     bool IsBranchOrJump();
+    bool WasPredictionCorrect();
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
     void Print();
@@ -40,6 +41,8 @@ private:
     int opCodeType;
     std::string opCodeStr;
     bool isBranchOrJump;
+
+    bool wasPredictionCorrect;
 
     std::string src1Reg;
     std::string src2Reg;

@@ -25,10 +25,23 @@ std::string inputTraceFile;
 int robHead = -1;
 int robTail = -1;
 
-std::vector<ARF_Element> registers;
 int regHILO = 0;
 int regFCC = 0;
 
+std::vector<ARF_Element> arf;
+std::vector<ROB_Element> rob;
+std::vector<RRF_Element> rrf;	
+std::vector<RS_Element> rs_int;
+std::vector<RS_Element> rs_fp;
+std::vector<RS_Element> rs_mem;
+std::vector<RS_Element> rs_br;
+std::vector<RS_Element> fu_add;
+std::vector<RS_Element> fu_mult;
+std::vector<RS_Element> fu_fp;
+std::vector<RS_Element> fu_mem;
+RS_Element fu_branch;			//single Functional Unit
+
+BranchPredictor branchPredictor;
 int cyclesCompleted = 0;
 int instructionCount = 0;
 

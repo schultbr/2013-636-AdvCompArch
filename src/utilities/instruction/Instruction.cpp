@@ -18,6 +18,10 @@ using namespace std;
 std::map<std::string, OpcodeType> Instruction::opcodeTypeMap;
 std::map<std::string, int> Instruction::instructionTypeMap;
 
+static const int fpRegIndex = 32;
+static const int hiloRegIndex = 63;
+static const int fccRegIndex = 64;
+
 Instruction::Instruction() {
     PC = -1;
     dest = -1;
@@ -30,6 +34,7 @@ Instruction::Instruction() {
     isBranchOrJump = false;
     branchPredictorAddress = -1;
     opCode = NOP;
+    wasPredictionCorrect = false;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
     	FillMaps();
@@ -50,6 +55,7 @@ Instruction::Instruction(string line) {
     offset = 0;
     branchPredictorAddress = -1;
     isBranchOrJump = false;
+    wasPredictionCorrect = false;
     opCode = NOP; //initial opCode. Gets set in decode.
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
@@ -64,6 +70,10 @@ Instruction::~Instruction() {
 
 bool Instruction::IsBranchOrJump(){
 	return isBranchOrJump;
+}
+
+bool Instruction::WasPredictionCorrect(){
+	return wasPredictionCorrect;
 }
 
 void Instruction::Print() {
@@ -149,12 +159,12 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 
 	if(regName == "HI_LO"){
 		cout << "Found HI_LO. Returning 63\n";
-		return 63;
+		return hiloRegIndex;
 	}
 
 	if(regName == "FCC") {
 		cout << "Found FCC. Returning 64\n";
-		return 64;
+		return fccRegIndex;
 	}
 
 	charPos = regName.find('r');
@@ -163,7 +173,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 		if(charPos == string::npos)
 			return -1; //we didnt find a r or f in the string... wat
 
-		indexOffset = 32;
+		indexOffset = fpRegIndex;
 	}
 
 	numberStr = regName.substr(charPos+1);
