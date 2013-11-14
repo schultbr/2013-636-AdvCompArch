@@ -40,20 +40,24 @@ bool checkBranchPrediction(Instruction &currentInstr){
 		//return true if our predicted PC matches the trace's next PC
 		if(normalNextPC == actualNextPC) {
 			cout << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
+			currentInstr.SetWasBranchTaken(false);
 			return false; //MISPREDICTION
 		}
 		else {
 			cout << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+			currentInstr.SetWasBranchTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 	}
 	else {
 		if(normalNextPC == actualNextPC) {
 			cout << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+			currentInstr.SetWasBranchTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 		else {
 			cout << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
+			currentInstr.SetWasBranchTaken(false);
 			return false; //MISPREDICTION
 		}
 	}
@@ -118,7 +122,7 @@ void grabNextInstructionGroup() {
 
 		cout << "Size: " << currentFetchedItem.instructions.size() << endl;
 		//do branch checks here..
-		if(instrToAdd.IsBranchOrJump()){
+		if(instrToAdd.IsBranch()){
 			if(!checkBranchPrediction(instrToAdd)){
 				fetchStalledInstrPC = instrToAdd.PC;
 				fetchStalled = true; //flip this to false once this mis-predicted branch finishes execution
@@ -175,8 +179,10 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 		//add another instruction set to the group, if we can.
 		grabNextInstructionGroup();
 
-	//move through and decrement all instruction groups. If one hits 0 cycles remaining,
-	decrementAllPipelineInstructions(fetchedInstructions);
+	if(instructionsInPipeline.size() > 0) {
+	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
+	    decrementAllPipelineInstructions(fetchedInstructions);
+	}
 
 	return;
 }

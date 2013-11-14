@@ -98,7 +98,7 @@ struct RS_Element {
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
-		code = NOP;
+		code =  NOP;
 	}
 };
 

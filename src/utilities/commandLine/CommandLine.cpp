@@ -40,7 +40,6 @@ static struct option long_options[] = {
 	{"rnt",   	required_argument, 0,  'n' },
 	{"rob",   	required_argument, 0,  'o' },
 	{"inshr",  	required_argument, 0,  'i' },
-	{"insat",  	required_argument, 0,  'I' },
 	{"l1hr",  	required_argument, 0,  '1' },
 	{"l1at",   	required_argument, 0,  '!' },
 	{"l2hr",   	required_argument, 0,  '2' },
@@ -113,11 +112,6 @@ int processCommandLine(int argc, char **argv) {
 				 ::instrCacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
-			 case 'I' :
-				 cout << "Found I\n";
-				 ::instrCacheAccessTime = atoi(optarg);
-				 foundCount++;
-				 break;
 			 case '1' :
 				 cout << "Found 1\n";
 				 ::level1CacheHitRate = atoi(optarg);
@@ -178,8 +172,8 @@ int processCommandLine(int argc, char **argv) {
 
 		if(::instrCacheHitRate == -1)
 			promptForFloat("Enter Instruction Cache Hit Rate:\t", ::instrCacheHitRate);
-		if(::instrCacheAccessTime == -1)
-			promptForInt("Enter Instruction Cache Access Time:\t", ::instrCacheAccessTime);
+//		if(::instrCacheAccessTime == -1)
+//			promptForInt("Enter Instruction Cache Access Time:\t", ::instrCacheAccessTime);
 
 		if(::level1CacheHitRate == -1)
 			promptForFloat("Enter L1 Cache Hit Rate:\t", ::level1CacheHitRate);
@@ -190,6 +184,8 @@ int processCommandLine(int argc, char **argv) {
 			promptForFloat("Enter L2 Cache Hit Rate:\t", ::level2CacheHitRate);
 		if(::level2CacheAccessTime == -1)
 			promptForInt("Enter L2 Cache Access Time:\t", ::level2CacheAccessTime);
+
+		::instrCacheAccessTime = ::level1CacheAccessTime;
 
 		if(::inputTraceFile.size() == 0)
 					promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);

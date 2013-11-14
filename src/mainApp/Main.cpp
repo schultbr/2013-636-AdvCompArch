@@ -38,7 +38,7 @@ void clearQueue(){
 int runSimulation() {
 	bool notDone = true;
 	int i = 0;
-	int max = 50;
+	int max = 5000;
 	while(notDone) {
 		cout << "Simulating cycle " << cyclesCompleted << endl;
 		cout << "Size3: " << fetchDecodeBuffer.size() << endl;

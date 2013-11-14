@@ -44,7 +44,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 }
 
 void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
-	if(executedInstr.WasPredictionCorrect()) {
+	if(executedInstr.GetWasBranchTaken()) {
 		//update the state machine with the current results
 		inc_state(executedInstr.branchPredictorAddress);
 	}

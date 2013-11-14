@@ -25,9 +25,6 @@ std::string inputTraceFile;
 int robHead = -1;
 int robTail = -1;
 
-int regHILO = 0;
-int regFCC = 0;
-
 std::vector<ARF_Element> arf;
 std::vector<ROB_Element> rob;
 std::vector<RRF_Element> rrf;	
