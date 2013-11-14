@@ -14,6 +14,10 @@
 #include "BranchPredictor.h"
 #include "StructureDefs.h"
 
+
+//////////////////////////////////
+//program options:
+//////////////////////////////////
 extern int superScalarFactor;
 extern int btbSize;
 extern int rsEntries;
@@ -26,30 +30,34 @@ extern float level1CacheHitRate;
 extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
+extern int systemMemoryAccessTime; //todo: Add in command line option for this
 extern std::string inputTraceFile;
 
-extern BranchPredictor branchPredictor;
 
-
+//////////////////////////////////
+//hardware elements:
+//////////////////////////////////
 extern std::vector<ARF_Element> registers;
 extern std::vector<ROB_Element> reOrderBuffer;
 extern std::vector<RRF_Element> renameRegisterFile;
-extern std::vector<RRF_Element> renameRegisterFile;
-
-
+//extern std::vector<RRF_Element> renameRegisterFile;
 
 extern int regHILO;
 extern int regFCC;
 
+extern BranchPredictor branchPredictor;
+
+//////////////////////////////////
+//statistical counters
+//////////////////////////////////
 extern int cyclesCompleted;
 extern int instructionCount;
 
+//////////////////////////////////
+//system flags (for coordinating
+//              pipeline stages)
+//////////////////////////////////
 extern int fetchStalledInstrPC;
 extern bool fetchStalled;
-
-
-//
-//void setSuperScalarSize(int size);
-//void setInstructionTrace(char *file);
 
 #endif /* GLOBALVARS_H_ */

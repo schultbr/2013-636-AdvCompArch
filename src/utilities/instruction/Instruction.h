@@ -23,6 +23,7 @@ public:
     bool WasPredictionCorrect();
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
+    std::string GetOpcodeString();
     void Print();
     std::string ToString();
 

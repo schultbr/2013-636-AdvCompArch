@@ -99,6 +99,10 @@ string Instruction::ToString() {
     return stream.str();
 }
 
+std::string Instruction::GetOpcodeString(){
+    return opCodeStr;
+}
+
 //not reaaaally used...
 int Instruction::OpcodeTypeLookup(string code) {
 
