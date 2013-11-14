@@ -18,6 +18,10 @@ using namespace std;
 std::map<std::string, OpcodeType> Instruction::opcodeTypeMap;
 std::map<std::string, int> Instruction::instructionTypeMap;
 
+static const int fpRegIndex = 32;
+static const int hiloRegIndex = 63;
+static const int fccRegIndex = 64;
+
 Instruction::Instruction() {
     PC = -1;
     dest = -1;
@@ -155,12 +159,12 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 
 	if(regName == "HI_LO"){
 		cout << "Found HI_LO. Returning 63\n";
-		return 63;
+		return hiloRegIndex;
 	}
 
 	if(regName == "FCC") {
 		cout << "Found FCC. Returning 64\n";
-		return 64;
+		return fccRegIndex;
 	}
 
 	charPos = regName.find('r');
@@ -169,7 +173,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 		if(charPos == string::npos)
 			return -1; //we didnt find a r or f in the string... wat
 
-		indexOffset = 32;
+		indexOffset = fpRegIndex;
 	}
 
 	numberStr = regName.substr(charPos+1);
