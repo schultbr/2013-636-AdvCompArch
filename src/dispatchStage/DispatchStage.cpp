@@ -56,8 +56,6 @@ int dispatchToRRF(Instruction inst) {
 }
 
 
-
-
 void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
     //Dispatch takes each instruction and sends it to:

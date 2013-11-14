@@ -66,6 +66,7 @@ struct RRF_Element {
 };
 
 //Reservation Station slot
+//also, FU element
 struct RS_Element {
 	bool busy;
 	bool valid1;
