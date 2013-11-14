@@ -34,20 +34,21 @@ enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT
 //Reorder Buffer slot
 
 struct ROB_Element {
-	bool 		busy;		//busy bit, this entry in use
-	bool 		finished;	//out of FU, has finished execution
-	bool 		valid;		//instr after a br are speculative, valid=0 by default
-	int		rename;		//Rename Register File tag
+	bool busy;		//busy bit, this entry in use
+	bool finished;	//out of FU, has finished execution
+	bool valid;		//instr after a br are speculative, valid=0 by default
+	int	rename;		//Rename Register File tag
 	OpcodeType	code;		//opcode
 	//bool	issued;			//out of RS, has been issued
 	//int 	PC;			//PC
 
-	ROB_Element(){			//constructor
+	ROB_Element() {			//constructor
 		busy = 0;
 		finished = 0;
 		valid = 0;
 		rename = -1;
 		code = NOP;	
+	}
 };
 
 //Architecture Register File slot
@@ -87,7 +88,7 @@ struct RS_Element {
 	int op1;
 	int op2;
 	int reorder;
-	OpcodeType	code;		//opcode
+	OpcodeType code;		//opcode
 
 	RS_Element() {
 		busy = 0;
@@ -108,13 +109,10 @@ struct FU_Element {
 	int op1;
 	int op2;
 	int	reorder;
-	OpcodeType	code;		//opcode
+	OpcodeType code;		//opcode
 
 	FU_Element() {
-		busy = 0;
 		count = 0;
-		valid1 = 0;
-		valid2 = 0;
 		ready = 0;
 		op1 = -1;
 		op2	= -1;
@@ -122,4 +120,5 @@ struct FU_Element {
 		code = NOP;
 	}
 };
+
 #endif /* STRUCTUREDEFS_H_ */

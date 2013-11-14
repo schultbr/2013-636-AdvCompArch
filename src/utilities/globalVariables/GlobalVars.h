@@ -14,6 +14,11 @@
 #include "BranchPredictor.h"
 #include "StructureDefs.h"
 
+//////////////////////////////////////////////////////////
+//
+//              User Options
+//
+//////////////////////////////////////////////////////////
 extern int superScalarFactor;
 extern int btbSize;
 extern int rsEntries;
@@ -28,9 +33,14 @@ extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
 extern std::string inputTraceFile;
 
+//////////////////////////////////////////////////////////
+//
+//          Architecture Elements
+//
+//////////////////////////////////////////////////////////
+
 extern int robHead;
 extern int robTail;
-=======
 
 extern BranchPredictor branchPredictor;
 
@@ -48,20 +58,27 @@ extern std::vector<RS_Element> fu_fp;
 extern std::vector<RS_Element> fu_mem;
 extern RS_Element fu_branch;			//single Functional Unit
 
-
-
 extern int regHILO;
 extern int regFCC;
 
+
+//////////////////////////////////////////////////////////
+//
+//          Statistical Variables
+//
+//////////////////////////////////////////////////////////
 extern int cyclesCompleted;
 extern int instructionCount;
 
+
+
+//////////////////////////////////////////////////////////
+//
+//         Inter-stage communications
+//
+//////////////////////////////////////////////////////////
 extern int fetchStalledInstrPC;
 extern bool fetchStalled;
 
-
-//
-//void setSuperScalarSize(int size);
-//void setInstructionTrace(char *file);
 
 #endif /* GLOBALVARS_H_ */

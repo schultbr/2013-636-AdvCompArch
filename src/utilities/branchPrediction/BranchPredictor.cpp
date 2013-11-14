@@ -15,7 +15,6 @@ BranchPredictor::BranchPredictor() {
 }
 
 BranchPredictor::~BranchPredictor() {
-	// TODO Auto-generated destructor stub
 }
 
 bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){

@@ -83,6 +83,9 @@ void grabNextInstructionGroup() {
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
 	//pause all together? todo: figure this out
+	//per discussion in class 11/14/2013 -> pipeline buffers fill up if dispatch fills up. if at the
+	//start we see that nothing has moved out... we could not decrement the counter and that stay the same? right?
+
 	for(int i = 0; i < ::superScalarFactor; i++) {
 		penaltyTime = checkCache(instrCacheHitRate, instrCacheAccessTime);
 		if(penaltyTime > 0) { //failed l1 instruction cache hit

@@ -48,14 +48,3 @@ int instructionCount = 0;
 
 int fetchStalledInstrPC = 0;
 bool fetchStalled = false;
-
-
-////these setters are totally unnecessary but, meh. theyre already here.
-////kinda the right thing to do... sometimes
-//void setSuperScalarSize(int size) {
-//	superScalarSize = size;
-//}
-//
-//void setInstructionTrace(char *file) {
-//	instructionTrace.openTrace(file);
-//}

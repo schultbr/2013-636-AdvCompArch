@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 	int returnVal = 0;
 
 	//set up global register collections
-	registers.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
+	arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
 //	fpRegisters.resize(31);
 
 	//process command line options to handle inputs

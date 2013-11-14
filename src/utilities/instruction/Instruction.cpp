@@ -65,7 +65,6 @@ Instruction::Instruction(string line) {
 }
 
 Instruction::~Instruction() {
-    // TODO Auto-generated destructor stub
 }
 
 bool Instruction::IsBranchOrJump(){
