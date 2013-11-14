@@ -5,6 +5,7 @@
  *      Author: brian
  */
 #include "GlobalVars.h"
+#include "BranchPredictor.h"
 #include <vector>
 
 
@@ -39,8 +40,8 @@ std::vector<RS_Element> fu_mem;
 RS_Element fu_branch;			//single Functional Unit
 
 BranchPredictor branchPredictor;
-int cyclesCompleted = 0;
-int instructionCount = 0;
+unsigned int cyclesCompleted = 0;
+unsigned int instructionCount = 0;
 
 
 int fetchStalledInstrPC = 0;

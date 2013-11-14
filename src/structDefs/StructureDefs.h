@@ -88,7 +88,11 @@ struct RS_Element {
 	int op1;
 	int op2;
 	int reorder;
-	OpcodeType code;		//opcode
+	short PTaddr;
+	bool BRoutcome;
+	int PC;
+	int BTaddr;
+	OpcodeType code; //opcode
 
 	RS_Element() {
 		busy = 0;
@@ -99,6 +103,10 @@ struct RS_Element {
 		op2	= -1;
 		reorder	= -1;
 		code =  NOP;
+		PTaddr = 0;
+		BRoutcome = 0;
+		PC = 0;
+		BTaddr = 0;
 	}
 };
 
@@ -109,7 +117,11 @@ struct FU_Element {
 	int op1;
 	int op2;
 	int	reorder;
-	OpcodeType code;		//opcode
+    short PTaddr;
+    bool BRoutcome;
+    int PC;
+    int BTaddr;
+	OpcodeType code; //opcode
 
 	FU_Element() {
 		count = 0;
@@ -118,7 +130,23 @@ struct FU_Element {
 		op2	= -1;
 		reorder	= -1;
 		code = NOP;
+        PTaddr = 0;
+        BRoutcome = 0;
+        PC = 0;
+        BTaddr = 0;
 	}
+};
+
+struct BTB_Element {
+    int instrPC;
+    int targetPC;
+    bool lastPredictedTaken;
+
+    BTB_Element() {
+        instrPC = -1;
+        targetPC = -1;
+    }
+
 };
 
 #endif /* STRUCTUREDEFS_H_ */

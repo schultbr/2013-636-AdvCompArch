@@ -19,6 +19,8 @@ using namespace std;
 int fetchedInstructionCount = 0;
 TraceReader instructionTrace;
 
+bool isResumeNextCycle = true;
+
 int cacheMissWaitTimeRemaining = 0;
 
 struct FetchPipelineItem{
@@ -62,7 +64,7 @@ bool checkBranchPrediction(Instruction &currentInstr){
 		}
 	}
 
-	cout << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
+//	cout << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
 	//return false otherwise. oops. we missed. somehow.
 	return false;
@@ -82,7 +84,7 @@ void grabNextInstructionGroup() {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
-	cout << "Fetching  " << ::superScalarFactor << " instuctions\n";
+//	cout << "Fetching  " << ::superScalarFactor << " instuctions\n";
 
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
@@ -114,13 +116,13 @@ void grabNextInstructionGroup() {
 
 		instrToAdd = instructionTrace.getNextInstruction();
 
-		cout<< "Fetched: ";
-		instrToAdd.Print();
+//		cout<< "Fetched: ";
+//		instrToAdd.Print();
 
 		currentFetchedItem.instructions.push(instrToAdd);
 		instructionCount++;
 
-		cout << "Size: " << currentFetchedItem.instructions.size() << endl;
+//		cout << "Size: " << currentFetchedItem.instructions.size() << endl;
 		//do branch checks here..
 		if(instrToAdd.IsBranch()){
 			if(!checkBranchPrediction(instrToAdd)){
@@ -165,7 +167,14 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	if(fetchStalled) {
 		cout << "Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n";
+		cacheMissWaitTimeRemaining = 0;
+		isResumeNextCycle = false;
 		return;
+	}
+
+	if(!fetchStalled && !isResumeNextCycle) {
+	    isResumeNextCycle = true;
+	    return;
 	}
 
 	//did we previously miss a cache hit?

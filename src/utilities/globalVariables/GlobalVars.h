@@ -11,8 +11,9 @@
 //#include "TraceReader.h"
 #include <string>
 #include <vector>
-#include "BranchPredictor.h"
 #include "StructureDefs.h"
+
+class BranchPredictor; //forward declaration of branch predictor
 
 //////////////////////////////////////////////////////////
 //
@@ -67,8 +68,11 @@ extern int regFCC;
 //          Statistical Variables
 //
 //////////////////////////////////////////////////////////
-extern int cyclesCompleted;
-extern int instructionCount;
+extern unsigned int cyclesCompleted;
+extern unsigned int instructionCount;
+
+extern unsigned int branchPredictionCount;
+
 
 
 
