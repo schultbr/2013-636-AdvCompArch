@@ -11,7 +11,7 @@
 #include <iostream>
 #include <string.h>
 
-  ROB_Element::ROB_Element()
+  ROB_Element::ROB_Element()	//head & tail variables need created in main to point to ROB vector index
   {
 	busy 		= 0;
 	finished 	= 0;

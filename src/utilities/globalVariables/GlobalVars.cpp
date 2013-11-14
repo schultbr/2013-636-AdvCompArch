@@ -8,7 +8,7 @@
 #include <vector>
 
 
-int returnVal = -1;
+int returnVal = -1;		//where is this defined, didn't see it in globalvars.h?
 int superScalarFactor = -1;
 int btbSize = -1;
 int rsEntries = -1;
@@ -22,6 +22,8 @@ int level1CacheAccessTime = -1;
 float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
 std::string inputTraceFile;
+int robHead = -1;
+int robTail = -1;
 
 std::vector<ARF_Element> registers;
 int regHILO = 0;

@@ -26,7 +26,8 @@ extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
 extern std::string inputTraceFile;
-
+extern int robHead;
+extern int robTail;
 
 extern std::vector<ARF_Element> registers;
 extern int regHILO;
