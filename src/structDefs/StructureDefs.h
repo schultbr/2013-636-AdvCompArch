@@ -11,23 +11,8 @@
 
 enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT, LOGICAL, NOP };
 
-//moved this guy to a class to better shape what this represents, and hide
-//some of the nitty-gritty (shifting and hashing ops) from the other
-//pieces. should just be a black box, basically.
-
-//class Branch_Predictor{
-//  public:
-//  	short 	shiftReg;
-//  	int 	predictionTable[1024];
-//
-//	Branch_Predictor();				//constructor
-//	void	shift_left(bool bit);
-//	short 	hash (int pc);
-//	int	get_bp (int hashAddr);
-//	void 	inc_state(int hashAddr);
-//	void 	dec_state(int hashAddr);
-//};
-
+//is this type needed? would it be helpful in issue?
+enum ReservationStationType{INTEGER_RS, FLOATING_POINT_RS, MEMORY_RS, BRANCH_RS, NO_RS};
 
 //the following can just be structs with constructors... a quick-and-dirty class,
 //essentially, since that's all we needed anyways.
@@ -43,9 +28,9 @@ struct ROB_Element {
 	//int 	PC;			//PC
 
 	ROB_Element() {			//constructor
-		busy = 0;
-		finished = 0;
-		valid = 0;
+		busy = false;
+		finished = false;
+		valid = false;
 		rename = -1;
 		code = NOP;	
 	}
@@ -58,7 +43,7 @@ struct ARF_Element {
 	int	rename;
 
 	ARF_Element() {
-		busy = 0;
+		busy = false;
 		data = -1;
 		rename = -1;
 	}
@@ -72,14 +57,15 @@ struct RRF_Element {
 	int	dest;
 
 	RRF_Element() {
-		busy = 0;
-		valid = 0;
+		busy = false;
+		valid = false;
 		data = 0;
 		dest = 0;
 	}
 };
 
 //Reservation Station slot
+//also, FU element
 struct RS_Element {
 	bool busy;
 	bool valid1;
@@ -96,10 +82,10 @@ struct RS_Element {
 	OpcodeType	code;		//opcode
 
 	RS_Element() {
-		busy = 0;
-		valid1 = 0;
-		valid2 = 0;
-		ready = 0;
+		busy = false;
+		valid1 = false;
+		valid2 = false;
+		ready = false;
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
@@ -117,8 +103,7 @@ struct FU_Element {
 	int count;
 	int op1;
 	int op2;
-	int	reorder;
-<<<<<<< HEAD
+	int reorder;
 	OpcodeType	code;		//opcode
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
@@ -141,7 +126,7 @@ struct FU_Element {
 struct BTB_Element {
     int instrPC;
     int targetPC;
-    bool lastPredictedTaken;
+//    bool lastPredictedTaken; //not needed? i dont think
 
     BTB_Element() {
         instrPC = -1;

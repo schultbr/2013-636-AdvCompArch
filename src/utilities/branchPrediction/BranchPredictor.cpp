@@ -6,14 +6,14 @@
  */
 
 #include "BranchPredictor.h"
-#include "GlobalVars.h"
-#include "Instruction.h"
 
 BranchPredictor::BranchPredictor() {
 	shiftReg 	= 0x0000;
 	std::fill(predictionTable, predictionTable + 1024, 1);  //set initial prediction to '01', Not Taken
 	btbInsertIndex = 0;
-	btb.resize(::btbSize);
+	branchPredictionCount = 0;
+	predictionMissCount = 0;
+
 }
 
 BranchPredictor::~BranchPredictor() {
@@ -21,6 +21,10 @@ BranchPredictor::~BranchPredictor() {
 
 void BranchPredictor::incrementPredictionMissCount() {
     predictionMissCount++;
+}
+
+void BranchPredictor::resizeBTB(int size) {
+    btb.resize(size);
 }
 
 bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
@@ -148,18 +152,18 @@ void BranchPredictor::dec_state(int hashAddr)
 void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTaken) {
     for(size_t i = 0; i < btb.size(); i++) {
         if(btb[i].instrPC == instrPC) {
-            btb[i].lastPredictedTaken = wasTaken;
+//            btb[i].lastPredictedTaken = wasTaken;
             btb[i].targetPC = brachTarget;
             return;
         }
     }
 
     btb[btbInsertIndex].instrPC = instrPC;
-    btb[btbInsertIndex].lastPredictedTaken = wasTaken;
+//    btb[btbInsertIndex].lastPredictedTaken = wasTaken;
     btb[btbInsertIndex].targetPC = brachTarget;
     btbInsertIndex++; //next entry
 
-    if(btbInsertIndex == ::btbSize) {
+    if(btbInsertIndex == (int)btb.size()) {
         btbInsertIndex = 0; //if we reached the max size, wrap around to 0;
     }
 

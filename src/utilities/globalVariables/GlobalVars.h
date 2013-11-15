@@ -8,12 +8,21 @@
 #ifndef GLOBALVARS_H_
 #define GLOBALVARS_H_
 
+#define DEBUG //for testing prints. Comment this line out to slim down the output.
+
+#ifdef DEBUG
+#define DEBUG_COUT cout
+#else
+#define DEBUG_COUT 0 && cout
+#endif
+
 //#include "TraceReader.h"
+#include "StructureDefs.h"
+#include "BranchPredictor.h"
 #include <string>
 #include <vector>
-#include "StructureDefs.h"
 
-class BranchPredictor; //forward declaration of branch predictor
+//class BranchPredictor; //forward declaration of branch predictor
 
 //////////////////////////////////////////////////////////
 //
@@ -32,6 +41,7 @@ extern float level1CacheHitRate;
 extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
+extern int systemMemoryAccessTime;
 extern std::string inputTraceFile;
 
 //////////////////////////////////////////////////////////
@@ -39,7 +49,6 @@ extern std::string inputTraceFile;
 //          Architecture Elements
 //
 //////////////////////////////////////////////////////////
-
 extern int robHead;
 extern int robTail;
 
@@ -52,15 +61,11 @@ extern std::vector<RS_Element> rs_int;
 extern std::vector<RS_Element> rs_fp;
 extern std::vector<RS_Element> rs_mem;
 extern std::vector<RS_Element> rs_br;
-
 extern std::vector<RS_Element> fu_add;
 extern std::vector<RS_Element> fu_mult;
 extern std::vector<RS_Element> fu_fp;
 extern std::vector<RS_Element> fu_mem;
 extern RS_Element fu_branch;			//single Functional Unit
-
-extern int regHILO;
-extern int regFCC;
 
 
 //////////////////////////////////////////////////////////
@@ -71,13 +76,9 @@ extern int regFCC;
 extern unsigned int cyclesCompleted;
 extern unsigned int instructionCount;
 
-extern unsigned int branchPredictionCount;
-
-
-
+//branch info is tracked by the predictor itself..
 
 //////////////////////////////////////////////////////////
-//
 //         Inter-stage communications
 //
 //////////////////////////////////////////////////////////

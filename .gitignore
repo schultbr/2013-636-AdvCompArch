@@ -20,3 +20,6 @@ _obj/
 
 # Log files
 *.log
+
+#Git things
+*.orig

@@ -16,6 +16,11 @@
 
 #include "FetchStage.h"
 #include "DecodeStage.h"
+#include "DispatchStage.h"
+//#include "IssueStage.h"
+//#include "ExecuteStage.h"
+#include "CompleteStage.h"
+#include "BranchPredictor.h"
 #include "GlobalVars.h"
 
 using namespace std;
@@ -40,15 +45,15 @@ int runSimulation() {
 	int i = 0;
 	int max = 5000;
 	while(notDone) {
-		cout << "Simulating cycle " << cyclesCompleted << endl;
-		cout << "Size3: " << fetchDecodeBuffer.size() << endl;
+	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
+	    DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
 	//	simulateCompleteStage();
 	//	simulateExecuteStage();
 	//	simulateIssueStage();
-	//	simulateDispatchStage();
+		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
-		cout << "Size2: " << fetchDecodeBuffer.size() << endl;
+		DEBUG_COUT << "Size2: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 
@@ -57,7 +62,7 @@ int runSimulation() {
 			notDone = false;
 
 		//todo: remove when done testing fetch
-		clearQueue();
+//		clearQueue();
 	}
 
 	return 1;
@@ -82,25 +87,45 @@ void printRunningParameters()
     cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
 }
 
+void resizeHardwareFromParameters() {
+    branchPredictor.resizeBTB(::btbSize);
+
+    //set up global register collections
+    arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
+
+    rrf.resize(::renameTableEntries);
+    rob.resize(::reorderBufferEntries);
+    rs_mem.resize(::rsEntries);
+    rs_int.resize(::rsEntries);
+    rs_fp.resize(::rsEntries);
+    rs_br.resize(::rsEntries);
+
+    fu_add.resize(::fuCount);
+    fu_mult.resize(::fuCount);
+    fu_fp.resize(::fuCount);
+    fu_mem.resize(::fuCount);
+}
+
 int main(int argc, char** argv) {
 
 	int returnVal = 0;
-
-	//set up global register collections
-	arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
-//	fpRegisters.resize(31);
 
 	//process command line options to handle inputs
 	processCommandLine(argc, argv);
 
 	printRunningParameters();
 
+	//resize stuff from cmd line prompts
+	resizeHardwareFromParameters();
+
 	//run simulation
 	returnVal = runSimulation();
 
+	cout << "Return code from simulation: " <<  returnVal << endl << endl;
+
+	//lets figure it out.
 	determineStatistics();
 
-	cout << "Return code from simulation: " <<  returnVal << endl << endl;
 	cout << "Exiting.\n";
 
 	return 0;

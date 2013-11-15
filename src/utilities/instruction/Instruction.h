@@ -24,6 +24,7 @@ public:
     void SetWasBranchTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
+    std::string GetOpcodeString();
     void Print();
     std::string ToString();
 
@@ -35,6 +36,7 @@ public:
     int offset;
     short branchPredictorAddress;
     OpcodeType opCode;
+    int predictedTargetPC;
 
 private:
     std::string instructionLine;

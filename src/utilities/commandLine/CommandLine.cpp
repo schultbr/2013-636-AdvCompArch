@@ -20,12 +20,14 @@ void print_usage() {
     cout << "Usage: project2 --ss NUM --btb NUM --rs NUM \n";
     cout << "                 --fu NUM --rnt NUM --rob NUM \n";
     cout << "                 --inshr NUM --l1hr NUM --l1at NUM  \n";
-    cout << "                 --l2hr NUM --l2at NUM --trace TRACE_FILE\n";
+    cout << "                 --l2hr NUM --l2at NUM --mmat NUM\n";
+    cout << "                 --trace TRACE_FILE\n";
     cout << "Key:\n";
     cout << "--ss = SuperScalar Count --btb = BTB Size --rs = ReservationStation Size\n";
     cout << "--fu = FunctionalUnit Count --rnt = RenameTable Size --rob = ReorderBuffer Size\n";
     cout << "--inshr = Level 1 Instruction Cache Hit Rate --l1hr = Level 1 Hit Rate --l1at = Level 1 Access Time\n";
-    cout << "--l2hr = Level 2 Hit Rate --l2at = Level 2 Access Time --trace = Path to Target Trace File\n";
+    cout << "--l2hr = Level 2 Hit Rate --l2at = Level 2 Access Time --mmat = Main Memory Access Time\n";
+    cout << "--trace = Path to Target Trace File\n";
     cout << "All parameters ARE required. \n";
     cout << "See included test.sh for usage examples\n";
 }
@@ -44,6 +46,7 @@ static struct option long_options[] = {
 	{"l1at",   	required_argument, 0,  '!' },
 	{"l2hr",   	required_argument, 0,  '2' },
 	{"l2at",   	required_argument, 0,  '@' },
+	{"mmat",    required_argument, 0,  'm' },
 	{"trace",   required_argument, 0,  't' },
 	{0,         0,                 0,  0   }
 };
@@ -132,6 +135,11 @@ int processCommandLine(int argc, char **argv) {
 				 ::level2CacheAccessTime = atoi(optarg);
 				 foundCount++;
 				 break;
+            case 'm' :
+                 cout << "Found m\n";
+                 ::systemMemoryAccessTime = atoi(optarg);
+                 foundCount++;
+                 break;
 			 case 't' :
 			 {
 				 cout << "Found t (" << optarg << ") size: " << sizeof(&optarg);
@@ -185,16 +193,16 @@ int processCommandLine(int argc, char **argv) {
 		if(::level2CacheAccessTime == -1)
 			promptForInt("Enter L2 Cache Access Time:\t", ::level2CacheAccessTime);
 
-		::instrCacheAccessTime = ::level1CacheAccessTime;
+		if(::systemMemoryAccessTime == -1)
+		    promptForInt("Enter Main Memory Access Time:\t", ::systemMemoryAccessTime);
 
 		if(::inputTraceFile.size() == 0)
-					promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
+		    promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
 
+        ::instrCacheAccessTime = ::level1CacheAccessTime;
 	}
 
 	//check for any remaining vars now and prompt for them
-
-
 
 	return 0; //return 0 for success, <0 for failure. handle that on the calling side.
 }
