@@ -32,6 +32,7 @@ SrcDirs += ./src/decodeStage
 SrcDirs += ./src/dispatchStage
 SrcDirs += ./src/issueStage
 SrcDirs += ./src/executeStage
+SrcDirs += ./src/completeStage
 SrcDirs += ./src/reservationStations
 SrcDirs += ./src/functionalUnits
 SrcDirs += ./src/utilities/branchPrediction
