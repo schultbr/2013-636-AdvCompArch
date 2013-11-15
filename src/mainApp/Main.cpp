@@ -84,27 +84,45 @@ void printRunningParameters()
     cout << "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n";
 }
 
+void resizeHardwareFromParameters() {
+    branchPredictor.resizeBTB();
+
+    //set up global register collections
+    arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
+
+    rrf.resize(::renameTableEntries);
+    rob.resize(::reorderBufferEntries);
+    rs_mem.resize(::rsEntries);
+    rs_int.resize(::rsEntries);
+    rs_fp.resize(::rsEntries);
+    rs_br.resize(::rsEntries);
+
+    fu_add.resize(::fuCount);
+    fu_mult.resize(::fuCount);
+    fu_fp.resize(::fuCount);
+    fu_mem.resize(::fuCount);
+}
+
 int main(int argc, char** argv) {
 
 	int returnVal = 0;
-
-	//set up global register collections
-	arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
-//	fpRegisters.resize(31);
 
 	//process command line options to handle inputs
 	processCommandLine(argc, argv);
 
 	printRunningParameters();
 
-	branchPredictor.resizeBTB();
+	//resize stuff from cmd line prompts
+	resizeHardwareFromParameters();
 
 	//run simulation
 	returnVal = runSimulation();
 
+	cout << "Return code from simulation: " <<  returnVal << endl << endl;
+
+	//lets figure it out.
 	determineStatistics();
 
-	cout << "Return code from simulation: " <<  returnVal << endl << endl;
 	cout << "Exiting.\n";
 
 	return 0;

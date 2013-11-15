@@ -25,15 +25,17 @@ float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
 int systemMemoryAccessTime = -1;
 std::string inputTraceFile;
+
+//////////////////////////////////
+//hardware elements:
+//////////////////////////////////
 int robHead = -1;
 int robTail = -1;
 
 std::vector<ARF_Element> arf;
 std::vector<ROB_Element> rob;
 std::vector<RRF_Element> rrf;	
-//////////////////////////////////
-//hardware elements:
-//////////////////////////////////
+
 std::vector<RS_Element> rs_int;
 std::vector<RS_Element> rs_fp;
 std::vector<RS_Element> rs_mem;
@@ -45,11 +47,13 @@ std::vector<RS_Element> fu_mem;
 RS_Element fu_branch;			//single Functional Unit
 
 BranchPredictor branchPredictor;
-unsigned int cyclesCompleted = 0;
-unsigned int instructionCount = 0;
+
 //////////////////////////////////
 //statistical counters
 //////////////////////////////////
+unsigned int cyclesCompleted = 0;
+unsigned int instructionCount = 0;
+
 
 //////////////////////////////////
 //system flags (for coordinating
