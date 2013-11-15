@@ -69,6 +69,10 @@ Instruction::Instruction(string line) {
 Instruction::~Instruction() {
 }
 
+int Instruction::GetOpcodeRegisterType() {
+    return opCodeDecodeType;
+}
+
 bool Instruction::IsBranch(){
 	return isBranch;
 }

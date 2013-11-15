@@ -24,6 +24,7 @@ public:
 //    void SetWasBranchPredictionTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
+    int GetOpcodeRegisterType();
     std::string GetOpcodeString();
     void Print();
     std::string ToString();
@@ -45,8 +46,6 @@ private:
     int opCodeDecodeType;
     std::string opCodeStr;
     bool isBranch;
-
-
 
     std::string src1Reg;
     std::string src2Reg;

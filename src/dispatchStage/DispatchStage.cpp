@@ -120,6 +120,10 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
                     targetRS->at(i).op1 = inst.offset;
                     targetRS->at(i).valid1 = true;
                 }
+                else {
+                    targetRS->at(i).op1 = -1;
+                    targetRS->at(i).valid1 = true;
+                }
             }
             else {
                 //op1 is a valid result now, but it points to the rrf,
@@ -138,6 +142,10 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
                 }
                 else if(inst.offset != 0) {
                     targetRS->at(i).op2 = inst.offset;
+                    targetRS->at(i).valid2 = true;
+                }
+                else {
+                    targetRS->at(i).op2 = -1;
                     targetRS->at(i).valid2 = true;
                 }
             }
@@ -178,6 +186,11 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
     robTail++;
     if(robTail == ::reorderBufferEntries) //if we're at the end of the vector now, wrap it to 0
         robTail = 0;
+
+    if(inst.opCode == BRANCH) {
+        ::unresolvedBranchRobIndex = returnTag;
+        ::anyUnresolvedBranches = true;
+    }
 
     return returnTag;
 }
