@@ -27,17 +27,44 @@ void BranchPredictor::resizeBTB(int size) {
     btb.resize(size);
 }
 
+//returns true if we were able to predict it at all, and sets predictedTargetPC to either currPC+8 or TargetPC(offset)
+//          then, fetch can check predictedTargetPC with the real next PC to determine if we hit or miss th prediction
+//returns false if btb didn't have an entry, so we have to call that a mis-predict.
 bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
-	instrToPredict.branchPredictorAddress = hash(instrToPredict.PC);
+	instrToPredict.branchPredictorTableAddress = hash(instrToPredict.PC);
 
-	int prediction = predictionTable[instrToPredict.branchPredictorAddress];
+	int predictionTableState = predictionTable[instrToPredict.branchPredictorTableAddress];
+	instrToPredict.SetWasBranchPredictionTaken(false);
 
 	branchPredictionCount++;
 
-	if(prediction == 2 || prediction == 3) //predict this branch is taken
-		return true;
-	else
-		return false; //predict not taken.
+	if(predictionTableState == 2 || predictionTableState == 3) //predict this branch is taken
+	    instrToPredict.SetWasBranchPredictionTaken(true);
+
+
+	instrToPredict.predictedTargetPC = -1;
+
+	//else, well, it's already false
+	if(instrToPredict.predictedTargetPC) {
+	    for(size_t i = 0; i < btb.size(); i++) {
+	        if(btb[i].instrPC == instrToPredict.PC) {
+	            instrToPredict.predictedTargetPC = btb[i].targetPC;
+	            return true;
+	        }
+	    }
+
+	    if(instrToPredict.predictedTargetPC == -1){
+//	        instrToPredict.predictedTargetPC = instrToPredict.PC + 8;
+	        return false;
+	    }
+
+	}
+	else {
+	    instrToPredict.predictedTargetPC = instrToPredict.PC + 8;
+	    return true;
+	}
+
+
 
 //  	predictAddr = hash(shiftreg, instr.PC)	//do we add PC to struct instr?  when br is exec if wrong we will need the PC to calc new fetch addr
 //  	prediction = predicitonTable[predictAddr];

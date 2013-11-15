@@ -20,8 +20,8 @@ public:
     virtual ~Instruction();
 
     bool IsBranch();
-    bool GetWasBranchTaken();
-    void SetWasBranchTaken(bool opt);
+    bool GetWasBranchPredictedTaken();
+    void SetWasBranchPredictionTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
     std::string GetOpcodeString();
@@ -34,7 +34,7 @@ public:
     int imm;
     int dest;
     int offset;
-    short branchPredictorAddress;
+    short branchPredictorTableAddress;
     OpcodeType opCode;
     int predictedTargetPC;
 
@@ -44,7 +44,7 @@ private:
     std::string opCodeStr;
     bool isBranch;
 
-    bool wasBranchTaken;
+    bool wasBranchPredictedAsTaken;
 
     std::string src1Reg;
     std::string src2Reg;

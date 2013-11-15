@@ -32,9 +32,9 @@ Instruction::Instruction() {
     src2 = -1;
     offset = 0;
     isBranch = false;
-    branchPredictorAddress = -1;
+    branchPredictorTableAddress = -1;
     opCode = NOP;
-    wasBranchTaken = false;
+    wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
@@ -54,9 +54,9 @@ Instruction::Instruction(string line) {
     src2 = -1;
 //    src2Reg = "";
     offset = 0;
-    branchPredictorAddress = -1;
+    branchPredictorTableAddress = -1;
     isBranch = false;
-    wasBranchTaken = false;
+    wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
     opCode = NOP; //initial opCode. Gets set in decode.
 
@@ -73,12 +73,12 @@ bool Instruction::IsBranch(){
 	return isBranch;
 }
 
-void Instruction::SetWasBranchTaken(bool opt){
-    wasBranchTaken = opt;
+void Instruction::SetWasBranchPredictionTaken(bool opt){
+    wasBranchPredictedAsTaken = opt;
 }
 
-bool Instruction::GetWasBranchTaken(){
-	return wasBranchTaken;
+bool Instruction::GetWasBranchPredictedTaken(){
+	return wasBranchPredictedAsTaken;
 }
 
 void Instruction::Print() {

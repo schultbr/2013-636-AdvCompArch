@@ -20,7 +20,7 @@ public:
 
 	void resizeBTB(int size);
 
-	int getPredictedPCForInstruction(Instruction &instrToPredict);
+//	int getPredictedPCForInstruction(Instruction &instrToPredict);
 	bool getPredictionForInstruction(Instruction &instrToPredict);
 
 //	void updatePredictorWithResults(Instruction &executedInstr);

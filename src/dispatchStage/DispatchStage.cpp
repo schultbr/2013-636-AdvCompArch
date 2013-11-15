@@ -150,8 +150,8 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 
             targetRS->at(i).ready = (targetRS->at(i).valid1 && targetRS->at(i).valid2);
             targetRS->at(i).reorder = robTag;
-            targetRS->at(i).PTaddr = inst.branchPredictorAddress;
-            targetRS->at(i).BRoutcome = inst.GetWasBranchTaken();
+            targetRS->at(i).PTaddr = inst.branchPredictorTableAddress;
+            targetRS->at(i).BRoutcome = inst.GetWasBranchPredictedTaken();
             targetRS->at(i).BTaddr = inst.predictedTargetPC;
             targetRS->at(i).code = inst.opCode;
 

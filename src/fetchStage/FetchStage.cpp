@@ -35,6 +35,7 @@ std::vector<FetchPipelineItem> instructionsInPipeline;
 bool checkBranchPrediction(Instruction &currentInstr){
 	int actualNextPC = instructionTrace.peekNextPC();;
 	int normalNextPC = currentInstr.PC + 8;
+	int predictedNextPC = 0;
 
 	bool isPredictionTaken = branchPredictor.getPredictionForInstruction(currentInstr);
 
@@ -42,24 +43,24 @@ bool checkBranchPrediction(Instruction &currentInstr){
 		//return true if our predicted PC matches the trace's next PC
 		if(normalNextPC == actualNextPC) {
 		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchTaken(false);
+			currentInstr.SetWasBranchPredictionTaken(false);
 			return false; //MISPREDICTION
 		}
 		else {
 		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchTaken(true);
+			currentInstr.SetWasBranchPredictionTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 	}
 	else {
 		if(normalNextPC == actualNextPC) {
 		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchTaken(true);
+			currentInstr.SetWasBranchPredictionTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 		else {
 		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchTaken(false);
+			currentInstr.SetWasBranchPredictionTaken(false);
 			return false; //MISPREDICTION
 		}
 	}
