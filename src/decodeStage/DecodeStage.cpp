@@ -22,7 +22,7 @@ void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queu
 
 	//loop through each instruction, decode it and add it to the next stage buffer...
 	//might not hit all N entries if the destination buffer could not be emptied due to dispatch stall
-	for(size_t i = decodedInstructions.size() ; i < instuctionsToDecode.size() && i < superScalarFactor; i++)	{
+	for(size_t i = decodedInstructions.size() ; i < instuctionsToDecode.size() && i < (size_t)superScalarFactor; i++)	{
 		instuctionsToDecode.front().DecodeInstructionString();
 
 		cout << "Decoded: ";

@@ -10,11 +10,11 @@
 
 //#include "TraceReader.h"
 #include "StructureDefs.h"
-//#include "BranchPredictor.h"
+#include "BranchPredictor.h"
 #include <string>
 #include <vector>
 
-class BranchPredictor; //forward declaration of branch predictor
+//class BranchPredictor; //forward declaration of branch predictor
 
 //////////////////////////////////////////////////////////
 //
@@ -58,14 +58,7 @@ extern std::vector<RS_Element> fu_mult;
 extern std::vector<RS_Element> fu_fp;
 extern std::vector<RS_Element> fu_mem;
 extern RS_Element fu_branch;			//single Functional Unit
-//extern int regHILO;
-//extern int regFCC;
 
-extern BranchPredictor branchPredictor;
-
-//////////////////////////////////
-//statistical counters
-//////////////////////////////////
 
 //////////////////////////////////////////////////////////
 //

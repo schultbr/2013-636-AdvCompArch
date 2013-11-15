@@ -6,14 +6,14 @@
  */
 
 #include "BranchPredictor.h"
-#include "GlobalVars.h"
-//#include "Instruction.h"
 
 BranchPredictor::BranchPredictor() {
 	shiftReg 	= 0x0000;
 	std::fill(predictionTable, predictionTable + 1024, 1);  //set initial prediction to '01', Not Taken
 	btbInsertIndex = 0;
-//	btb.resize(0);
+	branchPredictionCount = 0;
+	predictionMissCount = 0;
+
 }
 
 BranchPredictor::~BranchPredictor() {
@@ -23,8 +23,8 @@ void BranchPredictor::incrementPredictionMissCount() {
     predictionMissCount++;
 }
 
-void BranchPredictor::resizeBTB() {
-    btb.resize(::btbSize);
+void BranchPredictor::resizeBTB(int size) {
+    btb.resize(size);
 }
 
 bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
@@ -163,7 +163,7 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
     btb[btbInsertIndex].targetPC = brachTarget;
     btbInsertIndex++; //next entry
 
-    if(btbInsertIndex == ::btbSize) {
+    if(btbInsertIndex == (int)btb.size()) {
         btbInsertIndex = 0; //if we reached the max size, wrap around to 0;
     }
 

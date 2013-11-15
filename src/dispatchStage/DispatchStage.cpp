@@ -220,7 +220,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     //	The RRF (where logical... not mem instr or branch instr)
 
     int rrfTag = -1;
-    int rsTag = -1;
+//    int rsTag = -1;
     int robTag = -1;
 //    ReservationStationType targetRSGroup = NO_RS;
     std::vector<RS_Element> *targetRS;
@@ -279,7 +279,8 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         //RS dispatch
         //does RS dispatch need RRF tag? I can't recall.
         if(usesRS)
-            rsTag = dispatchToRS(instrToDispatch.front(), targetRS, robTag);
+            dispatchToRS(instrToDispatch.front(), targetRS, robTag);
+//            rsTag = dispatchToRS(instrToDispatch.front(), targetRS, robTag);
 //        if(rsTag == -1) {
 //            //we need to stall! RS is full
 //            isStalled = true;

@@ -85,7 +85,7 @@ void printRunningParameters()
 }
 
 void resizeHardwareFromParameters() {
-    branchPredictor.resizeBTB();
+    branchPredictor.resizeBTB(::btbSize);
 
     //set up global register collections
     arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64

@@ -9,10 +9,7 @@
 #define BRANCHPREDICTOR_H_
 
 #include <vector>
-#include "GlobalVars.h"
 #include "Instruction.h"
-
-//class Instruction; //forward declaration to avoid circular includes...
 
 class BranchPredictor {
 public:
@@ -21,7 +18,7 @@ public:
 
 	void incrementPredictionMissCount();
 
-	void resizeBTB();
+	void resizeBTB(int size);
 
 	int getPredictedPCForInstruction(Instruction &instrToPredict);
 	bool getPredictionForInstruction(Instruction &instrToPredict);

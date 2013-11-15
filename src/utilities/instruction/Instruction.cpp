@@ -162,7 +162,7 @@ void Instruction::DecodeInstructionString() {
 
 int Instruction::GetRegisterIndexFromName(std::string regName){
 	int retVal = 0;
-	int charPos = 0;
+	unsigned int charPos = 0;
 	int indexOffset = 0;
 	string numberStr;
 
