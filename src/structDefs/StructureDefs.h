@@ -17,22 +17,22 @@ enum ReservationStationType{INTEGER_RS, FLOATING_POINT_RS, MEMORY_RS, BRANCH_RS,
 //the following can just be structs with constructors... a quick-and-dirty class,
 //essentially, since that's all we needed anyways.
 //Reorder Buffer slot
+
 struct ROB_Element {
 	bool busy;		//busy bit, this entry in use
 	bool finished;	//out of FU, has finished execution
 	bool valid;		//instr after a br are speculative, valid=0 by default
 	int	rename;		//Rename Register File tag
-	std::string	OP;	//opcode
-	OpcodeType opCode; //opcode enum (for dispatching)
-	//bool	issued;	//out of RS, has been issued
-	//int 	PC;		//PC
+	OpcodeType	code;		//opcode
+	//bool	issued;			//out of RS, has been issued
+	//int 	PC;			//PC
 
-	ROB_Element(){				//constructor
+	ROB_Element() {			//constructor
 		busy = false;
 		finished = false;
 		valid = false;
 		rename = -1;
-		OP = "NOP";	//is OP a string, an int for each OP, or an int for the OP "type"
+		code = NOP;	
 		opCode = NOP;
 	}
 };
@@ -74,8 +74,12 @@ struct RS_Element {
 	bool ready;
 	int op1;
 	int op2;
-	int	reorder;
-	int cpuCyclesRemaining;
+	int reorder;
+	short PTaddr;
+	bool BRoutcome;
+	int PC;
+	int BTaddr;
+	OpcodeType code; //opcode
 
 	RS_Element() {
 		busy = false;
@@ -85,11 +89,51 @@ struct RS_Element {
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
-		cpuCyclesRemaining = -1;
+		code =  NOP;
+		PTaddr = 0;
+		BRoutcome = 0;
+		PC = 0;
+		BTaddr = 0;
 	}
 };
 
+//Functional Unit slot
+struct FU_Element {
+	bool ready;
+	int count;
+	int op1;
+	int op2;
+	int	reorder;
+    short PTaddr;
+    bool BRoutcome;
+    int PC;
+    int BTaddr;
+	OpcodeType code; //opcode
 
+	FU_Element() {
+		count = 0;
+		ready = 0;
+		op1 = -1;
+		op2	= -1;
+		reorder	= -1;
+		code = NOP;
+        PTaddr = 0;
+        BRoutcome = 0;
+        PC = 0;
+        BTaddr = 0;
+	}
+};
 
+struct BTB_Element {
+    int instrPC;
+    int targetPC;
+    bool lastPredictedTaken;
+
+    BTB_Element() {
+        instrPC = -1;
+        targetPC = -1;
+    }
+
+};
 
 #endif /* STRUCTUREDEFS_H_ */

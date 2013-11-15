@@ -110,6 +110,8 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
         //ROB Dispatch
         robTag = dispatchToROB(instrToDispatch.front(), rsTag);
+
+    //for syscall - no RRF or RS entry... straight to ROB and make completed.
         if(robTag == -1) {
             //crap. again, we stall. ROB is full.
             isStalled = true;

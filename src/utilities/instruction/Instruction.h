@@ -19,8 +19,9 @@ public:
     Instruction(std::string line);
     virtual ~Instruction();
 
-    bool IsBranchOrJump();
-    bool WasPredictionCorrect();
+    bool IsBranch();
+    bool GetWasBranchTaken();
+    void SetWasBranchTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
     std::string GetOpcodeString();
@@ -37,13 +38,12 @@ public:
     OpcodeType opCode;
 
 private:
-
     std::string instructionLine;
-    int opCodeType;
+    int opCodeDecodeType;
     std::string opCodeStr;
-    bool isBranchOrJump;
+    bool isBranch;
 
-    bool wasPredictionCorrect;
+    bool wasBranchTaken;
 
     std::string src1Reg;
     std::string src2Reg;

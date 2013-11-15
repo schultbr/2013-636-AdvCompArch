@@ -27,14 +27,14 @@ Instruction::Instruction() {
     dest = -1;
     imm = -1;
     opCodeStr = "";
-    opCodeType = -1;
+    opCodeDecodeType = -1;
     src1 = -1;
     src2 = -1;
     offset = 0;
-    isBranchOrJump = false;
+    isBranch = false;
     branchPredictorAddress = -1;
     opCode = NOP;
-    wasPredictionCorrect = false;
+    wasBranchTaken = false;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
     	FillMaps();
@@ -47,15 +47,15 @@ Instruction::Instruction(string line) {
 //    destReg = "";
     imm = -1;
     opCodeStr = "";
-    opCodeType = -1;
+    opCodeDecodeType = -1;
     src1 = -1;
 //    src1Reg = "";
     src2 = -1;
 //    src2Reg = "";
     offset = 0;
     branchPredictorAddress = -1;
-    isBranchOrJump = false;
-    wasPredictionCorrect = false;
+    isBranch = false;
+    wasBranchTaken = false;
     opCode = NOP; //initial opCode. Gets set in decode.
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
@@ -65,15 +65,18 @@ Instruction::Instruction(string line) {
 }
 
 Instruction::~Instruction() {
-    // TODO Auto-generated destructor stub
 }
 
-bool Instruction::IsBranchOrJump(){
-	return isBranchOrJump;
+bool Instruction::IsBranch(){
+	return isBranch;
 }
 
-bool Instruction::WasPredictionCorrect(){
-	return wasPredictionCorrect;
+void Instruction::SetWasBranchTaken(bool opt){
+    wasBranchTaken = opt;
+}
+
+bool Instruction::GetWasBranchTaken(){
+	return wasBranchTaken;
 }
 
 void Instruction::Print() {
@@ -129,8 +132,13 @@ void Instruction::SplitPCandString(string line) {
 	instructionLine = line.substr(spacePos+1);
 
 	//partial decode to know if we need to hit a predictor
-	if(instructionLine.find("br") != string::npos)
-		isBranchOrJump = true;
+	if(instructionLine.find("beq") != string::npos ||
+        instructionLine.find("bne") != string::npos ||
+        instructionLine.find("bl") != string::npos ||
+        instructionLine.find("bg") != string::npos ||
+        instructionLine.find("bc") != string::npos ||
+        instructionLine.find("beq") != string::npos)
+		isBranch = true;
 
 	PC = atoi(pcStr.c_str());
 

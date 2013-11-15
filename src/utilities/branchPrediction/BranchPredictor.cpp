@@ -12,16 +12,23 @@
 BranchPredictor::BranchPredictor() {
 	shiftReg 	= 0x0000;
 	std::fill(predictionTable, predictionTable + 1024, 1);  //set initial prediction to '01', Not Taken
+	btbInsertIndex = 0;
+	btb.resize(::btbSize);
 }
 
 BranchPredictor::~BranchPredictor() {
-	// TODO Auto-generated destructor stub
+}
+
+void BranchPredictor::incrementPredictionMissCount() {
+    predictionMissCount++;
 }
 
 bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 	instrToPredict.branchPredictorAddress = hash(instrToPredict.PC);
 
 	int prediction = predictionTable[instrToPredict.branchPredictorAddress];
+
+	branchPredictionCount++;
 
 	if(prediction == 2 || prediction == 3) //predict this branch is taken
 		return true;
@@ -44,21 +51,24 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 //	}
 }
 
-void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
-	if(executedInstr.WasPredictionCorrect()) {
+//void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
+void BranchPredictor::updatePredictorWithResults(FU_Element entry){
+	if(entry.BRoutcome) {
 		//update the state machine with the current results
-		inc_state(executedInstr.branchPredictorAddress);
+		inc_state(entry.PTaddr);
 	}
 	else {
-		dec_state(executedInstr.branchPredictorAddress);
+		dec_state(entry.PTaddr);
 	}
+
+	updateBTBRecord(entry.PC, entry.BTaddr, entry.BRoutcome);
 }
 
 
 //////////////////////////////////////////////////////////////
-//															//
-//			Private functions. Not needed by anyone else	//
-//															//
+//							                            	//
+//		Private functions. Not needed by anyone else	    //
+//								                            //
 //////////////////////////////////////////////////////////////
 //shift function
 void BranchPredictor::shift_left(bool bit)
@@ -66,9 +76,7 @@ void BranchPredictor::shift_left(bool bit)
 	shiftReg = shiftReg << 1;			//shift 0 into lsb
 	shiftReg = shiftReg & 0x03FF; 			//only use lower 10 bits
 	if (bit == 1)
-	shiftReg = shiftReg | 0x0001;			//shift 1 into lsb
-
-	//return shift;
+	    shiftReg = shiftReg | 0x0001;			//shift 1 into lsb
 }
 
 //hash function
@@ -76,7 +84,8 @@ void BranchPredictor::shift_left(bool bit)
 short BranchPredictor::hash (int pc)
 {
 	short hash = 0;
-	short x = (short)pc;
+	int y = pc >> 3; //per 11/14/2013 class, ignore lowest 3 bits due to being multiples of 8.. they'd be the same each time.
+	short x = (short)y;
 	x = x & 0x03FF;		//only use lower 10 bits
 	hash = shiftReg ^ x;	//bitwise XOR
 
@@ -87,8 +96,6 @@ short BranchPredictor::hash (int pc)
 int BranchPredictor::get_bp (int hashAddr)
 {
 	return predictionTable[hashAddr];
-
-//	return x;
 }
 
 //increment Prediction State
@@ -138,56 +145,23 @@ void BranchPredictor::dec_state(int hashAddr)
 }
 
 
+void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTaken) {
+    for(size_t i = 0; i < btb.size(); i++) {
+        if(btb[i].instrPC == instrPC) {
+            btb[i].lastPredictedTaken = wasTaken;
+            btb[i].targetPC = brachTarget;
+            return;
+        }
+    }
+
+    btb[btbInsertIndex].instrPC = instrPC;
+    btb[btbInsertIndex].lastPredictedTaken = wasTaken;
+    btb[btbInsertIndex].targetPC = brachTarget;
+    btbInsertIndex++; //next entry
+
+    if(btbInsertIndex == ::btbSize) {
+        btbInsertIndex = 0; //if we reached the max size, wrap around to 0;
+    }
 
 
-
-//pseudo code for inside Fetch Stage
-/*
-if instr.offset != 0		//check if br instr
-{
-  	predictAddr = hash(shiftreg, instr.PC)	//do we add PC to struct instr?  when br is exec if wrong we will need the PC to calc new fetch addr
-  	prediction = predicitonTable[predictAddr];
-  	if (prediction == 2 || prediction == 3)	//predict Taken
-	{
-    		if (next_instr.PC == instr.PC+8)		//Trace not Taken
-			//don't bring in instr, this simulates flushing later
-  		else if (prediction == 0 || prediction == 1)//predict Not Taken
-		{
-    			if (next_instr.PC != instr.PC=8)		//Trace Taken
-				//don't bring in instr
-  			else
-				//prediction correct, bring in next instr
-		}
-	}
 }
-
-
-//pseudo code for inside Execute Stage
-
-if (branch == true)		//branch is taken
-{
-	branch_predictor.inc_state(hashAddr)	//increment state machine
-  	if (prediction == 1 || prediction == 0)	//this variable if global may have changed, need a way to track the prediction made for specific instr
-						//we could just look up the prediction table again, but would need to attach the hash addr to the instr
-  	{
-    		//prediction wrong, flush instr
-  	}
-  	else
-  	{
-    		//prediction right, make ROB entries valid
-  	}
-}
-
-else if (branch == false)	//branch not taken
-{
-	branch_predictor.dec_state(hashAddr)	//decrement state machine
-  	if (prediction == 2 || prediction == 3)
- 	{
-   	 //prediction wrong, flush instr
-  	}
-  	else
-  	{
-   	 //prediction right, make ROB entries valid
- 	}
-}
-*/

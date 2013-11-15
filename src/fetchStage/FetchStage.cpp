@@ -19,6 +19,8 @@ using namespace std;
 int fetchedInstructionCount = 0;
 TraceReader instructionTrace;
 
+bool isResumeNextCycle = true;
+
 int cacheMissWaitTimeRemaining = 0;
 
 struct FetchPipelineItem{
@@ -40,25 +42,29 @@ bool checkBranchPrediction(Instruction &currentInstr){
 		//return true if our predicted PC matches the trace's next PC
 		if(normalNextPC == actualNextPC) {
 			cout << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
+			currentInstr.SetWasBranchTaken(false);
 			return false; //MISPREDICTION
 		}
 		else {
 			cout << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+			currentInstr.SetWasBranchTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 	}
 	else {
 		if(normalNextPC == actualNextPC) {
 			cout << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+			currentInstr.SetWasBranchTaken(true);
 			return true; //CORRECT PREDICTION
 		}
 		else {
 			cout << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
+			currentInstr.SetWasBranchTaken(false);
 			return false; //MISPREDICTION
 		}
 	}
 
-	cout << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
+//	cout << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
 	//return false otherwise. oops. we missed. somehow.
 	return false;
@@ -78,11 +84,14 @@ void grabNextInstructionGroup() {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
-	cout << "Fetching  " << ::superScalarFactor << " instuctions\n";
+//	cout << "Fetching  " << ::superScalarFactor << " instuctions\n";
 
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
 	//pause all together? todo: figure this out
+	//per discussion in class 11/14/2013 -> pipeline buffers fill up if dispatch fills up. if at the
+	//start we see that nothing has moved out... we could not decrement the counter and that stay the same? right?
+
 	for(int i = 0; i < ::superScalarFactor; i++) {
 		penaltyTime = checkCache(instrCacheHitRate, instrCacheAccessTime);
 		if(penaltyTime > 0) { //failed l1 instruction cache hit
@@ -107,15 +116,15 @@ void grabNextInstructionGroup() {
 
 		instrToAdd = instructionTrace.getNextInstruction();
 
-		cout<< "Fetched: ";
-		instrToAdd.Print();
+//		cout<< "Fetched: ";
+//		instrToAdd.Print();
 
 		currentFetchedItem.instructions.push(instrToAdd);
 		instructionCount++;
 
-		cout << "Size: " << currentFetchedItem.instructions.size() << endl;
+//		cout << "Size: " << currentFetchedItem.instructions.size() << endl;
 		//do branch checks here..
-		if(instrToAdd.IsBranchOrJump()){
+		if(instrToAdd.IsBranch()){
 			if(!checkBranchPrediction(instrToAdd)){
 				fetchStalledInstrPC = instrToAdd.PC;
 				fetchStalled = true; //flip this to false once this mis-predicted branch finishes execution
@@ -158,7 +167,14 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	if(fetchStalled) {
 		cout << "Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n";
+		cacheMissWaitTimeRemaining = 0;
+		isResumeNextCycle = false;
 		return;
+	}
+
+	if(!fetchStalled && !isResumeNextCycle) {
+	    isResumeNextCycle = true;
+	    return;
 	}
 
 	//did we previously miss a cache hit?
@@ -172,8 +188,10 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 		//add another instruction set to the group, if we can.
 		grabNextInstructionGroup();
 
-	//move through and decrement all instruction groups. If one hits 0 cycles remaining,
-	decrementAllPipelineInstructions(fetchedInstructions);
+	if(instructionsInPipeline.size() > 0) {
+	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
+	    decrementAllPipelineInstructions(fetchedInstructions);
+	}
 
 	return;
 }

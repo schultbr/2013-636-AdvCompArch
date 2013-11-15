@@ -5,6 +5,7 @@
  *      Author: brian
  */
 #include "GlobalVars.h"
+#include "BranchPredictor.h"
 #include <vector>
 
 //////////////////////////////////
@@ -24,24 +25,31 @@ float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
 int systemMemoryAccessTime = -1; //todo: Add in command line option for this
 std::string inputTraceFile;
+int robHead = -1;
+int robTail = -1;
 
+std::vector<ARF_Element> arf;
+std::vector<ROB_Element> rob;
+std::vector<RRF_Element> rrf;	
 //////////////////////////////////
 //hardware elements:
 //////////////////////////////////
-std::vector<ARF_Element> registers;
-std::vector<ROB_Element> reOrderBuffer;
-std::vector<RRF_Element> renameRegisterFile;
-
-int regHILO = 0;
-int regFCC = 0;
+std::vector<RS_Element> rs_int;
+std::vector<RS_Element> rs_fp;
+std::vector<RS_Element> rs_mem;
+std::vector<RS_Element> rs_br;
+std::vector<RS_Element> fu_add;
+std::vector<RS_Element> fu_mult;
+std::vector<RS_Element> fu_fp;
+std::vector<RS_Element> fu_mem;
+RS_Element fu_branch;			//single Functional Unit
 
 BranchPredictor branchPredictor;
-
+unsigned int cyclesCompleted = 0;
+unsigned int instructionCount = 0;
 //////////////////////////////////
 //statistical counters
 //////////////////////////////////
-int cyclesCompleted = 0;
-int instructionCount = 0;
 
 //////////////////////////////////
 //system flags (for coordinating
