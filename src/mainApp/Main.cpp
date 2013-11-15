@@ -16,6 +16,8 @@
 
 #include "FetchStage.h"
 #include "DecodeStage.h"
+#include "DispatchStage.h"
+#include "BranchPredictor.h"
 #include "GlobalVars.h"
 
 using namespace std;
@@ -45,7 +47,7 @@ int runSimulation() {
 	//	simulateCompleteStage();
 	//	simulateExecuteStage();
 	//	simulateIssueStage();
-	//	simulateDispatchStage();
+		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
 		cout << "Size2: " << fetchDecodeBuffer.size() << endl;
@@ -57,7 +59,7 @@ int runSimulation() {
 			notDone = false;
 
 		//todo: remove when done testing fetch
-		clearQueue();
+//		clearQueue();
 	}
 
 	return 1;
@@ -94,6 +96,8 @@ int main(int argc, char** argv) {
 	processCommandLine(argc, argv);
 
 	printRunningParameters();
+
+	branchPredictor.resizeBTB();
 
 	//run simulation
 	returnVal = runSimulation();

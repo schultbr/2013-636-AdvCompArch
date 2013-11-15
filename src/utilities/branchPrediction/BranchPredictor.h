@@ -20,6 +20,8 @@ public:
 
 	void incrementPredictionMissCount();
 
+	void resizeBTB();
+
 	int getPredictedPCForInstruction(Instruction &instrToPredict);
 	bool getPredictionForInstruction(Instruction &instrToPredict);
 
