@@ -30,7 +30,6 @@ extern std::string inputTraceFile;
 
 extern int robHead;
 extern int robTail;
-=======
 
 extern BranchPredictor branchPredictor;
 
