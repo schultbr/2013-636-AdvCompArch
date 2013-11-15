@@ -14,35 +14,40 @@
 
 using namespace std;
 
-void simulateCompleteStage() {
-    int dest, rename;//, index;
-    int done = 0;
+void simulateCompleteStage()
+{
+	int dest_tag, rename_tag;
+	int done = 0;
 
-    cout << "Completing " << " instructions\n";
+	cout << "Completing " << " instructions\n";
+	
+	while(!done)
+	{
+		if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1)
+		{
+			done = 0;
+			rob[robHead].busy = 0;			            //set not busy
+			rename_tag = rob[robHead].rename;
 
-    while (!done) {
-        if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1) {
-            done = 0;
-            rob[robHead].busy = 0;			//set not busy
-            rename = rob[robHead].rename;
+			if (rename_tag != -1);				        //has a destination register
+			{
+				dest_tag = rrf[rename_tag].dest;
+				arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
+				rrf[rename_tag].busy = 0;			    //set not busy
 
-            if (rename != -1) { //has a destination register
-                dest = rrf[rename].dest;
-                arf[dest].data = rrf[rename].data;	//copy data from RRF to ARF
-                rrf[rename].busy = 0;			//set not busy
+				if (arf[dest_tag].rename == rename_tag)		//data being written to ARF is newest value
+					arf[dest_tag].busy = 0;			        //set not busy
+			}
 
-                if (arf[dest].rename == rename)			//data being written to ARF is newest value
-                    arf[dest].busy = 0;			//set not busy
-            }
-
-            if (robHead == (int)rob.size() - 1)				//increment head of circular queue
-                robHead = 0;
-            else
-                robHead += 1;
-        }
-        else {				//do we do anything special for finished but not valid?
-            done = 1;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
-        }
-    }
+			if (robHead == rob.size()-1)				    //increment head of circular queue
+				robHead = 0;
+			else
+				robHead++;
+		}
+		else				//do we do anything special for finished but not valid?
+		{
+			done = 1;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
+		}
+	}
 }
 

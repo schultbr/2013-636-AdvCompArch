@@ -6,8 +6,6 @@
  */
 
 #include "StructureDefs.h"
-#include "ReservationStations.h"
-#include "FunctionalUnits.h"
 #include "CommandLine.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -18,7 +16,7 @@
 #include "DecodeStage.h"
 #include "DispatchStage.h"
 //#include "IssueStage.h"
-//#include "ExecuteStage.h"
+#include "ExecuteStage.h"
 #include "CompleteStage.h"
 #include "BranchPredictor.h"
 #include "GlobalVars.h"

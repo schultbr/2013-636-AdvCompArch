@@ -74,11 +74,12 @@ struct RS_Element {
 	int op1;
 	int op2;
 	int reorder;
-	short PTaddr;
-	bool BRoutcome;
+	short PTaddr;			//Prediction Table address
+	bool BRoutcome;			//Branch Outcome
 	int PC;
-	int BTaddr;
-	OpcodeType code; //opcode
+	int BTaddr;			//Branch Target Address
+
+	OpcodeType	code;		//opcode
 
 	RS_Element() {
 		busy = false;
@@ -88,38 +89,39 @@ struct RS_Element {
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
-		code =  NOP;
-		PTaddr = 0;
+		code = NOP;
+		PTaddr = -1;
 		BRoutcome = 0;
-		PC = 0;
-		BTaddr = 0;
+		PC = -1;
+		BTaddr = -1;
 	}
 };
 
 //Functional Unit slot
 struct FU_Element {
-	bool ready;
+
 	int count;
 	int op1;
 	int op2;
-	int	reorder;
-    short PTaddr;
-    bool BRoutcome;
-    int PC;
-    int BTaddr;
-	OpcodeType code; //opcode
+	int reorder;
+	int result;
+	OpcodeType	code;		//opcode
+	short PTaddr;			//Prediction Table address
+	bool BRoutcome;			//Branch Outcome
+	int PC;
+	int BTaddr;			//Branch Target Address
 
 	FU_Element() {
 		count = 0;
-		ready = 0;
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
 		code = NOP;
-        PTaddr = 0;
-        BRoutcome = 0;
-        PC = 0;
-        BTaddr = 0;
+		result = 0;
+		PTaddr = -1;
+		BRoutcome = 0;
+		PC = -1;
+		BTaddr = -1;
 	}
 };
 

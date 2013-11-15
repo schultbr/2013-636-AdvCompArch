@@ -61,11 +61,11 @@ extern std::vector<RS_Element> rs_int;
 extern std::vector<RS_Element> rs_fp;
 extern std::vector<RS_Element> rs_mem;
 extern std::vector<RS_Element> rs_br;
-extern std::vector<RS_Element> fu_add;
-extern std::vector<RS_Element> fu_mult;
-extern std::vector<RS_Element> fu_fp;
-extern std::vector<RS_Element> fu_mem;
-extern RS_Element fu_branch;			//single Functional Unit
+extern std::vector<FU_Element> fu_add;
+extern std::vector<FU_Element> fu_mult;
+extern std::vector<FU_Element> fu_fp;
+extern std::vector<FU_Element> fu_mem;
+extern FU_Element fu_br;			//single Functional Unit
 
 
 //////////////////////////////////////////////////////////
