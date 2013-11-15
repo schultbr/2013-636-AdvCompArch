@@ -8,8 +8,8 @@
 #ifndef COMPLETESTAGE_H_
 #define COMPLETESTAGE_H_
 
-#include "Instruction.h"
-#include <vector>
+//#include "Instruction.h"
+//#include <vector>
 
 void simulateCompleteStage();
 

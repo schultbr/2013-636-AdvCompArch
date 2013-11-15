@@ -8,6 +8,14 @@
 #ifndef GLOBALVARS_H_
 #define GLOBALVARS_H_
 
+#define DEBUG //for testing prints. Comment this line out to slim down the output.
+
+#ifdef DEBUG
+#define DEBUG_COUT cout
+#else
+#define DEBUG_COUT 0 && cout
+#endif
+
 //#include "TraceReader.h"
 #include "StructureDefs.h"
 #include "BranchPredictor.h"
@@ -68,8 +76,7 @@ extern RS_Element fu_branch;			//single Functional Unit
 extern unsigned int cyclesCompleted;
 extern unsigned int instructionCount;
 
-extern unsigned int branchPredictionCount;
-
+//branch info is tracked by the predictor itself..
 
 //////////////////////////////////////////////////////////
 //         Inter-stage communications

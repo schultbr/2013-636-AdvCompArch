@@ -17,6 +17,9 @@
 #include "FetchStage.h"
 #include "DecodeStage.h"
 #include "DispatchStage.h"
+//#include "IssueStage.h"
+//#include "ExecuteStage.h"
+#include "CompleteStage.h"
 #include "BranchPredictor.h"
 #include "GlobalVars.h"
 
@@ -42,15 +45,15 @@ int runSimulation() {
 	int i = 0;
 	int max = 5000;
 	while(notDone) {
-		cout << "Simulating cycle " << cyclesCompleted << endl;
-		cout << "Size3: " << fetchDecodeBuffer.size() << endl;
+	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
+	    DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
 	//	simulateCompleteStage();
 	//	simulateExecuteStage();
 	//	simulateIssueStage();
 		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
-		cout << "Size2: " << fetchDecodeBuffer.size() << endl;
+		DEBUG_COUT << "Size2: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 

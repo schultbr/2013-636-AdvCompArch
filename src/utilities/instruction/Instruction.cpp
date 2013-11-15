@@ -82,12 +82,12 @@ bool Instruction::GetWasBranchTaken(){
 }
 
 void Instruction::Print() {
-    cout << "PC:\t" << PC << endl;
-    cout << "dest:\t" << dest <<  endl;//"\t destStr:\t" << destReg << endl;
-    cout << "imm:\t" << imm << endl;
-    cout << "op:\t" << opCode << endl;
-    cout << "src1:\t" << src1 << endl;//"\t src1Str:\t" << src1Reg << endl;
-    cout << "src2:\t" << src2 << endl;//"\t src2Str:\t" << src2Reg << endl;
+    DEBUG_COUT << "PC:\t" << PC << endl;
+    DEBUG_COUT << "dest:\t" << dest <<  endl;//"\t destStr:\t" << destReg << endl;
+    DEBUG_COUT << "imm:\t" << imm << endl;
+    DEBUG_COUT << "op:\t" << opCode << endl;
+    DEBUG_COUT << "src1:\t" << src1 << endl;//"\t src1Str:\t" << src1Reg << endl;
+    DEBUG_COUT << "src2:\t" << src2 << endl;//"\t src2Str:\t" << src2Reg << endl;
 }
 
 
@@ -166,18 +166,18 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	int indexOffset = 0;
 	string numberStr;
 
-	cout << "Translating " << regName << " to a vector index" << endl;
+	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
 
 	if(regName.length() == 0)
 		return 0;
 
 	if(regName == "HI_LO"){
-		cout << "Found HI_LO. Returning 63\n";
+	    DEBUG_COUT << "Found HI_LO. Returning 63\n";
 		return hiloRegIndex;
 	}
 
 	if(regName == "FCC") {
-		cout << "Found FCC. Returning 64\n";
+	    DEBUG_COUT << "Found FCC. Returning 64\n";
 		return fccRegIndex;
 	}
 
@@ -191,11 +191,11 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	}
 
 	numberStr = regName.substr(charPos+1);
-	cout << "Found reg " << regName << " to be #" << numberStr << endl;
+	DEBUG_COUT << "Found reg " << regName << " to be #" << numberStr << endl;
 
 	retVal = atoi(numberStr.c_str());
 
-	cout << "Return val is " << retVal << " plus " << indexOffset << endl;
+	DEBUG_COUT << "Return val is " << retVal << " plus " << indexOffset << endl;
 
 	retVal += indexOffset;
 
@@ -215,7 +215,7 @@ void Instruction::DecodeRegisters(std::string regStr){
 		if(ss.peek() == ',' ||
 				ss.peek() == '(' ||
 				ss.peek() == ')') {
-			cout << "Found " << token->str() << endl;
+		    DEBUG_COUT << "Found " << token->str() << endl;
 			regs.push_back(token->str());
 			ss.ignore();
 			delete token;
@@ -223,11 +223,11 @@ void Instruction::DecodeRegisters(std::string regStr){
 		}
 	}
 	if(token->str().size() > 0) {
-		cout << "Found " << token->str() << endl;
+	    DEBUG_COUT << "Found " << token->str() << endl;
 		regs.push_back(token->str());
 	}
 
-	cout << "Total of " << regs.size() << " tokens\n";
+	DEBUG_COUT << "Total of " << regs.size() << " tokens\n";
 
 	/* Opcode input instruction types
 	 * 0 = IMM ONLY
