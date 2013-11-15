@@ -227,12 +227,12 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 //    ReservationStationType targetRSGroup = NO_RS;
     std::vector<RS_Element> *targetRS;
     bool isStalled = false;
-
+    bool checkRet = false; //this is so dumb but im in a hurry
     bool usesRRF = false;
     bool usesRS = false;
 
 
-    while(instrToDispatch.size() > 0) {
+    while(instrToDispatch.size() > 0 && !isStalled) {
         switch(instrToDispatch.front().opCode){
             case ADD_SUB_I:
             case MULT_DIV_I:
@@ -254,43 +254,48 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
                 break;
         }
 
-        checkDestAvailable(instrToDispatch.front(), targetRS, usesRRF, usesRS);
+        checkRet = checkDestAvailable(instrToDispatch.front(), targetRS, usesRRF, usesRS);
+        isStalled = !checkRet; //the check returns false if we can't place things... so, we stall then
 
+        if(isStalled)
+            break;
 
         //for syscall - no RRF or RS entry... straight to ROB and make completed.
         //RRF Dispatch
-        rrfTag = dispatchToRRF(instrToDispatch.front());
-        if(rrfTag == -1) {
-            //we need to stall! RRF is full
-            isStalled = true;
-            break;
-        }
+        if(usesRRF)
+            rrfTag = dispatchToRRF(instrToDispatch.front());
+//        if(rrfTag == -1) { //shouldnt be needed
+//            //we need to stall! RRF is full
+//            isStalled = true;
+//            break;
+//        }
 
         //ROB Dispatch
         robTag = dispatchToROB(instrToDispatch.front(), rrfTag, (instrToDispatch.front().opCode == NOP ? true : false));
-        if(robTag == -1) {
-            //crap. again, we stall. ROB is full.
-            isStalled = true;
-            break;
-        }
+//        if(robTag == -1) {
+//            //crap. again, we stall. ROB is full.
+//            isStalled = true;
+//            break;
+//        }
 
         //RS dispatch
         //does RS dispatch need RRF tag? I can't recall.
-        rsTag = dispatchToRS(instrToDispatch.front(), targetRS, robTag);
-        if(rsTag == -1) {
-            //we need to stall! RS is full
-            isStalled = true;
-            break;
-        }
-
-
+        if(usesRS)
+            rsTag = dispatchToRS(instrToDispatch.front(), targetRS, robTag);
+//        if(rsTag == -1) {
+//            //we need to stall! RS is full
+//            isStalled = true;
+//            break;
+//        }
 
         //we get here? that means the instruction was dispatched. bon voyage!
         instrToDispatch.pop();
     }
 
     if(isStalled) {
-        //do something useful
+        //do something useful.. or not? I think we just hang and let the decode/fetch stages
+        //figure it out? maybe?
+
     }
 
 }
