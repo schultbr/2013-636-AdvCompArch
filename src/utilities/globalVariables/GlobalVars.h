@@ -11,9 +11,15 @@
 //#include "TraceReader.h"
 #include <string>
 #include <vector>
-#include "BranchPredictor.h"
 #include "StructureDefs.h"
 
+class BranchPredictor; //forward declaration of branch predictor
+
+//////////////////////////////////////////////////////////
+//
+//              User Options
+//
+//////////////////////////////////////////////////////////
 extern int superScalarFactor;
 extern int btbSize;
 extern int rsEntries;
@@ -27,6 +33,12 @@ extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
 extern std::string inputTraceFile;
+
+//////////////////////////////////////////////////////////
+//
+//          Architecture Elements
+//
+//////////////////////////////////////////////////////////
 
 extern int robHead;
 extern int robTail;
@@ -47,20 +59,30 @@ extern std::vector<RS_Element> fu_fp;
 extern std::vector<RS_Element> fu_mem;
 extern RS_Element fu_branch;			//single Functional Unit
 
-
-
 extern int regHILO;
 extern int regFCC;
 
-extern int cyclesCompleted;
-extern int instructionCount;
 
+//////////////////////////////////////////////////////////
+//
+//          Statistical Variables
+//
+//////////////////////////////////////////////////////////
+extern unsigned int cyclesCompleted;
+extern unsigned int instructionCount;
+
+extern unsigned int branchPredictionCount;
+
+
+
+
+//////////////////////////////////////////////////////////
+//
+//         Inter-stage communications
+//
+//////////////////////////////////////////////////////////
 extern int fetchStalledInstrPC;
 extern bool fetchStalled;
 
-
-//
-//void setSuperScalarSize(int size);
-//void setInstructionTrace(char *file);
 
 #endif /* GLOBALVARS_H_ */

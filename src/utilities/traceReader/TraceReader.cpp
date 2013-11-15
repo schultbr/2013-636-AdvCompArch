@@ -13,12 +13,10 @@
 using namespace std;
 
 TraceReader::TraceReader() {
-	// TODO Auto-generated constructor stub
 	traceFile = new ifstream();
 }
 
 TraceReader::~TraceReader() {
-	// TODO Auto-generated destructor stub
 	traceFile->close();
 	delete traceFile;
 }

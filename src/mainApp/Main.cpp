@@ -38,7 +38,7 @@ void clearQueue(){
 int runSimulation() {
 	bool notDone = true;
 	int i = 0;
-	int max = 50;
+	int max = 5000;
 	while(notDone) {
 		cout << "Simulating cycle " << cyclesCompleted << endl;
 		cout << "Size3: " << fetchDecodeBuffer.size() << endl;
@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
 	int returnVal = 0;
 
 	//set up global register collections
-	registers.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
+	arf.resize(32+31+1+1); //need +1+1 for the HI_LO and FCC reg... 63 and 64
 //	fpRegisters.resize(31);
 
 	//process command line options to handle inputs

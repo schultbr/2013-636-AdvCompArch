@@ -17,5 +17,8 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     for (size_t i = 0; i < instrToDispatch.size(); i++) {
 
     }
+
+
+    //for syscall - no RRF or RS entry... straight to ROB and make completed.
 }
 

@@ -34,20 +34,21 @@ enum OpcodeType{ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT
 //Reorder Buffer slot
 
 struct ROB_Element {
-	bool 		busy;		//busy bit, this entry in use
-	bool 		finished;	//out of FU, has finished execution
-	bool 		valid;		//instr after a br are speculative, valid=0 by default
-	int		rename;		//Rename Register File tag
+	bool busy;		//busy bit, this entry in use
+	bool finished;	//out of FU, has finished execution
+	bool valid;		//instr after a br are speculative, valid=0 by default
+	int	rename;		//Rename Register File tag
 	OpcodeType	code;		//opcode
 	//bool	issued;			//out of RS, has been issued
 	//int 	PC;			//PC
 
-	ROB_Element(){			//constructor
+	ROB_Element() {			//constructor
 		busy = 0;
 		finished = 0;
 		valid = 0;
 		rename = -1;
 		code = NOP;	
+	}
 };
 
 //Architecture Register File slot
@@ -117,6 +118,7 @@ struct FU_Element {
 	int op1;
 	int op2;
 	int	reorder;
+<<<<<<< HEAD
 	OpcodeType	code;		//opcode
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
@@ -135,4 +137,17 @@ struct FU_Element {
 		BTaddr = -1;
 	}
 };
+
+struct BTB_Element {
+    int instrPC;
+    int targetPC;
+    bool lastPredictedTaken;
+
+    BTB_Element() {
+        instrPC = -1;
+        targetPC = -1;
+    }
+
+};
+
 #endif /* STRUCTUREDEFS_H_ */

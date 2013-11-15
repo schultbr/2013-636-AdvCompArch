@@ -5,6 +5,7 @@
  *      Author: brian
  */
 #include "GlobalVars.h"
+#include "BranchPredictor.h"
 #include <vector>
 
 
@@ -25,9 +26,6 @@ std::string inputTraceFile;
 int robHead = -1;
 int robTail = -1;
 
-int regHILO = 0;
-int regFCC = 0;
-
 std::vector<ARF_Element> arf;
 std::vector<ROB_Element> rob;
 std::vector<RRF_Element> rrf;	
@@ -42,20 +40,9 @@ std::vector<RS_Element> fu_mem;
 RS_Element fu_branch;			//single Functional Unit for branch
 
 BranchPredictor branchPredictor;
-int cyclesCompleted = 0;
-int instructionCount = 0;
+unsigned int cyclesCompleted = 0;
+unsigned int instructionCount = 0;
 
 
 int fetchStalledInstrPC = 0;
 bool fetchStalled = false;
-
-
-////these setters are totally unnecessary but, meh. theyre already here.
-////kinda the right thing to do... sometimes
-//void setSuperScalarSize(int size) {
-//	superScalarSize = size;
-//}
-//
-//void setInstructionTrace(char *file) {
-//	instructionTrace.openTrace(file);
-//}
