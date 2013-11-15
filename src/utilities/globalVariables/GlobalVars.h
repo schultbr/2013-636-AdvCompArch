@@ -32,7 +32,7 @@ extern float level1CacheHitRate;
 extern int level1CacheAccessTime;
 extern float level2CacheHitRate;
 extern int level2CacheAccessTime;
-extern int systemMemoryAccessTime; //todo: Add in command line option for this
+extern int systemMemoryAccessTime;
 extern std::string inputTraceFile;
 
 //////////////////////////////////////////////////////////

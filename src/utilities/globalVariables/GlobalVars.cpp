@@ -23,7 +23,7 @@ float level1CacheHitRate = -1;
 int level1CacheAccessTime = -1;
 float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
-int systemMemoryAccessTime = -1; //todo: Add in command line option for this
+int systemMemoryAccessTime = -1;
 std::string inputTraceFile;
 int robHead = -1;
 int robTail = -1;

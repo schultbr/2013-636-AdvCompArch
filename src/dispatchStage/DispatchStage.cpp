@@ -98,8 +98,6 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
     int returnTag = -1;
 //    std::vector<RS_Element> *targetRS;
 
-
-
     if(targetRS == NULL)
         return returnTag;
 
