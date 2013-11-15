@@ -36,6 +36,7 @@ public:
     int offset;
     short branchPredictorAddress;
     OpcodeType opCode;
+    int predictedTargetPC;
 
 private:
     std::string instructionLine;

@@ -33,7 +33,6 @@ struct ROB_Element {
 		valid = false;
 		rename = -1;
 		code = NOP;	
-		opCode = NOP;
 	}
 };
 
@@ -127,7 +126,7 @@ struct FU_Element {
 struct BTB_Element {
     int instrPC;
     int targetPC;
-    bool lastPredictedTaken;
+//    bool lastPredictedTaken; //not needed? i dont think
 
     BTB_Element() {
         instrPC = -1;

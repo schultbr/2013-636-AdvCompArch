@@ -35,6 +35,7 @@ Instruction::Instruction() {
     branchPredictorAddress = -1;
     opCode = NOP;
     wasBranchTaken = false;
+    predictedTargetPC = -1;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
     	FillMaps();
@@ -56,6 +57,7 @@ Instruction::Instruction(string line) {
     branchPredictorAddress = -1;
     isBranch = false;
     wasBranchTaken = false;
+    predictedTargetPC = -1;
     opCode = NOP; //initial opCode. Gets set in decode.
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
