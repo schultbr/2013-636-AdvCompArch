@@ -33,36 +33,27 @@ std::vector<FetchPipelineItem> instructionsInPipeline;
 
 //returns true if predicted correctly, false if we goofed.
 bool checkBranchPrediction(Instruction &currentInstr){
-	int actualNextPC = instructionTrace.peekNextPC();;
+	int actualNextPC = instructionTrace.peekNextPC();
 	int normalNextPC = currentInstr.PC + 8;
-	int predictedNextPC = 0;
+//	int predictedNextPC = 0;
 
-	bool isPredictionTaken = branchPredictor.getPredictionForInstruction(currentInstr);
+	bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
 
-	if(isPredictionTaken) {
+	currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC != normalNextPC);
+
+	if(wasBranchPredicted) {
 		//return true if our predicted PC matches the trace's next PC
-		if(normalNextPC == actualNextPC) {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchPredictionTaken(false);
-			return false; //MISPREDICTION
+		if(currentInstr.predictedTargetPC == actualNextPC) {
+		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+		    return true; //Correct
 		}
 		else {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchPredictionTaken(true);
-			return true; //CORRECT PREDICTION
+		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n";
+			return false; //CORRECT PREDICTION
 		}
 	}
-	else {
-		if(normalNextPC == actualNextPC) {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchPredictionTaken(true);
-			return true; //CORRECT PREDICTION
-		}
-		else {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchPredictionTaken(false);
-			return false; //MISPREDICTION
-		}
+	else { //if we were unable to predict... thats a miss
+		return false;
 	}
 
 //	DEBUG_COUT << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";

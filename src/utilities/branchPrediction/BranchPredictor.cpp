@@ -34,13 +34,12 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 	instrToPredict.branchPredictorTableAddress = hash(instrToPredict.PC);
 
 	int predictionTableState = predictionTable[instrToPredict.branchPredictorTableAddress];
-	instrToPredict.SetWasBranchPredictionTaken(false);
+	instrToPredict.wasBranchPredictedAsTaken = false;
 
 	branchPredictionCount++;
 
 	if(predictionTableState == 2 || predictionTableState == 3) //predict this branch is taken
-	    instrToPredict.SetWasBranchPredictionTaken(true);
-
+	    instrToPredict.wasBranchPredictedAsTaken = true;
 
 	instrToPredict.predictedTargetPC = -1;
 
