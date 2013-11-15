@@ -7,6 +7,8 @@
 
 #include "ExecuteStage.h"
 #include "GlobalVars.h"
+#include "StructureDefs.h"
+#include "CacheController.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
@@ -18,49 +20,49 @@ void copyToRRF(FU_Element entry){
     int reorder_tag, rename_tag;
 
     reorder_tag = entry.reorder;
-    rename_tag = rob[reorder_tag].rename
+    rename_tag = rob[reorder_tag].rename;
     rrf[rename_tag].data = entry.result;    //write result to RRF
     rrf[rename_tag].valid = 1;              //set RRF valid bit
     rob[reorder_tag].finished = 1;          //set ROB finished bit
 }
 
-void simulateCompleteStage()
+void simulateExecuteStage()
 {
 
-	cout << "Executing " << " instructions\n";
+	cout << "Execute Stage\n";
 	
 	//integer addition/logic - 1 cycle
-	for(i=0; i < fu_add.size(); i++)
+	for(unsigned i=0; i < fu_add.size(); i++)
 	{
 	    if(fu_add[i].count == 1)    //move data to Rename Register File
-	        copyToRRF(fu_add[i])
+	        copyToRRF(fu_add[i]);
 
 		if(fu_add[i].count > 0)     //decrement cycle count
 		    fu_add[i].count--;
 	}
 
 	//integer multiply/divide - 3 cycles
-	for(j=0; j< fu_mult.size(); j++)
+	for(unsigned j=0; j< fu_mult.size(); j++)
 	{
-        if(fu_mult[i].count == 1)   //move data to Rename Register File
-            copyToRRF(fu_mult[i])
+        if(fu_mult[j].count == 1)   //move data to Rename Register File
+            copyToRRF(fu_mult[j]);
 
         if(fu_mult[j].count > 0)
             fu_mult[j].count--;
 	}
 
 	//floating point FU - 5 cycles
-	for(k=0; k< fu_fp.size(); k++)
+	for(unsigned k=0; k< fu_fp.size(); k++)
 	{
-        if(fu_fp[i].count == 1)     //move data to Rename Register File
-            copyToRRF(fu_fp[i])
+        if(fu_fp[k].count == 1)     //move data to Rename Register File
+            copyToRRF(fu_fp[k]);
 
 	    if(fu_fp[k].count > 0)
 	        fu_fp[k].count--;
 	}
 
 	//memory FU - 2 cycles
-	for(m=0; m< fu_mem.size(); m++)
+	for(unsigned m=0; m< fu_mem.size(); m++)
 	{
         //treat mem read and mem writes the same, both access mem during execute
 	    if(fu_mem[m].count == 1)                                                      //access memory
@@ -76,11 +78,11 @@ void simulateCompleteStage()
 	{
 	    fu_br.count = 0;    //set finished
 
-	    if (fetchStalled == true && fetchStalledInstrPc == fu_br.PC)    //if mispredicted
+	    if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
 	        fetchStalled = false;                                       //stop stalling Fetch Stage
 
         if (fu_br.BRoutcome == 1)                               //branch is taken
-            branchPredictor.updatePredictorWithResults(fu_br)   //update Prediction Table & BTB
+            branchPredictor.updatePredictorWithResults(fu_br);   //update Prediction Table & BTB
 
         //if (fu_br.BRoutcome == branchPredictor.get)
 	}

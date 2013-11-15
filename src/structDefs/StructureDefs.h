@@ -104,6 +104,7 @@ struct FU_Element {
 	int op1;
 	int op2;
 	int reorder;
+	int result;
 	OpcodeType	code;		//opcode
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
@@ -116,6 +117,7 @@ struct FU_Element {
 		op2	= -1;
 		reorder	= -1;
 		code = NOP;
+		result = 0;
 		PTaddr = -1;
 		BRoutcome = 0;
 		PC = -1;

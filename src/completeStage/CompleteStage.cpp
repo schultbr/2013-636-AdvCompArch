@@ -23,7 +23,7 @@ void simulateCompleteStage()
 	
 	while(!done)
 	{
-		if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1 &&)
+		if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1)
 		{
 			done = 0;
 			rob[robHead].busy = 0;			            //set not busy
@@ -32,7 +32,7 @@ void simulateCompleteStage()
 			if (rename_tag != -1);				        //has a destination register
 			{
 				dest_tag = rrf[rename_tag].dest;
-				arf[dest_tag] = rrf[rename_tag].data;	//copy data from RRF to ARF
+				arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
 				rrf[rename_tag].busy = 0;			    //set not busy
 
 				if (arf[dest_tag].rename == rename_tag)		//data being written to ARF is newest value

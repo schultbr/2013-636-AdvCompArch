@@ -40,11 +40,11 @@ std::vector<RS_Element> rs_int;
 std::vector<RS_Element> rs_fp;
 std::vector<RS_Element> rs_mem;
 std::vector<RS_Element> rs_br;
-std::vector<RS_Element> fu_add;
-std::vector<RS_Element> fu_mult;
-std::vector<RS_Element> fu_fp;
-std::vector<RS_Element> fu_mem;
-RS_Element fu_branch;			//single Functional Unit for branch
+std::vector<FU_Element> fu_add;
+std::vector<FU_Element> fu_mult;
+std::vector<FU_Element> fu_fp;
+std::vector<FU_Element> fu_mem;
+FU_Element fu_br;			//single Functional Unit for branch
 
 BranchPredictor branchPredictor;
 
