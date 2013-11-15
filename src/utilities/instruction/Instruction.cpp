@@ -73,13 +73,13 @@ bool Instruction::IsBranch(){
 	return isBranch;
 }
 
-void Instruction::SetWasBranchPredictionTaken(bool opt){
-    wasBranchPredictedAsTaken = opt;
-}
-
-bool Instruction::GetWasBranchPredictedTaken(){
-	return wasBranchPredictedAsTaken;
-}
+//void Instruction::SetWasBranchPredictionTaken(bool opt){
+//    wasBranchPredictedAsTaken = opt;
+//}
+//
+//bool Instruction::GetWasBranchPredictedTaken(){
+//	return wasBranchPredictedAsTaken;
+//}
 
 void Instruction::Print() {
     DEBUG_COUT << "PC:\t" << PC << endl;
@@ -166,18 +166,18 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	int indexOffset = 0;
 	string numberStr;
 
-	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
+//	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
 
 	if(regName.length() == 0)
 		return 0;
 
 	if(regName == "HI_LO"){
-	    DEBUG_COUT << "Found HI_LO. Returning 63\n";
+//	    DEBUG_COUT << "Found HI_LO. Returning 63\n";
 		return hiloRegIndex;
 	}
 
 	if(regName == "FCC") {
-	    DEBUG_COUT << "Found FCC. Returning 64\n";
+//	    DEBUG_COUT << "Found FCC. Returning 64\n";
 		return fccRegIndex;
 	}
 
@@ -191,11 +191,11 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	}
 
 	numberStr = regName.substr(charPos+1);
-	DEBUG_COUT << "Found reg " << regName << " to be #" << numberStr << endl;
+//	DEBUG_COUT << "Found reg " << regName << " to be #" << numberStr << endl;
 
 	retVal = atoi(numberStr.c_str());
 
-	DEBUG_COUT << "Return val is " << retVal << " plus " << indexOffset << endl;
+//	DEBUG_COUT << "Return val is " << retVal << " plus " << indexOffset << endl;
 
 	retVal += indexOffset;
 

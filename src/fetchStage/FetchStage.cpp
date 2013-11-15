@@ -37,6 +37,8 @@ bool checkBranchPrediction(Instruction &currentInstr){
 	int normalNextPC = currentInstr.PC + 8;
 //	int predictedNextPC = 0;
 
+	DEBUG_COUT << "BRANCH PREDICTING" << endl;
+
 	bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
 
 	currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC != normalNextPC);
@@ -53,6 +55,7 @@ bool checkBranchPrediction(Instruction &currentInstr){
 		}
 	}
 	else { //if we were unable to predict... thats a miss
+	    DEBUG_COUT << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n";
 		return false;
 	}
 
@@ -148,10 +151,16 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 		DEBUG_COUT << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n";
 	}
 
+	string boolCheck =(instructionsInPipeline[0].cyclesUntilReturned == 0 ? "true" : "false");
+
+	DEBUG_COUT << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n";
+
 	//start to flush the front instruction if it's time is up.
 	if(instructionsInPipeline[0].cyclesUntilReturned == 0) {
-		fetchedInstructions = instructionsInPipeline[0].instructions;
+	    DEBUG_COUT << "Moving instructions over\n";
+//		fetchedInstructions = instructionsInPipeline[0].instructions;
 		while((int)fetchedInstructions.size() < ::superScalarFactor && instructionsInPipeline[0].instructions.size() > 0) {
+		    DEBUG_COUT << "Fetched size = " << fetchedInstructions.size() << endl;
 		    fetchedInstructions.push(instructionsInPipeline[0].instructions.front()); //move over one at a time, in case of partial filled downstream stages
 		    instructionsInPipeline[0].instructions.pop();
 		}
@@ -201,6 +210,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	//always continue to grab more, unless fetched instructions is full already. then we stop.
 	if(instructionsInPipeline.size() > 0) {
+	    DEBUG_COUT << "Working through the cache latencies in the pipeline\n";
 	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
 	    decrementAllPipelineInstructions(fetchedInstructions);
 	}

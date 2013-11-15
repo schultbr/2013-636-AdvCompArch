@@ -61,8 +61,10 @@ int runSimulation() {
 		if(i == max)
 			notDone = false;
 
+		if(i%50 == 0)
+		    fetchStalled = false;
 		//todo: remove when done testing fetch
-//		clearQueue();
+		clearQueue();
 	}
 
 	return 1;
