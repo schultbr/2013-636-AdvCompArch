@@ -10,8 +10,9 @@
 
 #include <vector>
 #include "GlobalVars.h"
+#include "Instruction.h"
 
-class Instruction; //forward declaration to avoid circular includes...
+//class Instruction; //forward declaration to avoid circular includes...
 
 class BranchPredictor {
 public:

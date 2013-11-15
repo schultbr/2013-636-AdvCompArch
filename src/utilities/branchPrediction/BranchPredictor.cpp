@@ -7,7 +7,7 @@
 
 #include "BranchPredictor.h"
 #include "GlobalVars.h"
-#include "Instruction.h"
+//#include "Instruction.h"
 
 BranchPredictor::BranchPredictor() {
 	shiftReg 	= 0x0000;

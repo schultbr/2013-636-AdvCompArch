@@ -9,9 +9,10 @@
 #define GLOBALVARS_H_
 
 //#include "TraceReader.h"
+#include "StructureDefs.h"
+//#include "BranchPredictor.h"
 #include <string>
 #include <vector>
-#include "StructureDefs.h"
 
 class BranchPredictor; //forward declaration of branch predictor
 
