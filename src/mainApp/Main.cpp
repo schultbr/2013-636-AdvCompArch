@@ -15,7 +15,7 @@
 #include "FetchStage.h"
 #include "DecodeStage.h"
 #include "DispatchStage.h"
-//#include "IssueStage.h"
+#include "IssueStage.h"
 #include "ExecuteStage.h"
 #include "CompleteStage.h"
 #include "BranchPredictor.h"
@@ -45,9 +45,9 @@ int runSimulation() {
 	while(notDone) {
 	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
 	    DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
-	//	simulateCompleteStage();
-	//	simulateExecuteStage();
-	//	simulateIssueStage();
+		simulateCompleteStage();
+		simulateExecuteStage();
+		simulateIssueStage();
 		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
