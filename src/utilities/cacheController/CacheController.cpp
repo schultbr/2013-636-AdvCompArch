@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 //using namespace std;
-int checkCache(int cacheHitRate, int cacheAccessTime)
+int checkCache(float cacheHitRate, int cacheAccessTime)
 {
 	int penaltyTime = 0;
 	int cacheHitRoll = 0;
