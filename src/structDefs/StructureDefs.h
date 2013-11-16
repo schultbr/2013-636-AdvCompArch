@@ -76,6 +76,7 @@ struct RS_Element {
 	int reorder;
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
+	bool BRprediction;		//Branch Prediction
 	int PC;
 	int BTaddr;			//Branch Target Address
 
@@ -92,6 +93,7 @@ struct RS_Element {
 		code = NOP;
 		PTaddr = -1;
 		BRoutcome = 0;
+		BRprediction = 0;
 		PC = -1;
 		BTaddr = -1;
 	}
@@ -108,6 +110,7 @@ struct FU_Element {
 	OpcodeType	code;		//opcode
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
+	bool BRprediction;		//Branch Prediction
 	int PC;
 	int BTaddr;			//Branch Target Address
 
@@ -120,6 +123,7 @@ struct FU_Element {
 		result = 0;
 		PTaddr = -1;
 		BRoutcome = 0;
+		BRprediction = 0;
 		PC = -1;
 		BTaddr = -1;
 	}

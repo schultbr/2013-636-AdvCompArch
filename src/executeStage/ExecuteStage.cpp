@@ -28,6 +28,8 @@ void copyToRRF(FU_Element entry){
 
 void simulateExecuteStage()
 {
+	int next_tag = 0;
+	bool done = false;
 
 	cout << "Execute Stage\n";
 	
@@ -73,20 +75,36 @@ void simulateExecuteStage()
 	        fu_mem[m].count--;
 	}
 
-	//branch FU - 1 cycle
+	//branch FU - 1 cycle 
 	if(fu_br.count == 1)     //active instr in FU
 	{
-	    fu_br.count = 0;    //set finished
+	    	fu_br.count = 0;    //set finished
 
-	    if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
-	        fetchStalled = false;                                       //stop stalling Fetch Stage
+		if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
+		fetchStalled = false;                                       //stop stalling Fetch Stage
 
-        if (fu_br.BRoutcome == 1)                               //branch is taken
-            branchPredictor.updatePredictorWithResults(fu_br);   //update Prediction Table & BTB
+		if (fu_br.BRoutcome == 1)                               //branch is taken
+		    branchPredictor.updatePredictorWithResults(fu_br);   //update Prediction Table & BTB
 
-        //if (fu_br.BRoutcome == branchPredictor.get)
+		//if (fu_br.BRoutcome == fu_br.BRprediction)  //pretend to check if prediction was correct
+		next_tag = fu_br.reorder;
+
+		//when branch resolves, set instructions in ROB valid up until next branch
+		while(!done)	//because of trace file, all instructions will end up being valid, no flushing from ROB
+		{
+			if (next_tag == (int)rob.size()-1)
+				next_tag = 0;
+			else
+				next_tag++;
+
+			rob[next_tag].valid = 1;
+
+			if (rob[next_tag].code == BRANCH || next_tag == robTail)
+				done = true;
+		}
+		//I do need to know prediction value, to set ROB entries valid if prediction was correct
 	}
-	//I do need to know prediction value, to set ROB entries valid if prediction was correct
+}
 
 
   /* 	how do we know outcome of branch execution?  is this value stored with instr during Fetch, along with the prediction?
@@ -117,6 +135,5 @@ void simulateExecuteStage()
    	}
   }
   */
-}
 
 
