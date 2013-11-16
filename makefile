@@ -60,7 +60,7 @@ Objs    = $(addprefix $(ObjDir)/, $(notdir $(patsubst %.cpp, %.o, $(CppSrc))))
 
 ##############################################################################
 
-all : prepare build
+all : clean prepare build
 
 build : prepare $(BinDir)/$(BinName)
 

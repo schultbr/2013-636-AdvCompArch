@@ -67,6 +67,9 @@ extern std::vector<FU_Element> fu_fp;
 extern std::vector<FU_Element> fu_mem;
 extern FU_Element fu_br;			//single Functional Unit
 
+extern bool anyUnresolvedBranches;
+extern int unresolvedBranchRobIndex;
+
 
 //////////////////////////////////////////////////////////
 //

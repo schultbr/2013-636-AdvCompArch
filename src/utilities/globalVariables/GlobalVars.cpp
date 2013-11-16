@@ -48,6 +48,9 @@ FU_Element fu_br;			//single Functional Unit for branch
 
 BranchPredictor branchPredictor;
 
+bool anyUnresolvedBranches = false;
+int unresolvedBranchRobIndex = 0;
+
 //////////////////////////////////
 //statistical counters
 //////////////////////////////////

@@ -33,35 +33,30 @@ std::vector<FetchPipelineItem> instructionsInPipeline;
 
 //returns true if predicted correctly, false if we goofed.
 bool checkBranchPrediction(Instruction &currentInstr){
-	int actualNextPC = instructionTrace.peekNextPC();;
+	int actualNextPC = instructionTrace.peekNextPC();
 	int normalNextPC = currentInstr.PC + 8;
+//	int predictedNextPC = 0;
 
-	bool isPredictionTaken = branchPredictor.getPredictionForInstruction(currentInstr);
+	DEBUG_COUT << "BRANCH PREDICTING" << endl;
 
-	if(isPredictionTaken) {
+	bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
+
+	currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC != normalNextPC);
+
+	if(wasBranchPredicted) {
 		//return true if our predicted PC matches the trace's next PC
-		if(normalNextPC == actualNextPC) {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchTaken(false);
-			return false; //MISPREDICTION
+		if(currentInstr.predictedTargetPC == actualNextPC) {
+		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+		    return true; //Correct
 		}
 		else {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchTaken(true);
-			return true; //CORRECT PREDICTION
+		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n";
+			return false; //CORRECT PREDICTION
 		}
 	}
-	else {
-		if(normalNextPC == actualNextPC) {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
-			currentInstr.SetWasBranchTaken(true);
-			return true; //CORRECT PREDICTION
-		}
-		else {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was mis-predicted. Stalling fetch until it's done!\n";
-			currentInstr.SetWasBranchTaken(false);
-			return false; //MISPREDICTION
-		}
+	else { //if we were unable to predict... thats a miss
+	    DEBUG_COUT << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n";
+		return false;
 	}
 
 //	DEBUG_COUT << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
@@ -156,10 +151,16 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 		DEBUG_COUT << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n";
 	}
 
+	string boolCheck =(instructionsInPipeline[0].cyclesUntilReturned == 0 ? "true" : "false");
+
+	DEBUG_COUT << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n";
+
 	//start to flush the front instruction if it's time is up.
 	if(instructionsInPipeline[0].cyclesUntilReturned == 0) {
-		fetchedInstructions = instructionsInPipeline[0].instructions;
+	    DEBUG_COUT << "Moving instructions over\n";
+//		fetchedInstructions = instructionsInPipeline[0].instructions;
 		while((int)fetchedInstructions.size() < ::superScalarFactor && instructionsInPipeline[0].instructions.size() > 0) {
+		    DEBUG_COUT << "Fetched size = " << fetchedInstructions.size() << endl;
 		    fetchedInstructions.push(instructionsInPipeline[0].instructions.front()); //move over one at a time, in case of partial filled downstream stages
 		    instructionsInPipeline[0].instructions.pop();
 		}
@@ -209,6 +210,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	//always continue to grab more, unless fetched instructions is full already. then we stop.
 	if(instructionsInPipeline.size() > 0) {
+	    DEBUG_COUT << "Working through the cache latencies in the pipeline\n";
 	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
 	    decrementAllPipelineInstructions(fetchedInstructions);
 	}

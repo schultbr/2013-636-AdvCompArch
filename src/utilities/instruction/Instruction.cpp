@@ -32,9 +32,9 @@ Instruction::Instruction() {
     src2 = -1;
     offset = 0;
     isBranch = false;
-    branchPredictorAddress = -1;
+    branchPredictorTableAddress = -1;
     opCode = NOP;
-    wasBranchTaken = false;
+    wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
@@ -54,9 +54,9 @@ Instruction::Instruction(string line) {
     src2 = -1;
 //    src2Reg = "";
     offset = 0;
-    branchPredictorAddress = -1;
+    branchPredictorTableAddress = -1;
     isBranch = false;
-    wasBranchTaken = false;
+    wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
     opCode = NOP; //initial opCode. Gets set in decode.
 
@@ -69,17 +69,21 @@ Instruction::Instruction(string line) {
 Instruction::~Instruction() {
 }
 
+int Instruction::GetOpcodeRegisterType() {
+    return opCodeDecodeType;
+}
+
 bool Instruction::IsBranch(){
 	return isBranch;
 }
 
-void Instruction::SetWasBranchTaken(bool opt){
-    wasBranchTaken = opt;
-}
-
-bool Instruction::GetWasBranchTaken(){
-	return wasBranchTaken;
-}
+//void Instruction::SetWasBranchPredictionTaken(bool opt){
+//    wasBranchPredictedAsTaken = opt;
+//}
+//
+//bool Instruction::GetWasBranchPredictedTaken(){
+//	return wasBranchPredictedAsTaken;
+//}
 
 void Instruction::Print() {
     DEBUG_COUT << "PC:\t" << PC << endl;
@@ -166,18 +170,18 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	int indexOffset = 0;
 	string numberStr;
 
-	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
+//	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
 
 	if(regName.length() == 0)
 		return 0;
 
 	if(regName == "HI_LO"){
-	    DEBUG_COUT << "Found HI_LO. Returning 63\n";
+//	    DEBUG_COUT << "Found HI_LO. Returning 63\n";
 		return hiloRegIndex;
 	}
 
 	if(regName == "FCC") {
-	    DEBUG_COUT << "Found FCC. Returning 64\n";
+//	    DEBUG_COUT << "Found FCC. Returning 64\n";
 		return fccRegIndex;
 	}
 
@@ -191,11 +195,11 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 	}
 
 	numberStr = regName.substr(charPos+1);
-	DEBUG_COUT << "Found reg " << regName << " to be #" << numberStr << endl;
+//	DEBUG_COUT << "Found reg " << regName << " to be #" << numberStr << endl;
 
 	retVal = atoi(numberStr.c_str());
 
-	DEBUG_COUT << "Return val is " << retVal << " plus " << indexOffset << endl;
+//	DEBUG_COUT << "Return val is " << retVal << " plus " << indexOffset << endl;
 
 	retVal += indexOffset;
 
