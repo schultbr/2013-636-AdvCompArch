@@ -92,8 +92,8 @@ struct RS_Element {
 		reorder	= -1;
 		code = NOP;
 		PTaddr = -1;
-		BRoutcome = 0;
-		BRprediction = 0;
+		BRoutcome = false;
+		BRprediction = false;
 		PC = -1;
 		BTaddr = -1;
 	}
@@ -122,8 +122,8 @@ struct FU_Element {
 		code = NOP;
 		result = 0;
 		PTaddr = -1;
-		BRoutcome = 0;
-		BRprediction = 0;
+		BRoutcome = false;
+		BRprediction = false;
 		PC = -1;
 		BTaddr = -1;
 	}

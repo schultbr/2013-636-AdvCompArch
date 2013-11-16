@@ -33,7 +33,9 @@ void simulateExecuteStage()
 
 	cout << "Execute Stage\n";
 	
-	//integer addition/logic - 1 cycle
+// ----------------------------------------------------------------------------------------------
+// ------------------------- integer addition & logic FU - 1 cycle  -----------------------------
+// ----------------------------------------------------------------------------------------------
 	for(unsigned i=0; i < fu_add.size(); i++)
 	{
 	    if(fu_add[i].count == 1)    //move data to Rename Register File
@@ -43,7 +45,9 @@ void simulateExecuteStage()
 		    fu_add[i].count--;
 	}
 
-	//integer multiply/divide - 3 cycles
+// ----------------------------------------------------------------------------------------------
+// ------------------------- integer mult & div FU - 3 cycles -----------------------------------
+// ----------------------------------------------------------------------------------------------
 	for(unsigned j=0; j< fu_mult.size(); j++)
 	{
         if(fu_mult[j].count == 1)   //move data to Rename Register File
@@ -53,7 +57,9 @@ void simulateExecuteStage()
             fu_mult[j].count--;
 	}
 
-	//floating point FU - 5 cycles
+// ----------------------------------------------------------------------------------------------
+// ------------------------- floating point FU - 5 cycles ---------------------------------------
+// ----------------------------------------------------------------------------------------------
 	for(unsigned k=0; k< fu_fp.size(); k++)
 	{
         if(fu_fp[k].count == 1)     //move data to Rename Register File
@@ -63,7 +69,10 @@ void simulateExecuteStage()
 	        fu_fp[k].count--;
 	}
 
-	//memory FU - 2 cycles
+
+// ----------------------------------------------------------------------------------------------
+// ------------------------- memory FU - 2 cycles -----------------------------------------------
+// ----------------------------------------------------------------------------------------------
 	for(unsigned m=0; m< fu_mem.size(); m++)
 	{
         //treat mem read and mem writes the same, both access mem during execute
@@ -75,34 +84,43 @@ void simulateExecuteStage()
 	        fu_mem[m].count--;
 	}
 
-	//branch FU - 1 cycle 
-	if(fu_br.count == 1)     //active instr in FU
+
+// ----------------------------------------------------------------------------------------------
+// ------------------------- branch FU - 1 cycle ------------------------------------------------
+// ----------------------------------------------------------------------------------------------
+	if(fu_br.count == 1)     	//active instr in FU
 	{
-	    	fu_br.count = 0;    //set finished
-
-		if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
-		fetchStalled = false;                                       //stop stalling Fetch Stage
-
-		if (fu_br.BRoutcome == 1)                               //branch is taken
-		    branchPredictor.updatePredictorWithResults(fu_br);   //update Prediction Table & BTB
-
-		//if (fu_br.BRoutcome == fu_br.BRprediction)  //pretend to check if prediction was correct
+	    	fu_br.count = 0;    	//set finished
 		next_tag = fu_br.reorder;
 
-		//when branch resolves, set instructions in ROB valid up until next branch
-		while(!done)	//because of trace file, all instructions will end up being valid, no flushing from ROB
+		if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
+		fetchStalled = false;                                       	//stop stalling Fetch Stage
+
+		if (fu_br.BRoutcome == 1)                               	//branch is taken
+		    branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB
+
+		//if prediction was not correct, Fetch is stalled to simulate "flushing" so there will be no new instrs
+		//in the ROB that need flushed
+		if (fu_br.BRoutcome == fu_br.BRprediction)  //check if prediction was correct
 		{
-			if (next_tag == (int)rob.size()-1)
-				next_tag = 0;
-			else
-				next_tag++;
+			//when branch resolves, set instructions in ROB valid up until next branch
+			while(!done)	//because of trace file, all instructions will end up being valid, no flushing from ROB
+			{
+				if (next_tag == (int)rob.size()-1)
+					next_tag = 0;
+				else
+					next_tag++;
 
-			rob[next_tag].valid = 1;
+				rob[next_tag].valid = 1;
 
-			if (rob[next_tag].code == BRANCH || next_tag == robTail)
-				done = true;
+				if (rob[next_tag].code == BRANCH || next_tag == robTail)
+					done = true;
+			}
 		}
-		//I do need to know prediction value, to set ROB entries valid if prediction was correct
+
+		if (fu_br.reorder == unresolvedBranchRobIndex)	//check if ROB has additional unresolved branches
+			anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
+	
 	}
 }
 
