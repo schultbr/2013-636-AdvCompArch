@@ -41,28 +41,26 @@ void clearQueue(){
 int runSimulation() {
 	bool notDone = true;
 	int i = 0;
-	int max = 5000;
+	int max = 500000;
 	while(notDone) {
 	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
-	    DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
 		simulateCompleteStage();
 		simulateExecuteStage();
 		simulateIssueStage();
 		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
-		DEBUG_COUT << "Size2: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 
 		i++;
 		if(i == max)
 			notDone = false;
-
-		if(i%50 == 0)
-		    fetchStalled = false;
+//
+//		if(i%50 == 0)
+//		    fetchStalled = false;
 		//todo: remove when done testing fetch
-		clearQueue();
+//		clearQueue();
 	}
 
 	return 1;

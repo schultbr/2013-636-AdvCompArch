@@ -7,6 +7,11 @@
 
 #include "DispatchStage.h"
 
+#include <unistd.h>
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+
 using namespace std;
 
 //check here to make sure the RRF, RS and ROB all have space, if needed
@@ -16,13 +21,20 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
                         bool &usesRRF, bool &usesRS) {
     bool isROBFull = true;
 
+    string trueStr = "true";
+    string falseStr = "false";
+
     //todo: this can be done by checking head and tail, but i need to
     //know if tail points to the next available entry or the last used entry...
     // that changes the math needed (ideally tail points to next available,
     //so we can check tail == head and be done)
+    DEBUG_COUT << "\tChecking ROB space" << endl;
     for(size_t i = 0; i < rob.size() && isROBFull; i++) {
-        if(rob[i].busy == false)
+        DEBUG_COUT << "Is " << i << " in rob busy? " << (rob[i].busy ? trueStr : falseStr) << endl;
+        if(rob[i].busy == false) {
             isROBFull = false;
+            break;
+        }
     }
     if(isROBFull)
         return false;
@@ -33,15 +45,24 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
             inst.opCode == STORE ||
             inst.opCode == NOP)
         usesRRF = false;
+    else
+        usesRRF = true;
 
     if(inst.opCode == NOP)
         usesRS = false;
+    else
+        usesRS = true;
 
     bool isRRFFull = true;
+
+    DEBUG_COUT << "\tChecking RRF space" << endl;
     if(usesRRF) {
         for(size_t i = 0; i < rrf.size() && isRRFFull; i++) {
-            if(rrf[i].busy == false)
+            DEBUG_COUT << "Is " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl;
+            if(rrf[i].busy == false) {
                 isRRFFull = false;
+                break;
+            }
         }
     }
 
@@ -50,10 +71,14 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 
 
     bool isRSFull = true;
+    DEBUG_COUT << "\tChecking RS space" << endl;
     if(usesRS) {
         for(size_t i = 0; i < targetRS->size() && isRSFull; i++) {
-            if(targetRS->at(i).busy == false)
+            DEBUG_COUT << "Is " << i << " in rs busy? " << (targetRS->at(i).busy ? trueStr : falseStr) << endl;
+            if(targetRS->at(i).busy == false) {
                 isRSFull = false;
+                break;
+            }
         }
     }
 
@@ -69,6 +94,9 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 //index (i.e. check imm/offset)
 //true means ready bit is tru too, and op contains real data.
 bool translateSrcToOp(int srcRegIndex, int &op) {
+
+//    DEBUG_COUT << "Dispatching to ROB." << endl;
+
     if(srcRegIndex == -1) {
         op = -1;
         return false;
@@ -97,6 +125,8 @@ bool translateSrcToOp(int srcRegIndex, int &op) {
 int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag) {
     int returnTag = -1;
 //    std::vector<RS_Element> *targetRS;
+
+    DEBUG_COUT << "Dispatching to RS." << endl;
 
     if(targetRS == NULL)
         return returnTag;
@@ -176,9 +206,11 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) {
     int returnTag = -1;
 
+    DEBUG_COUT << "Dispatching to ROB." << endl;
+
     rob[robTail].busy = true;
     rob[robTail].finished = initAsFinished;
-    rob[robTail].valid = true; //always true, since we don't have prediction blocks
+    rob[robTail].valid = !(::anyUnresolvedBranches); //set to 0 if we have a branch waiting to resolve
     rob[robTail].rename = renameTag;
     rob[robTail].code = inst.opCode;
     returnTag = robTail;
@@ -199,6 +231,8 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
 //returns the RRF Tag
 int dispatchToRRF(Instruction inst) {
     int returnTag = -1;
+
+    DEBUG_COUT << "Dispatching to RRF" << endl;
 
     //loop through from the start to the end of the ROB
     //find the first emtpy spot and sit 'er down.
@@ -242,18 +276,20 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     bool usesRRF = false;
     bool usesRS = false;
 
-
     while(instrToDispatch.size() > 0 && !isStalled) {
         switch(instrToDispatch.front().opCode){
             case ADD_SUB_I:
             case MULT_DIV_I:
+            case LOGICAL: //todo verify these go here.
                 targetRS =  &rs_int;
                 break;
             case FLOATING_POINT:
                 targetRS =  &rs_fp;
                 break;
             case BRANCH:
+                DEBUG_COUT << "Found a ... branch instr " << instrToDispatch.front().PC << endl;
                 targetRS =  &rs_br;
+                DEBUG_COUT << "TargetRS is now " << (int)targetRS << endl;
                 break;
             case LOAD:
             case STORE:
@@ -261,12 +297,22 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
                 break;
             case JUMP:
             default:
+                DEBUG_COUT << "Found a ... jump? " << instrToDispatch.front().PC << endl;
                 targetRS = NULL; //right? JUMP doesn't use a execution unit? maybe?
                 break;
         }
 
         checkRet = checkDestAvailable(instrToDispatch.front(), targetRS, usesRRF, usesRS);
         isStalled = !checkRet; //the check returns false if we can't place things... so, we stall then
+
+        string boolResTrue = "true";
+        string boolResFalse = "false";
+//        string checkRetStr = (!checkRet ? "true" : "false");
+
+        DEBUG_COUT << "Instruction PC: " << instrToDispatch.front().PC << endl;
+        DEBUG_COUT << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl;
 
         if(isStalled)
             break;

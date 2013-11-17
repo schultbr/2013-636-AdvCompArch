@@ -17,27 +17,27 @@ using namespace std;
 
 void copyToFU(RS_Element entry, std::vector<FU_Element> &targetFU, int index, int cnt)
 {
-	targetFU[index].op1 		= entry.op1;
-	targetFU[index].op2 		= entry.op2;
-	targetFU[index].reorder 	= entry.reorder;
-	targetFU[index].code		= entry.code;
-	targetFU[index].PC		= entry.PC;
-	targetFU[index].count		= cnt;
+	targetFU[index].op1 = entry.op1;
+	targetFU[index].op2 = entry.op2;
+	targetFU[index].reorder = entry.reorder;
+	targetFU[index].code = entry.code;
+	targetFU[index].PC = entry.PC;
+	targetFU[index].count = cnt;
 
 }
 
 void copyToBranchFU(RS_Element entry, FU_Element &targetFU)	//single element FU, not a vector
 {
-	targetFU.op1 		= entry.op1;
-	targetFU.op2 		= entry.op2;
-	targetFU.reorder 	= entry.reorder;
-	targetFU.code		= entry.code;
-	targetFU.PC		= entry.PC;
-	targetFU.PTaddr		= entry.PTaddr;
-	targetFU.BTaddr		= entry.BTaddr;
-	targetFU.BRoutcome 	= entry.BRoutcome;
-	targetFU.BRprediction	= entry.BRprediction;
-	targetFU.count		= 1;
+	targetFU.op1 = entry.op1;
+	targetFU.op2 = entry.op2;
+	targetFU.reorder = entry.reorder;
+	targetFU.code = entry.code;
+	targetFU.PC	= entry.PC;
+	targetFU.PTaddr	= entry.PTaddr;
+	targetFU.BTaddr	= entry.BTaddr;
+	targetFU.BRoutcome = entry.BRoutcome;
+	targetFU.BRprediction = entry.BRprediction;
+	targetFU.count = 1;
 }
 
 //function to check for empty FU
@@ -134,8 +134,8 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					break;
 
 				//********************* WHAT DO WE DO WITH NOP AND JUMP? ********
-				case NOP:			
-				case JUMP:
+                case NOP: //NOP goes straight to ROB with complete marked as true -- brs
+				case JUMP: // JUMP goes here. Correct. --Brs
 				case BRANCH:
 					if(fu_br.count == 0)	//FU empty
 						copyToBranchFU( targetRS->at(i), fu_br );
@@ -151,21 +151,29 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 void simulateIssueStage()
 {
-	int rename_tag = 0;
-	unsigned i;
+//	int rename_tag = 0;
+//	unsigned i;
 
 	cout << "Issue Stage\n";
 	
-	//check Commom Data Bus for updates
+	//check Common Data Bus for updates
+	DEBUG_COUT << " Checking cdb for rs_int" << endl;
 	checkValue( &rs_int );
+	DEBUG_COUT << " Checking cdb for rs_fp" << endl;
 	checkValue( &rs_fp );
+	DEBUG_COUT << " Checking cdb for rs_mem" << endl;
 	checkValue( &rs_mem );
+	DEBUG_COUT << " Checking cdb for rs_br" << endl;
 	checkValue( &rs_br );
 	
 	//check RS for ready instructions and issue if FU is not busy
+	DEBUG_COUT << " Checking rs_int for issue" << endl;
 	checkReady( &rs_int );
+	DEBUG_COUT << " Checking rs_fp for issue" << endl;
 	checkReady( &rs_fp );
+	DEBUG_COUT << " Checking rs_mem for issue" << endl;
 	checkReady( &rs_mem );
+	DEBUG_COUT << " Checking rs_br for issue" << endl;
 	checkReady( &rs_br );	
 
 }	

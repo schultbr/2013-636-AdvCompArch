@@ -115,7 +115,7 @@ struct FU_Element {
 	int BTaddr;			//Branch Target Address
 
 	FU_Element() {
-		count = 0;
+		count = -1;
 		op1 = -1;
 		op2	= -1;
 		reorder	= -1;
