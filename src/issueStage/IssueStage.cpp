@@ -157,23 +157,23 @@ void simulateIssueStage()
 	cout << "Issue Stage\n";
 	
 	//check Common Data Bus for updates
-	DEBUG_COUT << " Checking cdb for rs_int" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking cdb for rs_int" << endl;
 	checkValue( &rs_int );
-	DEBUG_COUT << " Checking cdb for rs_fp" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking cdb for rs_fp" << endl;
 	checkValue( &rs_fp );
-	DEBUG_COUT << " Checking cdb for rs_mem" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking cdb for rs_mem" << endl;
 	checkValue( &rs_mem );
-	DEBUG_COUT << " Checking cdb for rs_br" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking cdb for rs_br" << endl;
 	checkValue( &rs_br );
 	
 	//check RS for ready instructions and issue if FU is not busy
-	DEBUG_COUT << " Checking rs_int for issue" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking rs_int for issue" << endl;
 	checkReady( &rs_int );
-	DEBUG_COUT << " Checking rs_fp for issue" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking rs_fp for issue" << endl;
 	checkReady( &rs_fp );
-	DEBUG_COUT << " Checking rs_mem for issue" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking rs_mem for issue" << endl;
 	checkReady( &rs_mem );
-	DEBUG_COUT << " Checking rs_br for issue" << endl;
+	DEBUG_COUT << "Issue:\t" <<  " Checking rs_br for issue" << endl;
 	checkReady( &rs_br );	
 
 }	

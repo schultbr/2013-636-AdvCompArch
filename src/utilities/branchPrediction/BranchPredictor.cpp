@@ -63,7 +63,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 	    return true;
 	}
 
-
+	return false; //if we got here, stuff is super screwed up.
 
 //  	predictAddr = hash(shiftreg, instr.PC)	//do we add PC to struct instr?  when br is exec if wrong we will need the PC to calc new fetch addr
 //  	prediction = predicitonTable[predictAddr];

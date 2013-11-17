@@ -30,13 +30,13 @@ void simulateExecuteStage() {
     int next_tag = 0;
     bool done = false;
 
-    DEBUG_COUT << "Execute Stage\n";
+    DEBUG_COUT << "Execute:\t" << "Execute Stage\n";
 
 // ----------------------------------------------------------------------------------------------
 // ------------------------- integer addition & logic FU - 1 cycle  -----------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned i = 0; i < fu_add.size(); i++) {
-        DEBUG_COUT << "Checking each add FU\n";
+        DEBUG_COUT << "Execute:\t" << "Checking each add FU\n";
         if (fu_add[i].count == 1)    //move data to Rename Register File
             copyToRRF(fu_add[i]);
 
@@ -48,7 +48,7 @@ void simulateExecuteStage() {
 // ------------------------- integer mult & div FU - 3 cycles -----------------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned j = 0; j < fu_mult.size(); j++) {
-        DEBUG_COUT << "Checking each mult FU\n";
+        DEBUG_COUT << "Execute:\t" << "Checking each mult FU\n";
         if (fu_mult[j].count == 1)   //move data to Rename Register File
             copyToRRF(fu_mult[j]);
 
@@ -60,7 +60,7 @@ void simulateExecuteStage() {
 // ------------------------- floating point FU - 5 cycles ---------------------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned k = 0; k < fu_fp.size(); k++) {
-        DEBUG_COUT << "Checking each fp FU\n";
+        DEBUG_COUT << "Execute:\t" << "Checking each fp FU\n";
         if (fu_fp[k].count == 1)     //move data to Rename Register File
             copyToRRF(fu_fp[k]);
 
@@ -72,7 +72,7 @@ void simulateExecuteStage() {
 // ------------------------- memory FU - 2 cycles -----------------------------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned m = 0; m < fu_mem.size(); m++) {
-        DEBUG_COUT << "Checking each mem FU\n";
+        DEBUG_COUT << "Execute:\t" << "Checking each mem FU\n";
         //treat mem read and mem writes the same, both access mem during execute
         if (fu_mem[m].count == 1)                                                      //access memory
             fu_mem[m].count = checkCache(level1CacheHitRate, level1CacheAccessTime);   //add any cache miss penalty
@@ -87,7 +87,7 @@ void simulateExecuteStage() {
 // ----------------------------------------------------------------------------------------------
     if (fu_br.count == 1)     	//active instr in FU
     {
-        DEBUG_COUT << "Checking the branch FU\n";
+        DEBUG_COUT << "Execute:\t" << "Checking the branch FU\n";
         fu_br.count = 0;    	//set finished
         next_tag = fu_br.reorder;
 

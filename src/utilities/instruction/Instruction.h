@@ -24,6 +24,7 @@ public:
 //    void SetWasBranchPredictionTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
+    void TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &valid2);
     int GetOpcodeRegisterType();
     std::string GetOpcodeString();
     void Print();

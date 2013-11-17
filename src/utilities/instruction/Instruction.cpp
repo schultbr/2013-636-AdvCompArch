@@ -77,6 +77,95 @@ bool Instruction::IsBranch(){
 	return isBranch;
 }
 
+//returns the ops corresponding to this instr... -1 is default and means "not used" and
+// the valid will be set to true if using an immediate/offset value, or if the op isn't used.
+// if the op is a reg reference, we set valid to false for the dispatch function to verify
+void Instruction::TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &valid2) {
+
+    //default these guys out.
+    op1 = -1;
+    op2 = -1;
+    valid1 = true;
+    valid2 = true;
+
+    /* Opcode input instruction types
+     * 0 = IMM ONLY
+     * 1 = SRC1 ONLY
+     * 2 = SRC1 & SRC2
+     * 3 = SRC1 & SRC2 & OFFSET
+     * 4 = SRC1 & OFFSET
+     * 5 = IMM & SRC1=FCC
+     * 6 = DEST & IMM & SRC1 (in that order)
+     * 7 = DEST & SRC1 & SRC2
+     * 8 = DEST & SRC1 & IMM
+     * 9 = SRC1 & SRC2, DEST = HI_LO
+     * 10 = DEST && SRC1 = HI_LO
+     * 11 = DEST & IMM
+     * 12 = SRC1 & DEST
+     * 13 = SRC1 & SRC2, DEST=FCC
+    */
+    switch(instructionTypeMap[opCodeStr]) {
+        case 0: //imm only
+        case 11: //DEST & IMM
+            op1 = imm;
+            break;
+
+        case 1: //src1 only
+        case 2: //dest & src 1
+        case 10: //s1= HI_LO, dest
+        case 12: //SRC1 & DEST
+            op1 = src1;
+            valid1 = false;
+            break;
+
+            //todo: figure out case 3... has 3 ops
+        case 3://src1 & src2 & offset
+//            src1Reg = regs[0];
+//            src2Reg = regs[1];
+//            offset = atoi(regs[2].c_str());
+            op1 = src1;
+            valid1 = false;
+            op2 = src2;
+            valid2 = false;
+            break;
+
+        case 4: //src1 & offset
+            op1 = src1;
+            valid1 = false;
+            op2 = offset;
+            valid2 = true;
+            break;
+
+        case 5: // IMM & SRC1=FCC
+        case 6: //DEST & IMM & SRC1 (in that order)
+            op1 = imm;
+            valid1 = true;
+            op2 = src1;
+            valid2 = false;
+            break;
+
+        case 8: //DEST & SRC1 & IMM
+            op1 = src1;
+            valid1 = false;
+            op2 = imm;
+            valid2 = true;
+            break;
+
+        case 7:
+        case 9: //SRC1 & SRC2, DEST = HI_LO
+        case 13: //SRC1 & SRC2, DEST=FCC
+            op1 = src1;
+            valid1 = false;
+            op2 = src2;
+            valid2 = false;
+            break;
+
+        default:
+            break;
+        }
+
+}
+
 //void Instruction::SetWasBranchPredictionTaken(bool opt){
 //    wasBranchPredictedAsTaken = opt;
 //}
@@ -173,7 +262,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 //	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
 
 	if(regName.length() == 0)
-		return 0;
+		return -1;
 
 	if(regName == "HI_LO"){
 //	    DEBUG_COUT << "Found HI_LO. Returning 63\n";

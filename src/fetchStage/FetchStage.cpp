@@ -37,7 +37,7 @@ bool checkBranchPrediction(Instruction &currentInstr){
 	int normalNextPC = currentInstr.PC + 8;
 //	int predictedNextPC = 0;
 
-	DEBUG_COUT << "BRANCH PREDICTING" << endl;
+	DEBUG_COUT << "Fetch:\t" << "BRANCH PREDICTING" << endl;
 
 	bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
 
@@ -46,20 +46,20 @@ bool checkBranchPrediction(Instruction &currentInstr){
 	if(wasBranchPredicted) {
 		//return true if our predicted PC matches the trace's next PC
 		if(currentInstr.predictedTargetPC == actualNextPC) {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+		    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
 		    return true; //Correct
 		}
 		else {
-		    DEBUG_COUT << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n";
+		    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n";
 			return false; //CORRECT PREDICTION
 		}
 	}
 	else { //if we were unable to predict... thats a miss
-	    DEBUG_COUT << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n";
+	    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n";
 		return false;
 	}
 
-//	DEBUG_COUT << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
+//	DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
 	//return false otherwise. oops. we missed. somehow.
 	return false;
@@ -79,7 +79,7 @@ void grabNextInstructionGroup() {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
-//	DEBUG_COUT << "Fetching  " << ::superScalarFactor << " instuctions\n";
+//	DEBUG_COUT << "Fetch:\t" << "Fetching  " << ::superScalarFactor << " instuctions\n";
 
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
@@ -113,7 +113,7 @@ void grabNextInstructionGroup() {
 
 
 		//debug print:
-		DEBUG_COUT << "Fetched: ";
+		DEBUG_COUT << "Fetch:\t" << "Fetched: ";
 		instrToAdd.Print();
 
 		currentFetchedItem.instructions.push(instrToAdd);
@@ -148,19 +148,19 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 			instructionsInPipeline[i].cyclesUntilReturned--;
 
 		//debug print:
-		DEBUG_COUT << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n";
+		DEBUG_COUT << "Fetch:\t" << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n";
 	}
 
 	string boolCheck =(instructionsInPipeline[0].cyclesUntilReturned == 0 ? "true" : "false");
 
-	DEBUG_COUT << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n";
+	DEBUG_COUT << "Fetch:\t" << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n";
 
 	//start to flush the front instruction if it's time is up.
 	if(instructionsInPipeline[0].cyclesUntilReturned == 0) {
-	    DEBUG_COUT << "Moving instructions over\n";
+	    DEBUG_COUT << "Fetch:\t" << "Moving instructions over\n";
 //		fetchedInstructions = instructionsInPipeline[0].instructions;
 		while((int)fetchedInstructions.size() < ::superScalarFactor && instructionsInPipeline[0].instructions.size() > 0) {
-		    DEBUG_COUT << "Fetched size = " << fetchedInstructions.size() << endl;
+		    DEBUG_COUT << "Fetch:\t" << "Fetched size = " << fetchedInstructions.size() << endl;
 		    fetchedInstructions.push(instructionsInPipeline[0].instructions.front()); //move over one at a time, in case of partial filled downstream stages
 		    instructionsInPipeline[0].instructions.pop();
 		}
@@ -210,7 +210,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	//always continue to grab more, unless fetched instructions is full already. then we stop.
 	if(instructionsInPipeline.size() > 0) {
-	    DEBUG_COUT << "Working through the cache latencies in the pipeline\n";
+	    DEBUG_COUT << "Fetch:\t" << "Working through the cache latencies in the pipeline\n";
 	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
 	    decrementAllPipelineInstructions(fetchedInstructions);
 	}

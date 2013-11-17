@@ -15,7 +15,7 @@
 using namespace std;
 
 void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queue<Instruction> &decodedInstructions) {
-    DEBUG_COUT << "Decoding " << instuctionsToDecode.size() << " instructions\n";
+    DEBUG_COUT << "Decode:\t" << "Decoding " << instuctionsToDecode.size() << " instructions\n";
 
 	if(instuctionsToDecode.size() == 0)
 		return;
@@ -28,7 +28,7 @@ void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queu
 
 		instuctionsToDecode.front().DecodeInstructionString();
 
-		DEBUG_COUT << "Decoded: ";
+		DEBUG_COUT << "Decode:\t" << "Decoded: ";
 		instuctionsToDecode.front().Print();
 
 		decodedInstructions.push(instuctionsToDecode.front());

@@ -28,9 +28,9 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
     //know if tail points to the next available entry or the last used entry...
     // that changes the math needed (ideally tail points to next available,
     //so we can check tail == head and be done)
-    DEBUG_COUT << "\tChecking ROB space" << endl;
+    DEBUG_COUT << "Dispatch:\t" << "\tChecking ROB space" << endl;
     for(size_t i = 0; i < rob.size() && isROBFull; i++) {
-        DEBUG_COUT << "Is " << i << " in rob busy? " << (rob[i].busy ? trueStr : falseStr) << endl;
+        DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rob busy? " << (rob[i].busy ? trueStr : falseStr) << endl;
         if(rob[i].busy == false) {
             isROBFull = false;
             break;
@@ -39,26 +39,30 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
     if(isROBFull)
         return false;
 
-    if(inst.opCode == BRANCH ||
-            inst.opCode == JUMP ||
-            inst.opCode == LOAD ||
-            inst.opCode == STORE ||
-            inst.opCode == NOP)
-        usesRRF = false;
-    else
-        usesRRF = true;
 
-    if(inst.opCode == NOP)
-        usesRS = false;
-    else
-        usesRS = true;
+    //the following is over the top. try the new one/
+//    if(inst.opCode == BRANCH ||
+//            inst.opCode == JUMP ||
+//            inst.opCode == LOAD ||
+//            inst.opCode == STORE ||
+//            inst.opCode == NOP)
+//        usesRRF = false;
+//    else
+//        usesRRF = true;
+    usesRRF = (inst.dest == -1 ? false:  true);
+
+//    if(inst.opCode == NOP)
+//        usesRS = false;
+//    else
+//        usesRS = true;
+    usesRS = (inst.opCode == NOP ? false : true);
 
     bool isRRFFull = true;
 
-    DEBUG_COUT << "\tChecking RRF space" << endl;
+    DEBUG_COUT << "Dispatch:\t" << "\tChecking RRF space" << endl;
     if(usesRRF) {
         for(size_t i = 0; i < rrf.size() && isRRFFull; i++) {
-            DEBUG_COUT << "Is " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl;
+            DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl;
             if(rrf[i].busy == false) {
                 isRRFFull = false;
                 break;
@@ -71,10 +75,10 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 
 
     bool isRSFull = true;
-    DEBUG_COUT << "\tChecking RS space" << endl;
+    DEBUG_COUT << "Dispatch:\t" << "\tChecking RS space" << endl;
     if(usesRS) {
         for(size_t i = 0; i < targetRS->size() && isRSFull; i++) {
-            DEBUG_COUT << "Is " << i << " in rs busy? " << (targetRS->at(i).busy ? trueStr : falseStr) << endl;
+            DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rs busy? " << (targetRS->at(i).busy ? trueStr : falseStr) << endl;
             if(targetRS->at(i).busy == false) {
                 isRSFull = false;
                 break;
@@ -95,7 +99,7 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 //true means ready bit is tru too, and op contains real data.
 bool translateSrcToOp(int srcRegIndex, int &op) {
 
-//    DEBUG_COUT << "Dispatching to ROB." << endl;
+//    DEBUG_COUT << "Dispatch:\t" << "Dispatching to ROB." << endl;
 
     if(srcRegIndex == -1) {
         op = -1;
@@ -126,12 +130,12 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
     int returnTag = -1;
 //    std::vector<RS_Element> *targetRS;
 
-    DEBUG_COUT << "Dispatching to RS." << endl;
+    DEBUG_COUT << "Dispatch:\t" << "Dispatching to RS." << endl;
 
     if(targetRS == NULL)
         return returnTag;
 
-    bool srcToOpRet = false;
+//    bool srcToOpRet = false;
 
     for(size_t i = 0; i < targetRS->size(); i++) {
         if(!(targetRS->at(i).busy)) {
@@ -139,52 +143,56 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
             targetRS->at(i).busy = true; //claim this guy
             targetRS->at(i).PC = inst.PC;
 
-            srcToOpRet = translateSrcToOp(inst.src1, targetRS->at(i).op1);
-            if(!srcToOpRet && targetRS->at(i).op1 == -1) {
-                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
-                if(inst.imm != -1) {
-                    targetRS->at(i).op1 = inst.imm;
-                    targetRS->at(i).valid1 = true;
-                }
-                else if(inst.offset != 0) {
-                    targetRS->at(i).op1 = inst.offset;
-                    targetRS->at(i).valid1 = true;
-                }
-                else {
-                    targetRS->at(i).op1 = -1;
-                    targetRS->at(i).valid1 = true;
-                }
-            }
-            else {
-                //op1 is a valid result now, but it points to the rrf,
-                //and the data's not ready -OR- op1 is valid and ready to rock.
-                //srcToOpRet is set accordingly..
-                targetRS->at(i).valid1 = srcToOpRet;
-            }
+            //set the op's and valid's:
+            inst.TraslateToFUEntry(targetRS->at(i).op1, targetRS->at(i).valid1,
+                                    targetRS->at(i).op2, targetRS->at(i).valid2);
 
-
-            srcToOpRet = translateSrcToOp(inst.src2, targetRS->at(i).op2);
-            if(!srcToOpRet && targetRS->at(i).op2 == -1) {
-                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
-                if(inst.imm != -1) {
-                    targetRS->at(i).op2 = inst.imm;
-                    targetRS->at(i).valid2 = true;
-                }
-                else if(inst.offset != 0) {
-                    targetRS->at(i).op2 = inst.offset;
-                    targetRS->at(i).valid2 = true;
-                }
-                else {
-                    targetRS->at(i).op2 = -1;
-                    targetRS->at(i).valid2 = true;
-                }
-            }
-            else {
-                //op1 is a valid result now, but it points to the rrf,
-                //and the data's not ready -OR- op1 is valid and ready to rock.
-                //srcToOpRet is set accordingly..
-                targetRS->at(i).valid2 = srcToOpRet;
-            }
+//            srcToOpRet = translateSrcToOp(inst.src1, targetRS->at(i).op1);
+//            if(!srcToOpRet && targetRS->at(i).op1 == -1) {
+//                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
+//                if(inst.imm != -1) {
+//                    targetRS->at(i).op1 = inst.imm;
+//                    targetRS->at(i).valid1 = true;
+//                }
+//                else if(inst.offset != 0) {
+//                    targetRS->at(i).op1 = inst.offset;
+//                    targetRS->at(i).valid1 = true;
+//                }
+//                else {
+//                    targetRS->at(i).op1 = -1;
+//                    targetRS->at(i).valid1 = true;
+//                }
+//            }
+//            else {
+//                //op1 is a valid result now, but it points to the rrf,
+//                //and the data's not ready -OR- op1 is valid and ready to rock.
+//                //srcToOpRet is set accordingly..
+//                targetRS->at(i).valid1 = srcToOpRet;
+//            }
+//
+//
+//            srcToOpRet = translateSrcToOp(inst.src2, targetRS->at(i).op2);
+//            if(!srcToOpRet && targetRS->at(i).op2 == -1) {
+//                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
+//                if(inst.imm != -1) {
+//                    targetRS->at(i).op2 = inst.imm;
+//                    targetRS->at(i).valid2 = true;
+//                }
+//                else if(inst.offset != 0) {
+//                    targetRS->at(i).op2 = inst.offset;
+//                    targetRS->at(i).valid2 = true;
+//                }
+//                else {
+//                    targetRS->at(i).op2 = -1;
+//                    targetRS->at(i).valid2 = true;
+//                }
+//            }
+//            else {
+//                //op1 is a valid result now, but it points to the rrf,
+//                //and the data's not ready -OR- op1 is valid and ready to rock.
+//                //srcToOpRet is set accordingly..
+//                targetRS->at(i).valid2 = srcToOpRet;
+//            }
 
             targetRS->at(i).ready = (targetRS->at(i).valid1 && targetRS->at(i).valid2);
             targetRS->at(i).reorder = robTag;
@@ -206,7 +214,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) {
     int returnTag = -1;
 
-    DEBUG_COUT << "Dispatching to ROB." << endl;
+    DEBUG_COUT << "Dispatch:\t" << "Dispatching to ROB." << endl;
 
     rob[robTail].busy = true;
     rob[robTail].finished = initAsFinished;
@@ -232,7 +240,7 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
 int dispatchToRRF(Instruction inst) {
     int returnTag = -1;
 
-    DEBUG_COUT << "Dispatching to RRF" << endl;
+    DEBUG_COUT << "Dispatch:\t" << "Dispatching to RRF" << endl;
 
     //loop through from the start to the end of the ROB
     //find the first emtpy spot and sit 'er down.
@@ -287,9 +295,9 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
                 targetRS =  &rs_fp;
                 break;
             case BRANCH:
-                DEBUG_COUT << "Found a ... branch instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT << "Dispatch:\t" << "Found a ... branch instr " << instrToDispatch.front().PC << endl;
                 targetRS =  &rs_br;
-                DEBUG_COUT << "TargetRS is now " << (int)targetRS << endl;
+                DEBUG_COUT << "Dispatch:\t" << "TargetRS is now " << (int)targetRS << endl;
                 break;
             case LOAD:
             case STORE:
@@ -297,7 +305,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
                 break;
             case JUMP:
             default:
-                DEBUG_COUT << "Found a ... jump? " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT << "Dispatch:\t" << "Found a ... jump? " << instrToDispatch.front().PC << endl;
                 targetRS = NULL; //right? JUMP doesn't use a execution unit? maybe?
                 break;
         }
@@ -309,10 +317,10 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         string boolResFalse = "false";
 //        string checkRetStr = (!checkRet ? "true" : "false");
 
-        DEBUG_COUT << "Instruction PC: " << instrToDispatch.front().PC << endl;
-        DEBUG_COUT << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl;
-        DEBUG_COUT << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl;
-        DEBUG_COUT << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT << "Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl;
+        DEBUG_COUT << "Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT << "Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT << "Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl;
 
         if(isStalled)
             break;

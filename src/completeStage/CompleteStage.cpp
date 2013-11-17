@@ -19,7 +19,7 @@ void simulateCompleteStage()
 	int dest_tag, rename_tag;
 	int done = 0;
 
-	cout << "Completing " << " instructions\n";
+	DEBUG_COUT << "Complete:\t" << "Completing " << " instructions\n";
 	
 	while(!done)
 	{
@@ -29,7 +29,7 @@ void simulateCompleteStage()
 			rob[robHead].busy = 0;			            //set not busy
 			rename_tag = rob[robHead].rename;
 
-			if (rename_tag != -1);				        //has a destination register
+			if (rename_tag != -1)				        //has a destination register
 			{
 				dest_tag = rrf[rename_tag].dest;
 				arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
@@ -39,7 +39,7 @@ void simulateCompleteStage()
 					arf[dest_tag].busy = 0;			        //set not busy
 			}
 
-			if (robHead == rob.size()-1)				    //increment head of circular queue
+			if (robHead == (int)rob.size()-1)				    //increment head of circular queue
 				robHead = 0;
 			else
 				robHead++;
