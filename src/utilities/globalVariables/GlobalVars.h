@@ -8,7 +8,7 @@
 #ifndef GLOBALVARS_H_
 #define GLOBALVARS_H_
 
-#define DEBUG //for testing prints. Comment this line out to slim down the output.
+//#define DEBUG //for testing prints. Comment this line out to slim down the output.
 
 #ifdef DEBUG
 #define DEBUG_COUT cout
@@ -88,6 +88,14 @@ extern unsigned int instructionCount;
 //////////////////////////////////////////////////////////
 extern int fetchStalledInstrPC;
 extern bool fetchStalled;
+extern bool endOfTraceReached;
+
+extern bool isFetchFinished;
+extern bool isDecodeFinished;
+extern bool isDispatchFinished;
+extern bool isIssueFinished;
+extern bool isExecuteFinished;
+extern bool isCompleteFinished;
 
 
 #endif /* GLOBALVARS_H_ */

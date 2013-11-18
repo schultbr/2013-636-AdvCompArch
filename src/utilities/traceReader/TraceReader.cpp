@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
+#include "GlobalVars.h"
 
 using namespace std;
 
@@ -24,6 +25,9 @@ TraceReader::~TraceReader() {
 string TraceReader::getNextTraceLine(){
 	string line;
 
+	if(endOfTraceReached)
+	    return line;
+
 	//if the trace file is not open... return
 	//now before trying to read
 	if(!(traceFile->is_open()))
@@ -32,6 +36,10 @@ string TraceReader::getNextTraceLine(){
 	//get next line from trace
 	getline((*traceFile), line);
 
+	if((*traceFile).eof()) {
+	    endOfTraceReached = true;
+	    return "";
+	}
 
 	return line;
 }
@@ -40,14 +48,20 @@ Instruction TraceReader::getNextInstruction(){
 	string line;
 	line = getNextTraceLine();
 
-	cout<< "Line:\t" <<  line << endl;
-
-	Instruction ret(line);
+//	cout<< "Line:\t" <<  line << endl;
+	if(line == "") {
+	    Instruction ret;
+	    return ret;
+	}
+	else {
+	    Instruction ret(line);
+	    return ret;
+	}
 //
 //	cout<< "Read: ";
 //	ret.Print();
 
-	return ret;
+
 }
 
 bool TraceReader::isTraceOpen() {

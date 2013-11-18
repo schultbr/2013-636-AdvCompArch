@@ -29,8 +29,8 @@ std::string inputTraceFile;
 //////////////////////////////////
 //hardware elements:
 //////////////////////////////////
-int robHead = -1;
-int robTail = -1;
+int robHead = 0;
+int robTail = 0;
 
 std::vector<ARF_Element> arf;
 std::vector<ROB_Element> rob;
@@ -64,3 +64,11 @@ unsigned int instructionCount = 0;
 //////////////////////////////////
 int fetchStalledInstrPC = 0;
 bool fetchStalled = false;
+bool endOfTraceReached = false;
+
+bool isFetchFinished = false;
+bool isDecodeFinished = false;
+bool isDispatchFinished = false;
+bool isIssueFinished = false;
+bool isExecuteFinished = false;
+bool isCompleteFinished = false;

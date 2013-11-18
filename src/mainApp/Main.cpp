@@ -29,40 +29,46 @@ std::queue<Instruction> fetchDecodeBuffer;
 void determineStatistics(){
 	//replace this with IPC calculations and whatnot
 
+    float CPI = (float)cyclesCompleted/instructionCount;
+
 	cout << "Instruction count: " << instructionCount << endl;
 	cout << "Cycle count: " << cyclesCompleted << endl;
+	cout << "CPI, then, is " << CPI << endl;
 }
-
-void clearQueue(){
-	while(decodeDispatchBuffer.size() > 0)
-		decodeDispatchBuffer.pop();
-}
+//
+//void clearQueue(){
+//	while(decodeDispatchBuffer.size() > 0)
+//		decodeDispatchBuffer.pop();
+//}
 
 int runSimulation() {
 	bool notDone = true;
-	int i = 0;
-	int max = 5000;
+//	int i = 0;
+//	int max = 2000;
+	unsigned int max = 500000; // if this thing runs away... don't wait
 	while(notDone) {
 	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
 	    DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
+
 		simulateCompleteStage();
 		simulateExecuteStage();
 		simulateIssueStage();
 		simulateDispatchStage(decodeDispatchBuffer);
 		simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
 		simulateFetchStage(fetchDecodeBuffer);
-		DEBUG_COUT << "Size2: " << fetchDecodeBuffer.size() << endl;
 
 		cyclesCompleted++;
 
-		i++;
-		if(i == max)
-			notDone = false;
+		if(isFetchFinished && isDecodeFinished && isDispatchFinished && isIssueFinished && isExecuteFinished && isCompleteFinished)
+		    notDone = false;
 
-		if(i%50 == 0)
-		    fetchStalled = false;
+		if(cyclesCompleted == max)
+			notDone = false;
+//
+//		if(i%50 == 0)
+//		    fetchStalled = false;
 		//todo: remove when done testing fetch
-		clearQueue();
+//		clearQueue();
 	}
 
 	return 1;
@@ -104,6 +110,13 @@ void resizeHardwareFromParameters() {
     fu_mult.resize(::fuCount);
     fu_fp.resize(::fuCount);
     fu_mem.resize(::fuCount);
+
+    //initilize arf
+    for(size_t i = 0; i < arf.size(); i++) {
+        arf[i].busy = false;
+        arf[i].data = 0;
+        arf[i].rename = 0;
+    }
 }
 
 int main(int argc, char** argv) {

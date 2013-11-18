@@ -77,6 +77,104 @@ bool Instruction::IsBranch(){
 	return isBranch;
 }
 
+//returns the ops corresponding to this instr... -1 is default and means "not used" and
+// the valid will be set to true if using an immediate/offset value, or if the op isn't used.
+// if the op is a reg reference, we set valid to false for the dispatch function to verify
+void Instruction::TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &op2,
+                                    bool &valid2, bool &isReg2, int &op3) {
+
+    //default these guys out.
+    op1 = -1;
+    op2 = -1;
+    valid1 = true;
+    valid2 = true;
+
+    isReg1 = false;
+    isReg2 = false;
+
+    /* Opcode input instruction types
+     * 0 = IMM ONLY
+     * 1 = SRC1 ONLY
+     * 2 = SRC1 & SRC2
+     * 3 = SRC1 & SRC2 & OFFSET
+     * 4 = SRC1 & OFFSET
+     * 5 = IMM & SRC1=FCC
+     * 6 = DEST & IMM & SRC1 (in that order)
+     * 7 = DEST & SRC1 & SRC2
+     * 8 = DEST & SRC1 & IMM
+     * 9 = SRC1 & SRC2, DEST = HI_LO
+     * 10 = DEST && SRC1 = HI_LO
+     * 11 = DEST & IMM
+     * 12 = SRC1 & DEST
+     * 13 = SRC1 & SRC2, DEST=FCC
+    */
+    switch(instructionTypeMap[opCodeStr]) {
+        case 0: //imm only
+        case 11: //DEST & IMM
+            op1 = imm;
+            break;
+
+        case 1: //src1 only
+        case 2: //dest & src 1
+        case 10: //s1= HI_LO, dest
+        case 12: //SRC1 & DEST
+            op1 = src1;
+            valid1 = false;
+            isReg1 = true;
+            break;
+
+        case 3://src1 & src2 & offset
+            op1 = src1;
+            valid1 = false;
+            isReg1 = true;
+            op2 = src2;
+            valid2 = false;
+            isReg2 = true;
+            op3 = offset; //always valid and not a reg
+            break;
+
+        case 4: //src1 & offset
+            op1 = src1;
+            valid1 = false;
+            isReg1 = true;
+            op2 = offset;
+            valid2 = true;
+            break;
+
+        case 5: // IMM & SRC1=FCC
+        case 6: //DEST & IMM & SRC1 (in that order)
+            op1 = imm;
+            valid1 = true;
+            op2 = src1;
+            valid2 = false;
+            isReg2 = true;
+            break;
+
+        case 8: //DEST & SRC1 & IMM
+            op1 = src1;
+            valid1 = false;
+            isReg1 = true;
+            op2 = imm;
+            valid2 = true;
+            break;
+
+        case 7:
+        case 9: //SRC1 & SRC2, DEST = HI_LO
+        case 13: //SRC1 & SRC2, DEST=FCC
+            op1 = src1;
+            valid1 = false;
+            isReg1 = true;
+            op2 = src2;
+            valid2 = false;
+            isReg2 = true;
+            break;
+
+        default:
+            break;
+        }
+
+}
+
 //void Instruction::SetWasBranchPredictionTaken(bool opt){
 //    wasBranchPredictedAsTaken = opt;
 //}
@@ -151,7 +249,13 @@ void Instruction::SplitPCandString(string line) {
 }
 
 void Instruction::DecodeInstructionString() {
-	cout << "DECODING " << instructionLine << endl;
+	DEBUG_COUT << "DECODING " << instructionLine << endl;
+	if(instructionLine == "" || instructionLine == "nop") {
+	    opCodeStr = "NOP";
+	    opCode = NOP;
+	    return;
+	}
+
 	istringstream splitLine(instructionLine);
 	vector<string> tokens;
 	copy(istream_iterator<string>(splitLine),
@@ -161,7 +265,8 @@ void Instruction::DecodeInstructionString() {
 //		PC = atoi(tokens[0].c_str()); // PC is decoded in fetch stage
 	opCodeStr = tokens[0];
 	opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
-	DecodeRegisters(tokens[1]);
+	if(tokens.size() > 1)
+	    DecodeRegisters(tokens[1]);
 }
 
 int Instruction::GetRegisterIndexFromName(std::string regName){
@@ -173,7 +278,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName){
 //	DEBUG_COUT << "Translating " << regName << " to a vector index" << endl;
 
 	if(regName.length() == 0)
-		return 0;
+		return -1;
 
 	if(regName == "HI_LO"){
 //	    DEBUG_COUT << "Found HI_LO. Returning 63\n";

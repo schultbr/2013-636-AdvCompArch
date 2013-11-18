@@ -73,6 +73,7 @@ struct RS_Element {
 	bool ready;
 	int op1;
 	int op2;
+	int op3;    //only used by BNE and BEQ, where we compare 2 regs and have a branch offset, too
 	int reorder;
 	short PTaddr;			//Prediction Table address
 	bool BRoutcome;			//Branch Outcome
@@ -89,6 +90,7 @@ struct RS_Element {
 		ready = false;
 		op1 = -1;
 		op2	= -1;
+		op3 = -1;
 		reorder	= -1;
 		code = NOP;
 		PTaddr = -1;
@@ -113,6 +115,7 @@ struct FU_Element {
 	bool BRprediction;		//Branch Prediction
 	int PC;
 	int BTaddr;			//Branch Target Address
+	bool isFirstClock;
 
 	FU_Element() {
 		count = 0;
@@ -126,6 +129,7 @@ struct FU_Element {
 		BRprediction = false;
 		PC = -1;
 		BTaddr = -1;
+		isFirstClock = false; // used by memory fu
 	}
 };
 

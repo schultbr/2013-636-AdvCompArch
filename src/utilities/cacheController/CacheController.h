@@ -8,7 +8,7 @@
 #ifndef CACHECONTROLLER_H_
 #define CACHECONTROLLER_H_
 
-int checkCache(int cacheHitRate, int cacheAccessTime);
+int checkCache(float cacheHitRate, int cacheAccessTime);
 
 
 #endif /* CACHECONTROLLER_H_ */

@@ -15,29 +15,28 @@
 
 using namespace std;
 
-void copyToFU(RS_Element entry, std::vector<FU_Element> &targetFU, int index, int cnt)
-{
-	targetFU[index].op1 		= entry.op1;
-	targetFU[index].op2 		= entry.op2;
-	targetFU[index].reorder 	= entry.reorder;
-	targetFU[index].code		= entry.code;
-	targetFU[index].PC		= entry.PC;
-	targetFU[index].count		= cnt;
+void copyToFU(RS_Element entry, std::vector<FU_Element> &targetFU, int index, int cnt) {
+    targetFU[index].op1 = entry.op1;
+    targetFU[index].op2 = entry.op2;
+    targetFU[index].reorder = entry.reorder;
+    targetFU[index].code = entry.code;
+    targetFU[index].PC = entry.PC;
+    targetFU[index].count = cnt;
+    targetFU[index].isFirstClock = true;
 
 }
 
-void copyToBranchFU(RS_Element entry, FU_Element &targetFU)	//single element FU, not a vector
-{
-	targetFU.op1 		= entry.op1;
-	targetFU.op2 		= entry.op2;
-	targetFU.reorder 	= entry.reorder;
-	targetFU.code		= entry.code;
-	targetFU.PC		= entry.PC;
-	targetFU.PTaddr		= entry.PTaddr;
-	targetFU.BTaddr		= entry.BTaddr;
-	targetFU.BRoutcome 	= entry.BRoutcome;
-	targetFU.BRprediction	= entry.BRprediction;
-	targetFU.count		= 1;
+void copyToBranchFU(RS_Element entry, FU_Element &targetFU) {	//single element FU, not a vector
+    targetFU.op1 = entry.op1;
+    targetFU.op2 = entry.op2;
+    targetFU.reorder = entry.reorder;
+    targetFU.code = entry.code;
+    targetFU.PC = entry.PC;
+    targetFU.PTaddr = entry.PTaddr;
+    targetFU.BTaddr = entry.BTaddr;
+    targetFU.BRoutcome = entry.BRoutcome;
+    targetFU.BRprediction = entry.BRprediction;
+    targetFU.count = 1;
 }
 
 //function to check for empty FU
@@ -48,7 +47,7 @@ int checkFU( std::vector<FU_Element> *targetFU )
 
 	for(size_t i = 0; i < targetFU->size(); i++)	//iterate through Functional Units
 	{
-		//DEBUG_COUT << "i = " << i << endl;
+        	DEBUG_COUT << "Issue:\t" << "FU #" << i << " has " << targetFU->at(i).count << " cycles remaining \n";
 		if(targetFU->at(i).count == 0)	//if not busy
 		{
 			FU_tag = i;
@@ -115,12 +114,13 @@ void checkReady( std::vector<RS_Element> *targetRS )
 				case LOGICAL:
 				case ADD_SUB_I: 
 					FU_tag = checkFU( &fu_add );
-					//DEBUG_COUT << "checkFU returned tag: " << FU_tag <<endl;
+					DEBUG_COUT << "Issue:\t" << "Checking ADD FU returned tag: " << FU_tag << endl;
+
 					if (FU_tag != -1)
 					{
 						//copy RS entry to FU slot & set cycle count
 						copyToFU( targetRS->at(i), fu_add, FU_tag, 1 );
-						DEBUG_COUT << "Issuing INT RS[" << i << "] instr to ADD FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						//DEBUG_COUT << "RS size starting = " << targetRS->size() << "\n";
 
@@ -136,10 +136,12 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 				case MULT_DIV_I:
 					FU_tag = checkFU( &fu_mult );
+					DEBUG_COUT << "Issue:\t" << "Checking MULT FU returned tag: " << FU_tag << endl;
+
 					if (FU_tag != -1)
 					{
 						copyToFU( targetRS->at(i), fu_mult, FU_tag, 3 );
-						DEBUG_COUT << "Issuing INT RS[" << i << "] instr to MULT FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
@@ -150,10 +152,12 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 				case FLOATING_POINT:
 					FU_tag = checkFU( &fu_fp );
+					DEBUG_COUT << "Issue:\t" << "Checking FP FU returned tag: " << FU_tag << endl;
+
 					if (FU_tag != -1)
 					{
 						copyToFU( targetRS->at(i), fu_fp, FU_tag, 5 );
-						DEBUG_COUT << "Issuing FP RS[" << i << "] instr to FP FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing FP RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
@@ -166,58 +170,89 @@ void checkReady( std::vector<RS_Element> *targetRS )
 				//********************* IF SO CHANGE THIS CASE *******************
 				case LOAD:
 				case STORE:
-					if(i == 0)	//only issue mem instr in order, after resize next instr will be at index 0
+					//if(i == 0)	Would implement if we needed to issue MEM instr in order
+					FU_tag = checkFU( &fu_mem );
+					DEBUG_COUT << "Issue:\t" << "Checking MEM FU returned tag: " << FU_tag << endl;
+
+					if (FU_tag != -1)
 					{
-						FU_tag = checkFU( &fu_mem );
-						if (FU_tag != -1)
-						{
-							copyToFU( targetRS->at(i), fu_mem, FU_tag, 2 );
-							DEBUG_COUT << "Issuing MEM RS[" << i << "] instr to MEM FU[" << FU_tag << "]\n";
-							DEBUG_COUT << "Resizing MEM RS" << endl << endl;
-							targetRS->erase( targetRS->begin()+i );	
-							targetRS->resize( targetRS->size()+1 );
-							i--;
-							cnt--;
-						}
+						copyToFU( targetRS->at(i), fu_mem, FU_tag, 2 );
+						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
+						targetRS->erase( targetRS->begin()+i );	
+						targetRS->resize( targetRS->size()+1 );
+						i--;
+						cnt--;
 					}
 					break;
-
-				//********************* WHAT DO WE DO WITH NOP AND JUMP? ********
-				case NOP:			
+			
 				case JUMP:
 				case BRANCH:
+					DEBUG_COUT << "Issue:\t" << "Checking if single Branch FU is empty" << endl;
 					if(fu_br.count == 0)	//FU empty
 					{
 						copyToBranchFU( targetRS->at(i), fu_br );
-						DEBUG_COUT << "Issuing BR RS[" << i << "] instr to BR FU" << "\n";
+						DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing BR RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						targetRS->resize( targetRS->size()+1 );
 						//can only issue 1 per cycle so no reindexing needed
 					}
 					break;
+
+                		case NOP: //NOP goes straight to ROB with complete marked as true -- brs
+                		default:
+                    			break;
 			}
 		}
 	}
 }
 
-void simulateIssueStage()
-{
 
-	cout << "inside Issue Stage" << endl;
-	
-	//check Commom Data Bus for updates
-	checkValue( &rs_int );
-	checkValue( &rs_fp );
-	checkValue( &rs_mem );
-	checkValue( &rs_br );
-	
-	//check RS for ready instructions and issue if FU is not busy
-	checkReady( &rs_int );
-	checkReady( &rs_fp );
-	checkReady( &rs_mem );
-	checkReady( &rs_br );	
+//quick sweep to see if all of our RS's are empty.
+//returns true if empty
+//returns false if any element is still busy
+bool checkForFinished(std::vector<RS_Element> *targetRS) {
+    for(size_t i = 0; i < targetRS->size(); i++) {
+        if(targetRS->at(i).busy)
+            return false;
+    }
+    return true;
+}
 
-}	
+void simulateIssueStage() {
 
+    if(isDispatchFinished &&
+        checkForFinished(&rs_int) &&
+        checkForFinished(&rs_fp) &&
+        checkForFinished(&rs_mem) &&
+        checkForFinished(&rs_br) ) {
+
+        cout << "Issue is now finished\n";
+        isIssueFinished = true;
+        return;
+    }
+
+    DEBUG_COUT << "Issue Stage\n";
+
+    //check Common Data Bus for updates
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_int" << endl;
+    checkValue(&rs_int);
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_fp" << endl;
+    checkValue(&rs_fp);
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_mem" << endl;
+    checkValue(&rs_mem);
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_br" << endl;
+    checkValue(&rs_br);
+
+    //check RS for ready instructions and issue if FU is not busy
+    DEBUG_COUT << "Issue:\t" << " Checking rs_int for issue" << endl;
+    checkReady(&rs_int);
+    DEBUG_COUT << "Issue:\t" << " Checking rs_fp for issue" << endl;
+    checkReady(&rs_fp);
+    DEBUG_COUT << "Issue:\t" << " Checking rs_mem for issue" << endl;
+    checkReady(&rs_mem);
+    DEBUG_COUT << "Issue:\t" << " Checking rs_br for issue" << endl;
+    checkReady(&rs_br);
+}
 
