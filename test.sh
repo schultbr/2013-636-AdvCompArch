@@ -2,7 +2,7 @@
 
 EXE=./bin/project2
 
-TRACE=./traces/compress.tra
+TRACE=./traces/perl.tra
 
 SS_FACTOR=4
 BTB_SIZE=64

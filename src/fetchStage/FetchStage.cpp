@@ -88,13 +88,16 @@ void grabNextInstructionGroup() {
 	//start we see that nothing has moved out... we could not decrement the counter and that stay the same? right?
 
 	for(int i = 0; i < ::superScalarFactor; i++) {
-		penaltyTime = checkCache(instrCacheHitRate, instrCacheAccessTime);
+
+	    currentFetchedItem.cyclesUntilReturned = instrCacheAccessTime; //we always have instrCacheAccessTime
+	    penaltyTime = checkCache(instrCacheHitRate, level2CacheAccessTime);
+
 		if(penaltyTime > 0) { //failed l1 instruction cache hit
-			cout << "Cache hit missed. Checking level 2 to see how bad the penalty is.\n";
-			cacheMissWaitTimeRemaining += penaltyTime;
+			DEBUG_COUT << "Cache hit missed. Checking level 2 to see how bad the penalty is.\n";
+			cacheMissWaitTimeRemaining += penaltyTime + instrCacheAccessTime;
 
 			//check level 2 and hope we don't miss
-			penaltyTime = checkCache(level2CacheHitRate, level2CacheAccessTime);
+			penaltyTime = checkCache(level2CacheHitRate, systemMemoryAccessTime);
 
 			if(penaltyTime > 0)
 				cacheMissWaitTimeRemaining +=  penaltyTime;
@@ -110,7 +113,6 @@ void grabNextInstructionGroup() {
 		}
 
 		instrToAdd = instructionTrace.getNextInstruction();
-
 
 		//debug print:
 		DEBUG_COUT << "Fetch:\t" << "Fetched: ";

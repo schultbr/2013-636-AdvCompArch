@@ -115,6 +115,7 @@ struct FU_Element {
 	bool BRprediction;		//Branch Prediction
 	int PC;
 	int BTaddr;			//Branch Target Address
+	bool isFirstClock;
 
 	FU_Element() {
 		count = 0;
@@ -128,6 +129,7 @@ struct FU_Element {
 		BRprediction = false;
 		PC = -1;
 		BTaddr = -1;
+		isFirstClock = false; // used by memory fu
 	}
 };
 
