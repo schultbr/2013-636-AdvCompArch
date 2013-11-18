@@ -201,58 +201,6 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
             if(isReg2)
                 checkForValid(targetRS->at(i).op2, targetRS->at(i).valid2);
 
-            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
-                    <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
-                    << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
-                    << endl;
-
-//            srcToOpRet = translateSrcToOp(inst.src1, targetRS->at(i).op1);
-//            if(!srcToOpRet && targetRS->at(i).op1 == -1) {
-//                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
-//                if(inst.imm != -1) {
-//                    targetRS->at(i).op1 = inst.imm;
-//                    targetRS->at(i).valid1 = true;
-//                }
-//                else if(inst.offset != 0) {
-//                    targetRS->at(i).op1 = inst.offset;
-//                    targetRS->at(i).valid1 = true;
-//                }
-//                else {
-//                    targetRS->at(i).op1 = -1;
-//                    targetRS->at(i).valid1 = true;
-//                }
-//            }
-//            else {
-//                //op1 is a valid result now, but it points to the rrf,
-//                //and the data's not ready -OR- op1 is valid and ready to rock.
-//                //srcToOpRet is set accordingly..
-//                targetRS->at(i).valid1 = srcToOpRet;
-//            }
-//
-//
-//            srcToOpRet = translateSrcToOp(inst.src2, targetRS->at(i).op2);
-//            if(!srcToOpRet && targetRS->at(i).op2 == -1) {
-//                //src 1 is not valid... it's -1. check imm or offset.. mainly just imm...
-//                if(inst.imm != -1) {
-//                    targetRS->at(i).op2 = inst.imm;
-//                    targetRS->at(i).valid2 = true;
-//                }
-//                else if(inst.offset != 0) {
-//                    targetRS->at(i).op2 = inst.offset;
-//                    targetRS->at(i).valid2 = true;
-//                }
-//                else {
-//                    targetRS->at(i).op2 = -1;
-//                    targetRS->at(i).valid2 = true;
-//                }
-//            }
-//            else {
-//                //op1 is a valid result now, but it points to the rrf,
-//                //and the data's not ready -OR- op1 is valid and ready to rock.
-//                //srcToOpRet is set accordingly..
-//                targetRS->at(i).valid2 = srcToOpRet;
-//            }
-
             targetRS->at(i).ready = (targetRS->at(i).valid1 && targetRS->at(i).valid2);
 
             DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
@@ -348,6 +296,12 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     bool checkRet = false; //this is so dumb but im in a hurry
     bool usesRRF = false;
     bool usesRS = false;
+
+    if(instrToDispatch.size() == 0 && isDecodeFinished) {
+        isDispatchFinished = true;
+        cout << "Dispatch is now finished" << endl;
+        return;
+    }
 
     while(instrToDispatch.size() > 0 && !isStalled) {
         switch(instrToDispatch.front().opCode){

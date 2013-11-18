@@ -69,6 +69,10 @@ void grabNextInstructionGroup() {
 	//	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
 	FetchPipelineItem currentFetchedItem;
 
+	if(endOfTraceReached) {
+	    return;
+	}
+
 	int penaltyTime = 0;
 	Instruction instrToAdd;
 
@@ -180,8 +184,14 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 //
 void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
+    if(instructionsInPipeline.size() == 0 && endOfTraceReached) {
+        isFetchFinished = true;
+        cout << "Fetch is now finished" << endl;
+        return;
+    }
+
     if((int)fetchedInstructions.size() == ::superScalarFactor) {
-        cout << "Error: Fetch buffer full at start of stage. Dispatch must be stalled. Waiting until that's kosher\n";
+        DEBUG_COUT << "Error: Fetch buffer full at start of stage. Dispatch must be stalled. Waiting until that's kosher\n";
         return; //we're stalled due to dispatch
     }
 
@@ -190,7 +200,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
     //  a mis-predicted branch didn't finish execution in this same cycle -AND-
     //  we're not waiting on the cache
 	if(fetchStalled) { //we mis-predicted a branch. it hurt.
-		cout << "Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n";
+	    DEBUG_COUT << "Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n";
 		cacheMissWaitTimeRemaining = 0;
 		isResumeNextCycle = false;
 //		return; //don't return, we need to decrement still. only new instruction fetching is stalled
@@ -203,7 +213,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 	    //did we previously miss a cache hit?
 	    //check to we're still paying any penalty
         cacheMissWaitTimeRemaining--;
-        cout << "Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n";
+        DEBUG_COUT << "Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n";
 //        return;  //don't return, we need to decrement still. only new instruction fetching is stalled
     }
     else //add another instruction set to the group, if we can.

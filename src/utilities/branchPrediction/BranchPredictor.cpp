@@ -6,6 +6,13 @@
  */
 
 #include "BranchPredictor.h"
+#include "GlobalVars.h"
+#include <unistd.h>
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+
+using namespace std;
 
 BranchPredictor::BranchPredictor() {
 	shiftReg 	= 0x0000;
@@ -83,6 +90,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 
 //void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
 void BranchPredictor::updatePredictorWithResults(FU_Element entry){
+    DEBUG_COUT << "Predictor:\t Updating predictor with branch execution results" << endl;
 	if(entry.BRoutcome) {
 		//update the state machine with the current results
 		inc_state(entry.PTaddr);

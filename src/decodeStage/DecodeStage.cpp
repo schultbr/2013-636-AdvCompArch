@@ -17,8 +17,13 @@ using namespace std;
 void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queue<Instruction> &decodedInstructions) {
     DEBUG_COUT << "Decode:\t" << "Decoding " << instuctionsToDecode.size() << " instructions\n";
 
-	if(instuctionsToDecode.size() == 0)
-		return;
+	if(instuctionsToDecode.size() == 0) {
+	    if(isFetchFinished) {
+	        cout << "Decode is now finished" << endl;
+	        isDecodeFinished = true;
+	    }
+	    return;
+	}
 
 	//loop through each instruction, decode it and add it to the next stage buffer...
 	//might not hit all N entries if the destination buffer could not be emptied due to dispatch stall

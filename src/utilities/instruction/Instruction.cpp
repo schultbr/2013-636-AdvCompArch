@@ -249,7 +249,13 @@ void Instruction::SplitPCandString(string line) {
 }
 
 void Instruction::DecodeInstructionString() {
-	cout << "DECODING " << instructionLine << endl;
+	DEBUG_COUT << "DECODING " << instructionLine << endl;
+	if(instructionLine == "" || instructionLine == "nop") {
+	    opCodeStr = "NOP";
+	    opCode = NOP;
+	    return;
+	}
+
 	istringstream splitLine(instructionLine);
 	vector<string> tokens;
 	copy(istream_iterator<string>(splitLine),

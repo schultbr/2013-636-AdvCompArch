@@ -29,20 +29,23 @@ std::queue<Instruction> fetchDecodeBuffer;
 void determineStatistics(){
 	//replace this with IPC calculations and whatnot
 
+    float CPI = (float)cyclesCompleted/instructionCount;
+
 	cout << "Instruction count: " << instructionCount << endl;
 	cout << "Cycle count: " << cyclesCompleted << endl;
+	cout << "CPI, then, is " << CPI << endl;
 }
-
-void clearQueue(){
-	while(decodeDispatchBuffer.size() > 0)
-		decodeDispatchBuffer.pop();
-}
+//
+//void clearQueue(){
+//	while(decodeDispatchBuffer.size() > 0)
+//		decodeDispatchBuffer.pop();
+//}
 
 int runSimulation() {
 	bool notDone = true;
-	int i = 0;
-//	int max = 25;
-	int max = 500000;
+//	int i = 0;
+//	int max = 2000;
+	unsigned int max = 500000; // if this thing runs away... don't wait
 	while(notDone) {
 	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
 		simulateCompleteStage();
@@ -54,8 +57,10 @@ int runSimulation() {
 
 		cyclesCompleted++;
 
-		i++;
-		if(i == max)
+		if(isFetchFinished && isDecodeFinished && isDispatchFinished && isIssueFinished && isExecuteFinished && isCompleteFinished)
+		    notDone = false;
+
+		if(cyclesCompleted == max)
 			notDone = false;
 //
 //		if(i%50 == 0)
@@ -103,7 +108,6 @@ void resizeHardwareFromParameters() {
     fu_mult.resize(::fuCount);
     fu_fp.resize(::fuCount);
     fu_mem.resize(::fuCount);
-
 
     //initilize arf
     for(size_t i = 0; i < arf.size(); i++) {
