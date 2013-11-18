@@ -259,16 +259,16 @@ int dispatchToRRF(Instruction inst) {
     //find the first emtpy spot and sit 'er down.
     //then update the original ARF entry with the
     //chosen RRF tag
-    for(size_t i = 0; i < rob.size(); i++){
-        if(!rob[i].busy) {
+    for(size_t i = 0; i < rrf.size(); i++){
+        if(!rrf[i].busy) {
             //bingo. found our entry
             returnTag = i;
 
             //set it up.
-            rob[i].busy = true;
-            rob[i].finished = false;
-            rob[i].valid = false;
-            rob[i].code = inst.opCode;
+            rrf[i].busy = true;
+            rrf[i].valid = false;
+            rrf[i].data = 0;
+            rrf[i].dest = inst.dest;
 //            rob[i].OP = inst.GetOpcodeString();
 
             break; //dont bother continuing. let's move on.
