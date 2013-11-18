@@ -74,87 +74,87 @@ int processCommandLine(int argc, char **argv) {
 	int foundCount = 0;
 	int targetFound = 12;
 
-	cout << "Processing command line for " << argc << " options\n";
+	DEBUG_COUT << "Processing command line for " << argc << " options\n";
 
 	while ((opt = getopt_long_only(argc, argv,"s:b:r:f:n:1:a:2:c:t:",
 				   long_options, &long_index )) != -1) {
 //		cout << "Found opt=%d\n", opt;
 		switch (opt) {
 			 case 's' :
-				 cout << "Found s\n";
+				 DEBUG_COUT << "Found s\n";
 				 ::superScalarFactor = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'b' :
-				 cout << "Found b\n";
+				 DEBUG_COUT << "Found b\n";
 				 ::btbSize = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'r' :
-				 cout << "Found r\n";
+				 DEBUG_COUT << "Found r\n";
 				 ::rsEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'f' :
-				 cout << "Found f\n";
+				 DEBUG_COUT << "Found f\n";
 				 ::fuCount = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'n' :
-				 cout << "Found n\n";
+				 DEBUG_COUT << "Found n\n";
 				 ::renameTableEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'o' :
-				 cout << "Found o\n";
+				 DEBUG_COUT << "Found o\n";
 				 ::reorderBufferEntries = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case 'i' :
-				 cout << "Found i\n";
+				 DEBUG_COUT << "Found i\n";
 				 ::instrCacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '1' :
-				 cout << "Found 1\n";
+				 DEBUG_COUT << "Found 1\n";
 				 ::level1CacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '!' :
-				 cout << "Found !\n";
+				 DEBUG_COUT << "Found !\n";
 				 ::level1CacheAccessTime = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '2' :
-				 cout << "Found 2\n";
+				 DEBUG_COUT << "Found 2\n";
 				 ::level2CacheHitRate = atoi(optarg);
 				 foundCount++;
 				 break;
 			 case '@' :
-				 cout << "Found @\n";
+				 DEBUG_COUT << "Found @\n";
 				 ::level2CacheAccessTime = atoi(optarg);
 				 foundCount++;
 				 break;
             case 'm' :
-                 cout << "Found m\n";
+                 DEBUG_COUT << "Found m\n";
                  ::systemMemoryAccessTime = atoi(optarg);
                  foundCount++;
                  break;
 			 case 't' :
 			 {
-				 cout << "Found t (" << optarg << ") size: " << sizeof(&optarg);
+				 DEBUG_COUT << "Found t (" << optarg << ") size: " << sizeof(&optarg);
 //				 inputTrace = optarg;
 //				 memcpy(::inputTrace, optarg, sizeof(&optarg));
 //				 char *inFile;
 //				 inFile = strdup(optarg);
 				 std::string tempString(optarg);
 				 ::inputTraceFile = tempString;
-				 cout << "EX: " << ::inputTraceFile << endl;
+				 DEBUG_COUT << "EX: " << ::inputTraceFile << endl;
 			}
 				 foundCount++;
 				 break;
 			 default:
-				 cout << "Found default\n";
+				 DEBUG_COUT << "Found default\n";
 				 break;
 //				 print_usage();
 //				 goto end_loop;
@@ -163,7 +163,7 @@ int processCommandLine(int argc, char **argv) {
 	}
 
 	if(opt == -1 && foundCount != targetFound) {
-		cout << "Found opt=" << opt << "\t" << foundCount << " of " << targetFound << " required flags found\n";
+		DEBUG_COUT << "Found opt=" << opt << "\t" << foundCount << " of " << targetFound << " required flags found\n";
 //		print_usage();
 		if(::superScalarFactor == -1)
 			promptForInt("Enter Superscalar Width:\t", ::superScalarFactor);
