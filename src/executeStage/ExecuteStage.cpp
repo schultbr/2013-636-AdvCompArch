@@ -184,7 +184,7 @@ void simulateExecuteStage() {
         if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
             fetchStalled = false;                                       //stop stalling Fetch Stage
 
-        if (fu_br.BRoutcome == 1)                               	//branch is taken
+        if (fu_br.BRoutcome == true)                               	//branch is taken
             branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB
 
         //if prediction was not correct, Fetch is stalled to simulate "flushing" so there will be no new instrs
@@ -198,7 +198,7 @@ void simulateExecuteStage() {
                 else
                     next_tag++;
 
-                rob[next_tag].valid = 1;
+                rob[next_tag].valid = true;
 
                 if (rob[next_tag].code == BRANCH || next_tag == robTail)
                     done = true;
