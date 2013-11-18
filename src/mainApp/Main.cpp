@@ -82,6 +82,7 @@ void printRunningParameters()
     cout << "Reservation Station Size:\t" << ::rsEntries << endl;
     cout << "Functional Unit Count:\t\t" << ::fuCount << endl;
     cout << "Rename Table Entries:\t\t" << ::renameTableEntries << endl;
+    cout << "Reorder Buffer Size:\t\t" << ::reorderBufferEntries << endl;
     cout << "Level 1 Instruction Cache Hit Rate:\t" << ::instrCacheHitRate << endl;
     cout << "Level 1 Instruction Cache Access Time:\t" << ::instrCacheAccessTime << endl;
     cout << "Level 1 Cache Hit Rate:\t\t" << ::level1CacheHitRate << endl;
