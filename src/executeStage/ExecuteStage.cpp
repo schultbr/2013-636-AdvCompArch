@@ -45,15 +45,15 @@ void copyToRRF(FU_Element entry)
     DEBUG_COUT << "Execute:\t" << "  ROB tag " << reorder_tag << endl;
     DEBUG_COUT << "Execute:\t" << "  RRF tag " << rename_tag << endl;
 
-    rrf[rename_tag].data = entry.result;    //write result to RRF
-    rrf[rename_tag].valid = true;              //set RRF valid bit
-//    rob[reorder_tag].finished = true;          //set ROB finished bit
-    markROBFinished(reorder_tag); // moved this to a function since not everything that can compelete needs the rrf...
+    rrf[rename_tag].data = entry.result;    	//write result to RRF
+    rrf[rename_tag].valid = true;              	//set RRF valid bit
+    markROBFinished(reorder_tag); 		//set ROB finished bit
 }
 
 void simulateExecuteStage() 
 {
     int next_tag = 0;
+    int reorder_tag = 0;
     bool done = false;
 
     bool chk_add = checkForFinished(&fu_add);
@@ -142,6 +142,7 @@ void simulateExecuteStage()
 // ----------------------------------------------------------------------------------------------
     int clockCount = 0;
     int clockCountTotal = 0;
+	
     for (unsigned m = 0; m < fu_mem.size(); m++) 
     {
         clockCount = 0;
@@ -151,6 +152,8 @@ void simulateExecuteStage()
 
         if (fu_mem[m].isFirstClock) //access memory on first clock
 	{ 
+		fu_mem[m].isFirstClock = false;
+
 		DEBUG_COUT << "Execute:\t" << "Determining cache latency\n";
 
 		clockCount = checkCache(::level1CacheHitRate, ::level2CacheAccessTime);   //add any cache miss penalty
@@ -161,27 +164,36 @@ void simulateExecuteStage()
 
 		if(clockCount > 0) 	//if we missed level 1 cache, see if we miss level 2
 		{ 
-		clockCount = checkCache(level1CacheHitRate, ::systemMemoryAccessTime);
-		clockCountTotal += clockCount; //add the result... either systemMemoryAccessTime or 0
+			clockCount = checkCache(level1CacheHitRate, ::systemMemoryAccessTime);
+			clockCountTotal += clockCount; //add the result... either systemMemoryAccessTime or 0
 		}
-
 		fu_mem[m].count = clockCountTotal;
-		fu_mem[m].isFirstClock = false;
+
 		DEBUG_COUT << "Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl;
         }
-        //todo: the above count == 1 code will always stall us... we need an entry time or
-        //      something, but not a check every time we hit 1
 
-        if (fu_mem[m].count > 1) 
+	else	//we already accessed cache or calculated miss penalty
 	{
-		fu_mem[m].count--;
-		DEBUG_COUT << "Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl;
-        }
-        else if (fu_mem[m].count == 1) {
-		DEBUG_COUT << "Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << fu_mem[m].reorder << ")" << endl;
-		markROBFinished(fu_mem[m].reorder);
-		fu_mem[m].count = 0;
-        }
+		reorder_tag = fu_mem[m].reorder;
+		if ( fu_mem[m].count == 1 )
+		{
+			DEBUG_COUT << "Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl;
+			if ( rob[reorder_tag].code == LOAD )
+			{
+				copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
+			}
+			else if ( rob[reorder_tag].code == STORE )
+			{
+				markROBFinished(fu_mem[m].reorder);	//just mark ROB finished
+			}
+		}
+		
+		if (fu_mem[m].count > 0) 
+		{
+			fu_mem[m].count--;
+			DEBUG_COUT << "Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl;
+        	}
+	}
     }
 
 // ----------------------------------------------------------------------------------------------

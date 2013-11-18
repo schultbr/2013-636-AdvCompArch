@@ -165,8 +165,6 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					}
 					break;
 				
-				//********************* DO WE NEED TO ISSUE MEM IN ORDER? ********
-				//********************* IF SO CHANGE THIS CASE *******************
 				case LOAD:
 				case STORE:
 					//if(i == 0)	Would implement if we needed to issue MEM instr in order
@@ -175,7 +173,8 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 					if (FU_tag != -1)
 					{
-						copyToFU( targetRS->at(i), fu_mem, FU_tag, 2 );
+						copyToFU( targetRS->at(i), fu_mem, FU_tag, 1 ); //only adding 1 cycle to count because L1 access time
+						//will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
 						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
