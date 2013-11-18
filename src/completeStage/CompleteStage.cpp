@@ -19,7 +19,7 @@ void simulateCompleteStage()
 	int dest_tag, rename_tag;
 	int done = 0;
 
-	cout << "Completing " << " instructions\n";
+	DEBUG_COUT << "inside Complete Stage" << endl;
 	
 	while(!done)
 	{

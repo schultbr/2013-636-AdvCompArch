@@ -31,7 +31,7 @@ void simulateExecuteStage()
 	int next_tag = 0;
 	bool done = false;
 
-	cout << "Execute Stage\n";
+	DEBUG_COUT << "inside Execute Stage:" << endl;
 	
 // ----------------------------------------------------------------------------------------------
 // ------------------------- integer addition & logic FU - 1 cycle  -----------------------------

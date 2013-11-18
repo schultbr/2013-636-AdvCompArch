@@ -8,9 +8,6 @@
 #ifndef EXECUTESTAGE_H_
 #define EXECUTESTAGE_H_
 
-#include "Instruction.h"
-#include <vector>
-
 void simulateExecuteStage();
 
 #endif /* EXECUTESTAGE_H_ */
