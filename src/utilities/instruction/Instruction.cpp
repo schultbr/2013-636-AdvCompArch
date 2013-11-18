@@ -265,7 +265,8 @@ void Instruction::DecodeInstructionString() {
 //		PC = atoi(tokens[0].c_str()); // PC is decoded in fetch stage
 	opCodeStr = tokens[0];
 	opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
-	DecodeRegisters(tokens[1]);
+	if(tokens.size() > 1)
+	    DecodeRegisters(tokens[1]);
 }
 
 int Instruction::GetRegisterIndexFromName(std::string regName){
