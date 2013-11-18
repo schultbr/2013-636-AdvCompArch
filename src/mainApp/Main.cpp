@@ -41,6 +41,7 @@ void clearQueue(){
 int runSimulation() {
 	bool notDone = true;
 	int i = 0;
+//	int max = 25;
 	int max = 500000;
 	while(notDone) {
 	    DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
@@ -102,6 +103,14 @@ void resizeHardwareFromParameters() {
     fu_mult.resize(::fuCount);
     fu_fp.resize(::fuCount);
     fu_mem.resize(::fuCount);
+
+
+    //initilize arf
+    for(size_t i = 0; i < arf.size(); i++) {
+        arf[i].busy = false;
+        arf[i].data = 0;
+        arf[i].rename = 0;
+    }
 }
 
 int main(int argc, char** argv) {

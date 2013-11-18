@@ -123,12 +123,52 @@ bool translateSrcToOp(int srcRegIndex, int &op) {
     }
 }
 
+//translate the reg index supplied by the instruction into a real op val (rrf tag or data)
+void checkForValid(int &op, bool &valid) {
+    string check = (op == -1 ? "true" : "false");
+    DEBUG_COUT << "Dispatch:\t" << "checking " << op << " for data/tags. (" << check << ")\n";
+
+    if(op == -1) {
+        DEBUG_COUT << "Dispatch:\t" << "Op is " << op << " (should be -1 if we got here)" << endl;
+        valid = true;
+        return;
+    }
+
+    if(arf[op].busy == false) {
+        DEBUG_COUT << "Dispatch:\t" << "ARF Hit: Op is " << arf[op].data << endl;
+        op = arf[op].data;
+        valid = true;
+        return;
+    }
+    else {
+        int rrfTag = arf[op].rename;
+        DEBUG_COUT << "Dispatch:\t" << "Op is in RRF at " << rrfTag << endl;
+        if(rrf[rrfTag].valid == true) {
+            DEBUG_COUT << "Dispatch:\t" << "RRF Hit: Op is " << rrf[rrfTag].data << endl;
+            op = rrf[rrfTag].data;
+            valid = true;
+            return;
+        }
+        else {
+            DEBUG_COUT << "Dispatch:\t" << "Uhh... op isn't valid in the rrf." << endl;
+            op = rrfTag;
+            valid = false;
+            return;
+        }
+    }
+
+}
+
 
 //returns some reference to the RS... not
 //sure what it should be yet though todo:figure out
 int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag) {
     int returnTag = -1;
 //    std::vector<RS_Element> *targetRS;
+//    int reg1 = -1;
+//    int reg2 = -2;
+    bool isReg1 = false;
+    bool isReg2 = false;
 
     DEBUG_COUT << "Dispatch:\t" << "Dispatching to RS." << endl;
 
@@ -139,13 +179,32 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 
     for(size_t i = 0; i < targetRS->size(); i++) {
         if(!(targetRS->at(i).busy)) {
+            isReg1 = false;
+            isReg2 = false;
             returnTag = i;
             targetRS->at(i).busy = true; //claim this guy
             targetRS->at(i).PC = inst.PC;
 
             //set the op's and valid's:
-            inst.TraslateToFUEntry(targetRS->at(i).op1, targetRS->at(i).valid1,
-                                    targetRS->at(i).op2, targetRS->at(i).valid2);
+            inst.TraslateToFUEntry(targetRS->at(i).op1, targetRS->at(i).valid1, isReg1,
+                                    targetRS->at(i).op2, targetRS->at(i).valid2, isReg2,
+                                    targetRS->at(i).op3);
+
+            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
+                    <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
+                    << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
+                    << endl;
+
+            if(isReg1)
+                checkForValid(targetRS->at(i).op1, targetRS->at(i).valid1);
+
+            if(isReg2)
+                checkForValid(targetRS->at(i).op2, targetRS->at(i).valid2);
+
+            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
+                    <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
+                    << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
+                    << endl;
 
 //            srcToOpRet = translateSrcToOp(inst.src1, targetRS->at(i).op1);
 //            if(!srcToOpRet && targetRS->at(i).op1 == -1) {
@@ -195,6 +254,12 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 //            }
 
             targetRS->at(i).ready = (targetRS->at(i).valid1 && targetRS->at(i).valid2);
+
+            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
+                    <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
+                    << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
+                    << endl;
+
             targetRS->at(i).reorder = robTag;
             targetRS->at(i).PTaddr = inst.branchPredictorTableAddress;
             targetRS->at(i).BRoutcome = inst.wasBranchPredictedAsTaken;
@@ -294,18 +359,17 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
             case FLOATING_POINT:
                 targetRS =  &rs_fp;
                 break;
+            case JUMP:
             case BRANCH:
                 DEBUG_COUT << "Dispatch:\t" << "Found a ... branch instr " << instrToDispatch.front().PC << endl;
                 targetRS =  &rs_br;
-                DEBUG_COUT << "Dispatch:\t" << "TargetRS is now " << (int)targetRS << endl;
                 break;
             case LOAD:
             case STORE:
                 targetRS =  &rs_mem;
                 break;
-            case JUMP:
             default:
-                DEBUG_COUT << "Dispatch:\t" << "Found a ... jump? " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT << "Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl;
                 targetRS = NULL; //right? JUMP doesn't use a execution unit? maybe?
                 break;
         }
@@ -329,30 +393,14 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         //RRF Dispatch
         if(usesRRF)
             rrfTag = dispatchToRRF(instrToDispatch.front());
-//        if(rrfTag == -1) { //shouldnt be needed
-//            //we need to stall! RRF is full
-//            isStalled = true;
-//            break;
-//        }
 
         //ROB Dispatch
         robTag = dispatchToROB(instrToDispatch.front(), rrfTag, (instrToDispatch.front().opCode == NOP ? true : false));
-//        if(robTag == -1) {
-//            //crap. again, we stall. ROB is full.
-//            isStalled = true;
-//            break;
-//        }
 
         //RS dispatch
         //does RS dispatch need RRF tag? I can't recall.
         if(usesRS)
             dispatchToRS(instrToDispatch.front(), targetRS, robTag);
-//            rsTag = dispatchToRS(instrToDispatch.front(), targetRS, robTag);
-//        if(rsTag == -1) {
-//            //we need to stall! RS is full
-//            isStalled = true;
-//            break;
-//        }
 
         //we get here? that means the instruction was dispatched. bon voyage!
         instrToDispatch.pop();

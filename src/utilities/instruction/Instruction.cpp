@@ -80,13 +80,17 @@ bool Instruction::IsBranch(){
 //returns the ops corresponding to this instr... -1 is default and means "not used" and
 // the valid will be set to true if using an immediate/offset value, or if the op isn't used.
 // if the op is a reg reference, we set valid to false for the dispatch function to verify
-void Instruction::TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &valid2) {
+void Instruction::TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &op2,
+                                    bool &valid2, bool &isReg2, int &op3) {
 
     //default these guys out.
     op1 = -1;
     op2 = -1;
     valid1 = true;
     valid2 = true;
+
+    isReg1 = false;
+    isReg2 = false;
 
     /* Opcode input instruction types
      * 0 = IMM ONLY
@@ -116,22 +120,23 @@ void Instruction::TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &vali
         case 12: //SRC1 & DEST
             op1 = src1;
             valid1 = false;
+            isReg1 = true;
             break;
 
-            //todo: figure out case 3... has 3 ops
         case 3://src1 & src2 & offset
-//            src1Reg = regs[0];
-//            src2Reg = regs[1];
-//            offset = atoi(regs[2].c_str());
             op1 = src1;
             valid1 = false;
+            isReg1 = true;
             op2 = src2;
             valid2 = false;
+            isReg2 = true;
+            op3 = offset; //always valid and not a reg
             break;
 
         case 4: //src1 & offset
             op1 = src1;
             valid1 = false;
+            isReg1 = true;
             op2 = offset;
             valid2 = true;
             break;
@@ -142,11 +147,13 @@ void Instruction::TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &vali
             valid1 = true;
             op2 = src1;
             valid2 = false;
+            isReg2 = true;
             break;
 
         case 8: //DEST & SRC1 & IMM
             op1 = src1;
             valid1 = false;
+            isReg1 = true;
             op2 = imm;
             valid2 = true;
             break;
@@ -156,8 +163,10 @@ void Instruction::TraslateToFUEntry(int &op1, bool &valid1, int &op2, bool &vali
         case 13: //SRC1 & SRC2, DEST=FCC
             op1 = src1;
             valid1 = false;
+            isReg1 = true;
             op2 = src2;
             valid2 = false;
+            isReg2 = true;
             break;
 
         default:
