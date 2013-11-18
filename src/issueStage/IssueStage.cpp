@@ -43,7 +43,7 @@ void copyToBranchFU(RS_Element entry, FU_Element &targetFU) {	//single element F
 int checkFU( std::vector<FU_Element> *targetFU )
 {
 	int FU_tag = -1;				//default = no empty slots
-	DEBUG_COUT << "inside Issue: Check FU " << endl;
+	DEBUG_COUT << "Issue: Check FU for empty slots" << endl;
 
 	for(size_t i = 0; i < targetFU->size(); i++)	//iterate through Functional Units
 	{
@@ -62,31 +62,30 @@ int checkFU( std::vector<FU_Element> *targetFU )
 void checkValue( std::vector<RS_Element> *targetRS )
 {
 	int rename_tag = 0;
-	int mem_inorder = 0;
 
-	DEBUG_COUT << "inside Issue: Check Value" << endl;
+	DEBUG_COUT << "Issue: Check Values in RS" << endl;
 
 	for(size_t i = 0; i < targetRS->size(); i++) 
 	{
 		
 		if(targetRS->at(i).valid1 == false)			//check if op1 is valid
 		{	
-			DEBUG_COUT << "checking for new op1 value" << endl;
+			//DEBUG_COUT << "Issue: checking for new op1 value" << endl;
 			rename_tag = targetRS->at(i).op1;	//set rrf tag
 			if(rename_tag != -1 && rrf[rename_tag].valid == true)	//if rrf is valid, copy data
 			{
-				DEBUG_COUT << "updating new op1 value" << endl;
+				DEBUG_COUT << "Issue: updating new op1 value" << endl;
     				targetRS->at(i).op1 = rrf[rename_tag].data;
     				targetRS->at(i).valid1 = true;
 			}
 		}
 		if(targetRS->at(i).valid2 == 0)			//check for valid op2 value
 		{
-			DEBUG_COUT << "checking for new op2 value" << endl;
+			//DEBUG_COUT << "Issue: checking for new op2 value" << endl;
 			rename_tag = targetRS->at(i).op2;
 			if(rename_tag != -1 && rrf[rename_tag].valid == true)
 			{
-				DEBUG_COUT << "updating new op1 value" << endl;
+				DEBUG_COUT << "Issue: updating new op1 value" << endl;
     				targetRS->at(i).op2 = rrf[rename_tag].data;
     				targetRS->at(i).valid2 = true;
 			}
@@ -103,7 +102,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 	int FU_tag= 0;
 	int cnt = targetRS->size();
 
-	DEBUG_COUT << "inside Issue: Check Ready" << endl;
+	//DEBUG_COUT << "Issue: Check if RS is Ready" << endl;
 	for(int i = 0; i < cnt; i++)
 	{
 		if(targetRS->at(i).ready == true)		//RS entry is ready
@@ -233,26 +232,26 @@ void simulateIssueStage() {
         return;
     }
 
-    DEBUG_COUT << "Issue Stage\n";
+    //DEBUG_COUT << "Issue Stage\n";
 
     //check Common Data Bus for updates
-    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_int" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking CDB for RS int" << endl;
     checkValue(&rs_int);
-    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_fp" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for RS fp" << endl;
     checkValue(&rs_fp);
-    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_mem" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for RS mem" << endl;
     checkValue(&rs_mem);
-    DEBUG_COUT << "Issue:\t" << " Checking cdb for rs_br" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking cdb for RS br" << endl;
     checkValue(&rs_br);
 
     //check RS for ready instructions and issue if FU is not busy
-    DEBUG_COUT << "Issue:\t" << " Checking rs_int for issue" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking if RS int is ready" << endl;
     checkReady(&rs_int);
-    DEBUG_COUT << "Issue:\t" << " Checking rs_fp for issue" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking if RS fp is ready" << endl;
     checkReady(&rs_fp);
-    DEBUG_COUT << "Issue:\t" << " Checking rs_mem for issue" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking if RS mem is ready" << endl;
     checkReady(&rs_mem);
-    DEBUG_COUT << "Issue:\t" << " Checking rs_br for issue" << endl;
+    DEBUG_COUT << "Issue:\t" << " Checking if RS br is ready" << endl;
     checkReady(&rs_br);
 }
 
