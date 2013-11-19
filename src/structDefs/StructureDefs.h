@@ -20,19 +20,21 @@ enum ReservationStationType{INTEGER_RS, FLOATING_POINT_RS, MEMORY_RS, BRANCH_RS,
 
 struct ROB_Element {
 	bool busy;		//busy bit, this entry in use
-	bool finished;	//out of FU, has finished execution
+	bool finished;		//out of FU, has finished execution
 	bool valid;		//instr after a br are speculative, valid=0 by default
+	bool issued;		//out of RS, has been issued
 	int	rename;		//Rename Register File tag
 	OpcodeType	code;		//opcode
-	//bool	issued;			//out of RS, has been issued
-	//int 	PC;			//PC
+	int 	PC;			//PC
 
 	ROB_Element() {			//constructor
 		busy = false;
 		finished = false;
 		valid = false;
+		issued = false;
 		rename = -1;
 		code = NOP;	
+		PC = -1;
 	}
 };
 
@@ -65,7 +67,6 @@ struct RRF_Element {
 };
 
 //Reservation Station slot
-//also, FU element
 struct RS_Element {
 	bool busy;
 	bool valid1;
@@ -123,7 +124,7 @@ struct FU_Element {
 		op2	= -1;
 		reorder	= -1;
 		code = NOP;
-		result = 0;
+		result = 7;
 		PTaddr = -1;
 		BRoutcome = false;
 		BRprediction = false;

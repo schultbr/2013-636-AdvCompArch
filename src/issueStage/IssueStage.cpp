@@ -117,19 +117,18 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 					if (FU_tag != -1)
 					{
-						//copy RS entry to FU slot & set cycle count
-						copyToFU( targetRS->at(i), fu_add, FU_tag, 1 );
 						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
-						//DEBUG_COUT << "RS size starting = " << targetRS->size() << "\n";
+						
+						//copy RS entry to FU slot & set cycle count
+						copyToFU( targetRS->at(i), fu_add, FU_tag, 1 );
+						rob[targetRS->at(i).reorder].issued = true;
 
 						targetRS->erase( targetRS->begin()+i );	//"pop" RS entry off queue
 						i--;		//erase will reindex vector so i needs adjusted
 						cnt--;		//erase will reindex vector so cnt needs adjusted
-						//DEBUG_COUT << "RS size after issue pop = " << targetRS->size() << "\n";
 
 						targetRS->resize( targetRS->size()+1 ); //"push" empty RS entry onto queue
-						//DEBUG_COUT << "RS size after issue push = " << targetRS->size() << "\n" << "\n";
 					}
 					break;
 
@@ -140,6 +139,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					if (FU_tag != -1)
 					{
 						copyToFU( targetRS->at(i), fu_mult, FU_tag, 3 );
+						rob[targetRS->at(i).reorder].issued = true;
 						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
@@ -156,6 +156,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					if (FU_tag != -1)
 					{
 						copyToFU( targetRS->at(i), fu_fp, FU_tag, 5 );
+						rob[targetRS->at(i).reorder].issued = true;
 						DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing FP RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
@@ -175,6 +176,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					{
 						copyToFU( targetRS->at(i), fu_mem, FU_tag, 1 ); //only adding 1 cycle to count because L1 access time
 						//will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
+						rob[targetRS->at(i).reorder].issued = true;
 						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
@@ -190,6 +192,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					if(fu_br.count == 0)	//FU empty
 					{
 						copyToBranchFU( targetRS->at(i), fu_br );
+						rob[targetRS->at(i).reorder].issued = true;
 						DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing BR RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	

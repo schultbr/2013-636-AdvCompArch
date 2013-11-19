@@ -120,6 +120,53 @@ void resizeHardwareFromParameters() {
     }
 }
 
+void printFU(FU_Element entry)
+{
+	cout << "PC " << entry.PC << endl;
+	cout << "count: " << entry.count << endl;
+	cout << "op1: " << entry.op1  << endl;
+	cout << "op2: " << entry.op2 << endl;
+	cout << "reorder " << entry.reorder << endl;
+	cout << "data result " << entry.result << endl;
+	cout << "PredictionT Addr: " << entry.PTaddr << endl;
+	cout << "Branch Outcome: " << entry.BRoutcome << endl;
+	cout << "Branch Prediction " << entry.BRprediction << endl;
+	cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
+}
+
+void printRS(RS_Element entry)
+{
+	cout << "PC " << entry.PC << endl;
+	cout << "busy: " << entry.busy << endl;
+	cout << "valid1: " << entry.valid1 << endl;
+	cout << "valid2: " << entry.valid2 << endl;
+	cout << "ready: " << entry.ready << endl;
+	cout << "op1: " << entry.op1  << endl;
+	cout << "op2: " << entry.op2 << endl;
+	cout << "reorder " << entry.reorder << endl;
+	cout << "OPcode " << entry.code << endl;
+	cout << "PredictionT Addr: " << entry.PTaddr << endl;
+	cout << "Branch Outcome: " << entry.BRoutcome << endl;
+	cout << "Branch Prediction " << entry.BRprediction << endl;
+	cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
+}
+
+void printROB(ROB_Element entry)
+{
+	cout << "busy: " << entry.busy << ", finished: " << entry.finished << ", valid: " << entry.valid << ", issued: " << entry.issued
+		<< ", OPcode: " << entry.code << ", PC: " << entry.PC << ", rename: " << entry.rename << endl;
+}
+
+void printRRF(RRF_Element entry)
+{
+	cout << "busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
+}
+
+void printARF(ARF_Element entry)
+{
+	cout << "busy: " << entry.busy << ", data: " << entry.data << ", rename: " << entry.rename << endl;
+}
+
 int main(int argc, char** argv) {
 
 	int returnVal = 0;
@@ -139,6 +186,30 @@ int main(int argc, char** argv) {
 
 	//lets figure it out.
 	determineStatistics();
+
+	//print final buffers
+	/*
+	cout << "Printing RRF" << endl;
+	for (int i=0;i<rrf.size();i++)
+	{
+		cout << "RRF[" << i << "] = ";
+		printRRF(rrf[i]);
+	}
+
+	cout << "Printing ARF" << endl;
+	for (int i=0;i<arf.size();i++)
+	{
+		cout << "ARF[" << i << "] = ";
+		printARF(arf[i]);
+		cout << endl;
+	}
+
+	cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
+	for (int i=0;i<rob.size();i++)
+	{
+		printROB(rob[i]);
+	}
+	*/
 
 	cout << "Exiting.\n";
 

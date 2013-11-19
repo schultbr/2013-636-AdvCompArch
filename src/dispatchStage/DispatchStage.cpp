@@ -234,6 +234,8 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
     rob[robTail].valid = !(::anyUnresolvedBranches); //set to 0 if we have a branch waiting to resolve
     rob[robTail].rename = renameTag;
     rob[robTail].code = inst.opCode;
+    rob[robTail].PC = inst.PC;
+    rob[robTail].issued = false;
     returnTag = robTail;
 
     robTail++;
