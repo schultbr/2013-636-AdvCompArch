@@ -43,12 +43,7 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS, boo
         usesRRF = false;
     else
         usesRRF = true;
-//    usesRRF = (inst.dest == -1 ? false:  true);
 
-//    if(inst.opCode == NOP)
-//        usesRS = false;
-//    else
-//        usesRS = true;
     usesRS = (inst.opCode == NOP ? false : true);
 
     bool isRRFFull = true;
@@ -156,9 +151,6 @@ void checkForValid(int &op, bool &valid) {
 //sure what it should be yet though todo:figure out
 int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag) {
     int returnTag = -1;
-//    std::vector<RS_Element> *targetRS;
-//    int reg1 = -1;
-//    int reg2 = -2;
     bool isReg1 = false;
     bool isReg2 = false;
 
@@ -166,8 +158,6 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 
     if (targetRS == NULL)
         return returnTag;
-
-//    bool srcToOpRet = false;
 
     for (size_t i = 0; i < targetRS->size(); i++) {
         if (!(targetRS->at(i).busy)) {
@@ -244,15 +234,6 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
     return returnTag;
 }
 
-//static void printROB(ROB_Element entry) {
-//    cout << "Dispatching:\tbusy: " << entry.busy << ", finished: " << entry.finished << ", valid: " << entry.valid << ", issued: " << entry.issued << ", OPcode: " << entry.code << ", PC: " << entry.PC
-//            << ", rename: " << entry.rename << endl;
-//}
-
-static void printRRF(int index, RRF_Element entry) {
-    cout << "Dispatching:\tindex: " << index << ", busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
-}
-
 //returns the RRF Tag
 int dispatchToRRF(Instruction inst) {
     int returnTag = -1;
@@ -273,11 +254,9 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].valid = false;
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
-//            rob[i].OP = inst.GetOpcodeString();
-	    //rrf_inUse++;
-	    
+            rrf_inUse++;
 
-            break; //dont bother continuing. let's move on.
+            break;//dont bother continuing. let's move on.
         }
     }
 
@@ -294,9 +273,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     //	The RRF (where logical... not mem instr or branch instr)
 
     int rrfTag = -1;
-//    int rsTag = -1;
     int robTag = -1;
-//    ReservationStationType targetRSGroup = NO_RS;
     std::vector<RS_Element> *targetRS;
     bool isStalled = false;
     bool checkRet = false; //this is so dumb but im in a hurry
@@ -344,9 +321,11 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
         string boolResTrue = "true";
         string boolResFalse = "false";
-//        string checkRetStr = (!checkRet ? "true" : "false");
 
-        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl); DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl);
+        DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
 
         if (isStalled)
             break;
@@ -397,11 +376,6 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
         //we get here? that means the instruction was dispatched. bon voyage!
         instrToDispatch.pop();
-    }
-
-    if (isStalled) {
-        //do something useful.. or not? I think we just hang and let the decode/fetch stages
-        //figure it out? maybe?
     }
 
 }
