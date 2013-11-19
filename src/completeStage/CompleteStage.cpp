@@ -47,14 +47,14 @@ void simulateCompleteStage() {
         return;
     }
 
-    DEBUG_COUT << "Complete:\t" << "Completing instructions\n";
+    DEBUG_COUT("Complete:\t" << "Completing instructions\n");
 
     while (!done) {
-        DEBUG_COUT << "Complete:\t Checking " << robHead << " busy=" << rob[robHead].busy << endl;
-        DEBUG_COUT << "Complete:\t Checking " << robHead << " finished=" << rob[robHead].finished << endl;
-        DEBUG_COUT << "Complete:\t Checking " << robHead << " valid=" << rob[robHead].valid << endl;
+        DEBUG_COUT("Complete:\t Checking " << robHead << " busy=" << rob[robHead].busy << endl);
+        DEBUG_COUT("Complete:\t Checking " << robHead << " finished=" << rob[robHead].finished << endl);
+        DEBUG_COUT("Complete:\t Checking " << robHead << " valid=" << rob[robHead].valid << endl);
         if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1) {
-            DEBUG_COUT << "Complete:\t Found #" << robHead << " to be ready for complete" << endl;
+            DEBUG_COUT("Complete:\t Found #" << robHead << " to be ready for complete" << endl);
 
             done = false;
             rob[robHead].busy = 0;			            //set not busy
@@ -69,14 +69,14 @@ void simulateCompleteStage() {
                     arf[dest_tag].busy = 0;			        //set not busy
             }
 
-            DEBUG_COUT << "Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl;
+            DEBUG_COUT("Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl);
             robHead++;
             if (robHead == (int) rob.size())				    //increment head of circular queue
                 robHead = 0;
 
         }
         else { 			//do we do anything special for finished but not valid?
-            DEBUG_COUT << "Complete:\t Hit else case. Done checking." << endl;
+            DEBUG_COUT("Complete:\t Hit else case. Done checking." << endl);
             done = true;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
         }
     }

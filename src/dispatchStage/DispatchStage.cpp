@@ -28,9 +28,9 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
     //know if tail points to the next available entry or the last used entry...
     // that changes the math needed (ideally tail points to next available,
     //so we can check tail == head and be done)
-    DEBUG_COUT << "Dispatch:\t" << "\tChecking ROB space" << endl;
+    DEBUG_COUT("Dispatch:\t" << "\tChecking ROB space" << endl);
     for(size_t i = 0; i < rob.size() && isROBFull; i++) {
-        DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rob busy? " << (rob[i].busy ? trueStr : falseStr) << endl;
+        DEBUG_COUT("Dispatch:\t" << "Is " << i << " in rob busy? " << (rob[i].busy ? trueStr : falseStr) << endl);
         if(rob[i].busy == false) {
             isROBFull = false;
             break;
@@ -59,10 +59,10 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 
     bool isRRFFull = true;
 
-    DEBUG_COUT << "Dispatch:\t" << "\tChecking RRF space" << endl;
+    DEBUG_COUT("Dispatch:\t\tChecking RRF space" << endl);
     if(usesRRF) {
         for(size_t i = 0; i < rrf.size() && isRRFFull; i++) {
-            DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl;
+            DEBUG_COUT("Dispatch:\tIs " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl);
             if(rrf[i].busy == false) {
                 isRRFFull = false;
                 break;
@@ -75,10 +75,10 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 
 
     bool isRSFull = true;
-    DEBUG_COUT << "Dispatch:\t" << "\tChecking RS space" << endl;
+    DEBUG_COUT("Dispatch:\t" << "\tChecking RS space" << endl);
     if(usesRS) {
         for(size_t i = 0; i < targetRS->size() && isRSFull; i++) {
-            DEBUG_COUT << "Dispatch:\t" << "Is " << i << " in rs busy? " << (targetRS->at(i).busy ? trueStr : falseStr) << endl;
+            DEBUG_COUT("Dispatch:\t" << "Is " << i << " in rs busy? " << (targetRS->at(i).busy ? trueStr : falseStr) << endl);
             if(targetRS->at(i).busy == false) {
                 isRSFull = false;
                 break;
@@ -99,7 +99,7 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 //true means ready bit is tru too, and op contains real data.
 bool translateSrcToOp(int srcRegIndex, int &op) {
 
-//    DEBUG_COUT << "Dispatch:\t" << "Dispatching to ROB." << endl;
+//    DEBUG_COUT("Dispatch:\t" << "Dispatching to ROB." << endl;
 
     if(srcRegIndex == -1) {
         op = -1;
@@ -126,31 +126,31 @@ bool translateSrcToOp(int srcRegIndex, int &op) {
 //translate the reg index supplied by the instruction into a real op val (rrf tag or data)
 void checkForValid(int &op, bool &valid) {
     string check = (op == -1 ? "true" : "false");
-    DEBUG_COUT << "Dispatch:\t" << "checking " << op << " for data/tags. (" << check << ")\n";
+    DEBUG_COUT("Dispatch:\t" << "checking " << op << " for data/tags. (" << check << ")\n");
 
     if(op == -1) {
-        DEBUG_COUT << "Dispatch:\t" << "Op is " << op << " (should be -1 if we got here)" << endl;
+        DEBUG_COUT("Dispatch:\t" << "Op is " << op << " (should be -1 if we got here)" << endl);
         valid = true;
         return;
     }
 
     if(arf[op].busy == false) {
-        DEBUG_COUT << "Dispatch:\t" << "ARF Hit: Op is " << arf[op].data << endl;
+        DEBUG_COUT("Dispatch:\t" << "ARF Hit: Op is " << arf[op].data << endl);
         op = arf[op].data;
         valid = true;
         return;
     }
     else {
         int rrfTag = arf[op].rename;
-        DEBUG_COUT << "Dispatch:\t" << "Op is in RRF at " << rrfTag << endl;
+        DEBUG_COUT("Dispatch:\t" << "Op is in RRF at " << rrfTag << endl);
         if(rrf[rrfTag].valid == true) {
-            DEBUG_COUT << "Dispatch:\t" << "RRF Hit: Op is " << rrf[rrfTag].data << endl;
+            DEBUG_COUT("Dispatch:\t" << "RRF Hit: Op is " << rrf[rrfTag].data << endl);
             op = rrf[rrfTag].data;
             valid = true;
             return;
         }
         else {
-            DEBUG_COUT << "Dispatch:\t" << "Uhh... op isn't valid in the rrf." << endl;
+            DEBUG_COUT("Dispatch:\t" << "Uhh... op isn't valid in the rrf." << endl);
             op = rrfTag;
             valid = false;
             return;
@@ -170,7 +170,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
     bool isReg1 = false;
     bool isReg2 = false;
 
-    DEBUG_COUT << "Dispatch:\t" << "Dispatching to RS." << endl;
+    DEBUG_COUT("Dispatch:\t" << "Dispatching to RS." << endl);
 
     if(targetRS == NULL)
         return returnTag;
@@ -190,10 +190,10 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
                                     targetRS->at(i).op2, targetRS->at(i).valid2, isReg2,
                                     targetRS->at(i).op3);
 
-            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
+            DEBUG_COUT("Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
                     <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
                     << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
-                    << endl;
+                    << endl);
 
             if(isReg1)
                 checkForValid(targetRS->at(i).op1, targetRS->at(i).valid1);
@@ -203,10 +203,10 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 
             targetRS->at(i).ready = (targetRS->at(i).valid1 && targetRS->at(i).valid2);
 
-            DEBUG_COUT << "Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
+            DEBUG_COUT("Dispatch:\t" << targetRS->at(i).PC << " op1: "<< targetRS->at(i).op1
                     <<" valid1: " << targetRS->at(i).valid1 << " op2: " << targetRS->at(i).op2
                     << " valid2: " << targetRS->at(i).valid2 << " op3: " << targetRS->at(i).op3
-                    << endl;
+                    << endl);
 
             targetRS->at(i).reorder = robTag;
             targetRS->at(i).PTaddr = inst.branchPredictorTableAddress;
@@ -310,22 +310,22 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
             case ADD_SUB_I:
             case MULT_DIV_I:
             case LOGICAL: //todo verify these go here.
-                DEBUG_COUT << "Dispatch:\t" << "Found a add/sub or logical instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT("Dispatch:\t" << "Found a add/sub or logical instr " << instrToDispatch.front().PC << endl);
                 targetRS =  &rs_int;
                 break;
             case FLOATING_POINT:
                 targetRS =  &rs_fp;
-                DEBUG_COUT << "Dispatch:\t" << "Found a fp instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT("Dispatch:\t" << "Found a fp instr " << instrToDispatch.front().PC << endl);
                 break;
             case JUMP:
             case BRANCH:
-                DEBUG_COUT << "Dispatch:\t" << "Found a branch instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT("Dispatch:\t" << "Found a branch instr " << instrToDispatch.front().PC << endl);
                 targetRS =  &rs_br;
                 break;
             case LOAD:
             case STORE:
                 targetRS =  &rs_mem;
-                DEBUG_COUT << "Dispatch:\t" << "Found a memory instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT("Dispatch:\t" << "Found a memory instr " << instrToDispatch.front().PC << endl);
                 break;
             default:
                 DEBUG_COUT_2("Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl);
@@ -340,10 +340,10 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         string boolResFalse = "false";
 //        string checkRetStr = (!checkRet ? "true" : "false");
 
-        DEBUG_COUT << "Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl;
-        DEBUG_COUT << "Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl;
-        DEBUG_COUT << "Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl;
-        DEBUG_COUT << "Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl;
+        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl);
+        DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
 
         if(isStalled)
             break;

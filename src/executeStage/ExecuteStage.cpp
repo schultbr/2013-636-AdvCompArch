@@ -44,9 +44,9 @@ void copyToRRF(FU_Element entry)
     reorder_tag = entry.reorder;
     rename_tag = rob[reorder_tag].rename;
 
-    DEBUG_COUT << "Execute:\t" << "Updating " << entry.PC << " in ROB/RRF.\n";
-    DEBUG_COUT << "Execute:\t" << "  ROB tag " << reorder_tag << endl;
-    DEBUG_COUT << "Execute:\t" << "  RRF tag " << rename_tag << endl;
+    DEBUG_COUT("Execute:\t" << "Updating " << entry.PC << " in ROB/RRF.\n");
+    DEBUG_COUT("Execute:\t" << "  ROB tag " << reorder_tag << endl);
+    DEBUG_COUT("Execute:\t" << "  RRF tag " << rename_tag << endl);
 
     rrf[rename_tag].data = entry.result;    	//write result to RRF
     rrf[rename_tag].valid = true;              	//set RRF valid bit
@@ -75,24 +75,24 @@ void simulateExecuteStage()
 //                "br_size? " << fu_br.count << endl;
 //    }
 
-    DEBUG_COUT << "Execute:\t" << "Execute Stage\n";
+    DEBUG_COUT("Execute:\t" << "Execute Stage\n");
 
 // ----------------------------------------------------------------------------------------------
 // ------------------------- integer addition & logic FU - 1 cycle  -----------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned i = 0; i < fu_add.size(); i++) 
     {
-        DEBUG_COUT << "Execute:\t" << "Checking add FU " << i << " count: " << fu_add[i].count << endl;
+        DEBUG_COUT("Execute:\t" << "Checking add FU " << i << " count: " << fu_add[i].count << endl);
         if (fu_add[i].count == 1) 	//move data to Rename Register File
 	{   
             copyToRRF(fu_add[i]);
-            DEBUG_COUT << "Execute:\t" << "Moved add inst " << fu_add[i].PC << " to rrf" << endl;
+            DEBUG_COUT("Execute:\t" << "Moved add inst " << fu_add[i].PC << " to rrf" << endl);
         }
 
         if (fu_add[i].count > 0) 	//decrement cycle count
 	{     
             fu_add[i].count--;
-            DEBUG_COUT << "Execute:\t" << "Decrement add inst " << fu_add[i].PC << endl;
+            DEBUG_COUT("Execute:\t" << "Decrement add inst " << fu_add[i].PC << endl);
         }
     }
 
@@ -101,17 +101,17 @@ void simulateExecuteStage()
 // ----------------------------------------------------------------------------------------------
     for (unsigned j = 0; j < fu_mult.size(); j++) 
     {
-        DEBUG_COUT << "Execute:\t" << "Checking mult FU " << j << " count: " << fu_mult[j].count << endl;
+        DEBUG_COUT("Execute:\t" << "Checking mult FU " << j << " count: " << fu_mult[j].count << endl);
         if (fu_mult[j].count == 1) 	//move data to Rename Register File
 	{   
             copyToRRF(fu_mult[j]);
-            DEBUG_COUT << "Execute:\t" << "Moved mult inst " << fu_mult[j].PC << " to rrf" << endl;
+            DEBUG_COUT("Execute:\t" << "Moved mult inst " << fu_mult[j].PC << " to rrf" << endl);
         }
 
         if (fu_mult[j].count > 0) 
 	{
             fu_mult[j].count--;
-            DEBUG_COUT << "Execute:\t" << "Decrement mult inst " << fu_mult[j].PC <<  endl;
+            DEBUG_COUT("Execute:\t" << "Decrement mult inst " << fu_mult[j].PC <<  endl);
         }
     }
 
@@ -120,17 +120,17 @@ void simulateExecuteStage()
 // ----------------------------------------------------------------------------------------------
     for (unsigned k = 0; k < fu_fp.size(); k++) 
     {
-	DEBUG_COUT << "Execute:\t" << "Checking fp FU " << k << " count: " << fu_fp[k].count << endl;
+	DEBUG_COUT("Execute:\t" << "Checking fp FU " << k << " count: " << fu_fp[k].count << endl);
 	if (fu_fp[k].count == 1) 	//move data to Rename Register File
 	{    
 	    copyToRRF(fu_fp[k]);
-	    DEBUG_COUT << "Execute:\t" << "Moved fp inst " << fu_fp[k].PC << " to rrf" << endl;
+	    DEBUG_COUT("Execute:\t" << "Moved fp inst " << fu_fp[k].PC << " to rrf" << endl);
 	}
 
 	if (fu_fp[k].count > 0) 
 	{
 	    fu_fp[k].count--;
-	    DEBUG_COUT << "Execute:\t" << "Decrement fp inst " << fu_fp[k].PC <<  endl;
+	    DEBUG_COUT("Execute:\t" << "Decrement fp inst " << fu_fp[k].PC <<  endl);
 	}
     }
 
@@ -152,11 +152,11 @@ void simulateExecuteStage()
         {
             fu_mem[m].isFirstClock = false;
 
-            DEBUG_COUT << "Execute:\t" << "Determining cache latency\n";
+            DEBUG_COUT("Execute:\t" << "Determining cache latency\n");
 
             clockCount = checkCache(::level1CacheHitRate, ::level2CacheAccessTime);   //add any cache miss penalty
 
-            DEBUG_COUT << "Execute:\t" << "First cache latency check ? " << (clockCount == 0? "pass" :"failed") << endl;
+            DEBUG_COUT("Execute:\t" << "First cache latency check ? " << (clockCount == 0? "pass" :"failed") << endl);
 
             clockCountTotal = clockCount + ::level1CacheAccessTime; //we always have level 1 access time;
 
@@ -167,7 +167,7 @@ void simulateExecuteStage()
             }
             fu_mem[m].count = clockCountTotal;
 
-            DEBUG_COUT << "Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl;
+            DEBUG_COUT("Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl);
         }
 
         else	//we already accessed cache or calculated miss penalty
@@ -190,7 +190,7 @@ void simulateExecuteStage()
             if (fu_mem[m].count > 0)
             {
                 fu_mem[m].count--;
-                DEBUG_COUT << "Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl;
+                DEBUG_COUT("Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl);
             }
         }
     }
@@ -200,7 +200,7 @@ void simulateExecuteStage()
 // ----------------------------------------------------------------------------------------------
     if (fu_br.count == 1)    	//active instr in FU
     {
-        DEBUG_COUT << "Execute:\t" << "Checking the branch FU\n";
+        DEBUG_COUT("Execute:\t" << "Checking the branch FU\n");
 
         fu_br.count = 0;    	//set finished
 

@@ -37,7 +37,7 @@ bool checkBranchPrediction(Instruction &currentInstr){
 	int normalNextPC = currentInstr.PC + 8;
 //	int predictedNextPC = 0;
 
-	DEBUG_COUT << "Fetch:\t" << "BRANCH PREDICTING" << endl;
+	DEBUG_COUT("Fetch:\tBRANCH PREDICTING" << endl);
 
 	bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
 
@@ -46,20 +46,20 @@ bool checkBranchPrediction(Instruction &currentInstr){
 	if(wasBranchPredicted) {
 		//return true if our predicted PC matches the trace's next PC
 		if(currentInstr.predictedTargetPC == actualNextPC) {
-		    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n";
+		    DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n");
 		    return true; //Correct
 		}
 		else {
-		    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n";
+		    DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n");
 			return false; //CORRECT PREDICTION
 		}
 	}
 	else { //if we were unable to predict... thats a miss
-	    DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n";
+	    DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n");
 		return false;
 	}
 
-//	DEBUG_COUT << "Fetch:\t" << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
+//	DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
 	//return false otherwise. oops. we missed. somehow.
 	return false;
@@ -83,7 +83,7 @@ void grabNextInstructionGroup() {
 	if(!instructionTrace.isTraceOpen())
 		instructionTrace.openTrace(::inputTraceFile);
 
-//	DEBUG_COUT << "Fetch:\t" << "Fetching  " << ::superScalarFactor << " instuctions\n";
+//	DEBUG_COUT("Fetch:\t" << "Fetching  " << ::superScalarFactor << " instuctions\n";
 
 	//loop through the remaining available spots in the queue... i.e. if we only got to move
 	//2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
@@ -97,7 +97,7 @@ void grabNextInstructionGroup() {
 	    penaltyTime = checkCache(instrCacheHitRate, level2CacheAccessTime);
 
 		if(penaltyTime > 0) { //failed l1 instruction cache hit
-			DEBUG_COUT << "Cache hit missed. Checking level 2 to see how bad the penalty is.\n";
+			DEBUG_COUT("Cache hit missed. Checking level 2 to see how bad the penalty is.\n");
 			cacheMissWaitTimeRemaining += penaltyTime + instrCacheAccessTime;
 
 			//check level 2 and hope we don't miss
@@ -119,7 +119,7 @@ void grabNextInstructionGroup() {
 		instrToAdd = instructionTrace.getNextInstruction();
 
 		//debug print:
-		DEBUG_COUT << "Fetch:\t" << "Fetched: ";
+		DEBUG_COUT("Fetch:\t" << "Fetched: ");
 		instrToAdd.Print();
 
 		//we got an empty instruction due to being at the end of the file. big day.
@@ -159,19 +159,19 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 			instructionsInPipeline[i].cyclesUntilReturned--;
 
 		//debug print:
-		DEBUG_COUT << "Fetch:\t" << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n";
+		DEBUG_COUT("Fetch:\t" << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n");
 	}
 
 	string boolCheck =(instructionsInPipeline[0].cyclesUntilReturned == 0 ? "true" : "false");
 
-	DEBUG_COUT << "Fetch:\t" << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n";
+	DEBUG_COUT("Fetch:\t" << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n");
 
 	//start to flush the front instruction if it's time is up.
 	if(instructionsInPipeline[0].cyclesUntilReturned == 0) {
-	    DEBUG_COUT << "Fetch:\t" << "Moving instructions over\n";
+	    DEBUG_COUT("Fetch:\t" << "Moving instructions over\n");
 //		fetchedInstructions = instructionsInPipeline[0].instructions;
 		while((int)fetchedInstructions.size() < ::superScalarFactor && instructionsInPipeline[0].instructions.size() > 0) {
-		    DEBUG_COUT << "Fetch:\t" << "Fetched size = " << fetchedInstructions.size() << endl;
+		    DEBUG_COUT("Fetch:\t" << "Fetched size = " << fetchedInstructions.size() << endl);
 		    fetchedInstructions.push(instructionsInPipeline[0].instructions.front()); //move over one at a time, in case of partial filled downstream stages
 		    instructionsInPipeline[0].instructions.pop();
 		}
@@ -196,7 +196,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
     }
 
     if((int)fetchedInstructions.size() == ::superScalarFactor) {
-        DEBUG_COUT << "Error: Fetch buffer full at start of stage. Dispatch must be stalled. Waiting until that's kosher\n";
+        DEBUG_COUT("Error: Fetch buffer full at start of stage. Dispatch must be stalled. Waiting until that's kosher\n");
         return; //we're stalled due to dispatch
     }
 
@@ -205,7 +205,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
     //  a mis-predicted branch didn't finish execution in this same cycle -AND-
     //  we're not waiting on the cache
 	if(fetchStalled) { //we mis-predicted a branch. it hurt.
-	    DEBUG_COUT << "Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n";
+	    DEBUG_COUT("Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n");
 		cacheMissWaitTimeRemaining = 0;
 		isResumeNextCycle = false;
 //		return; //don't return, we need to decrement still. only new instruction fetching is stalled
@@ -218,7 +218,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 	    //did we previously miss a cache hit?
 	    //check to we're still paying any penalty
         cacheMissWaitTimeRemaining--;
-        DEBUG_COUT << "Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n";
+        DEBUG_COUT("Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n");
 //        return;  //don't return, we need to decrement still. only new instruction fetching is stalled
     }
     else if((int)fetchedInstructions.size() == 0 && instructionsInPipeline.size() == 0)//add another instruction set to the group, if we can. if size is > 0, we shoudln't grab more
@@ -227,7 +227,7 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
 	//always continue to grab more, unless fetched instructions is full already. then we stop.
 	if(instructionsInPipeline.size() > 0) {
-	    DEBUG_COUT << "Fetch:\t" << "Working through the cache latencies in the pipeline\n";
+	    DEBUG_COUT("Fetch:\t" << "Working through the cache latencies in the pipeline\n");
 	    //move through and decrement all instruction groups. If one hits 0 cycles remaining,
 	    decrementAllPipelineInstructions(fetchedInstructions);
 	}

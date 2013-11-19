@@ -90,7 +90,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict){
 
 //void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
 void BranchPredictor::updatePredictorWithResults(FU_Element entry){
-    DEBUG_COUT << "Predictor:\t Updating predictor with branch execution results" << endl;
+    DEBUG_COUT("Predictor:\t Updating predictor with branch execution results" << endl);
 	if(entry.BRoutcome) {
 		//update the state machine with the current results
 		inc_state(entry.PTaddr);

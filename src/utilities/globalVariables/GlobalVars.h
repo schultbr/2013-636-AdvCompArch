@@ -11,9 +11,13 @@
 //#define DEBUG //for testing prints. Comment this line out to slim down the output.
 
 #ifdef DEBUG
-#define DEBUG_COUT cout
+//#define DEBUG_COUT cout
+//#else
+//#define DEBUG_COUT 0 && cout
+//#endif
+#define DEBUG_COUT( x ) std::cout << x
 #else
-#define DEBUG_COUT 0 && cout
+#define DEBUG_COUT( x )
 #endif
 
 
