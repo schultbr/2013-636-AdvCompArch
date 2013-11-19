@@ -19,7 +19,8 @@ using namespace std;
 //quick sweep to see if all of our RS's are empty.
 //returns true if empty
 //returns false if any element is still busy
-bool checkForFinished(std::vector<FU_Element> *targetFUs) {
+bool checkForFinished(std::vector<FU_Element> *targetFUs) 
+{
     for(size_t i = 0; i < targetFUs->size(); i++) {
         if(targetFUs->at(i).count > 0) {
             DEBUG_COUT << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
@@ -205,6 +206,9 @@ void simulateExecuteStage()
 
         fu_br.count = 0;    	//set finished
 
+	//update ROB to say that we're done:
+	markROBFinished(fu_br.reorder);
+
 	if (rob[fu_br.reorder].code == BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
 	{
 		next_tag = fu_br.reorder;
@@ -248,9 +252,6 @@ void simulateExecuteStage()
 		{
 		    anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
 		}
-
-		//update ROB to say that we're done:
-		markROBFinished(fu_br.reorder);
 	}
     }
 }
