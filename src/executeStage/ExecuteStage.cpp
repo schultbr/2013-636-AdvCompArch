@@ -59,7 +59,7 @@ void simulateExecuteStage()
     int reorder_tag = 0;
     bool done = false;
 
-    if(isIssueFinished && checkForFinished(&fu_add) && checkForFinished(&fu_add) && checkForFinished(&fu_add) && checkForFinished(&fu_add) && fu_br.count == 0)
+    if(isIssueFinished && checkForFinished(&fu_add) && checkForFinished(&fu_mult) && checkForFinished(&fu_mem) && checkForFinished(&fu_fp) && fu_br.count == 0)
     {
         cout << "Execute is now finished" << endl;
         isExecuteFinished = true;
@@ -144,53 +144,55 @@ void simulateExecuteStage()
     {
         clockCount = 0;
         clockCountTotal = 0;
-        DEBUG_COUT << "Execute:\t" << "Checking mem FU " << m << " count: "<< fu_mem[m].count << endl;
+        if(isDispatchFinished)
+            DEBUG_COUT_2 << "Execute:\t" << "Checking mem FU " << m << " count: "<< fu_mem[m].count << endl;
         //treat mem read and mem writes the same, both access mem during execute
 
         if (fu_mem[m].isFirstClock) //access memory on first clock
-	{ 
-		fu_mem[m].isFirstClock = false;
+        {
+            fu_mem[m].isFirstClock = false;
 
-		DEBUG_COUT << "Execute:\t" << "Determining cache latency\n";
+            DEBUG_COUT << "Execute:\t" << "Determining cache latency\n";
 
-		clockCount = checkCache(::level1CacheHitRate, ::level2CacheAccessTime);   //add any cache miss penalty
+            clockCount = checkCache(::level1CacheHitRate, ::level2CacheAccessTime);   //add any cache miss penalty
 
-		DEBUG_COUT << "Execute:\t" << "First cache latency check ? " << (clockCount == 0? "pass" :"failed") << endl;
+            DEBUG_COUT << "Execute:\t" << "First cache latency check ? " << (clockCount == 0? "pass" :"failed") << endl;
 
-		clockCountTotal = clockCount + ::level1CacheAccessTime; //we always have level 1 access time;
+            clockCountTotal = clockCount + ::level1CacheAccessTime; //we always have level 1 access time;
 
-		if(clockCount > 0) 	//if we missed level 1 cache, see if we miss level 2
-		{ 
-			clockCount = checkCache(level1CacheHitRate, ::systemMemoryAccessTime);
-			clockCountTotal += clockCount; //add the result... either systemMemoryAccessTime or 0
-		}
-		fu_mem[m].count = clockCountTotal;
+            if(clockCount > 0) 	//if we missed level 1 cache, see if we miss level 2
+            {
+                clockCount = checkCache(level1CacheHitRate, ::systemMemoryAccessTime);
+                clockCountTotal += clockCount; //add the result... either systemMemoryAccessTime or 0
+            }
+            fu_mem[m].count = clockCountTotal;
 
-		DEBUG_COUT << "Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl;
+            DEBUG_COUT << "Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl;
         }
 
-	else	//we already accessed cache or calculated miss penalty
-	{
-		reorder_tag = fu_mem[m].reorder;
-		if ( fu_mem[m].count == 1 )
-		{
-			DEBUG_COUT << "Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl;
-			if ( rob[reorder_tag].code == LOAD )
-			{
-				copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
-			}
-			else if ( rob[reorder_tag].code == STORE )
-			{
-				markROBFinished(fu_mem[m].reorder);	//just mark ROB finished
-			}
-		}
-		
-		if (fu_mem[m].count > 0) 
-		{
-			fu_mem[m].count--;
-			DEBUG_COUT << "Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl;
-        	}
-	}
+        else	//we already accessed cache or calculated miss penalty
+        {
+            reorder_tag = fu_mem[m].reorder;
+            if ( fu_mem[m].count == 1 )
+            {
+                if(isDispatchFinished)
+                    DEBUG_COUT_2 << "Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl;
+                if ( rob[reorder_tag].code == LOAD )
+                {
+                    copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
+                }
+                else if ( rob[reorder_tag].code == STORE )
+                {
+                    markROBFinished(fu_mem[m].reorder);	//just mark ROB finished
+                }
+            }
+
+            if (fu_mem[m].count > 0)
+            {
+                fu_mem[m].count--;
+                DEBUG_COUT << "Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl;
+            }
+        }
     }
 
 // ----------------------------------------------------------------------------------------------

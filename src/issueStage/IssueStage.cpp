@@ -113,7 +113,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 					if (FU_tag != -1)
 					{
-						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						
 						//copy RS entry to FU slot & set cycle count
@@ -136,7 +136,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					{
 						copyToFU( targetRS->at(i), fu_mult, FU_tag, 3 );
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
@@ -153,7 +153,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					{
 						copyToFU( targetRS->at(i), fu_fp, FU_tag, 5 );
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing FP RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
@@ -173,7 +173,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						copyToFU( targetRS->at(i), fu_mem, FU_tag, 1 ); //only adding 1 cycle to count because L1 access time
 						//will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						targetRS->resize( targetRS->size()+1, RS_Element() );
