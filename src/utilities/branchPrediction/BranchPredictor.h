@@ -20,12 +20,11 @@ public:
 
 	void resizeBTB(int size);
 
-//	int getPredictedPCForInstruction(Instruction &instrToPredict);
 	bool getPredictionForInstruction(Instruction &instrToPredict);
 
-//	void updatePredictorWithResults(Instruction &executedInstr);
-//	void updatePredictorWithResults(int instrPC, int branchTargetPC, short predictionTableAddr, bool branchOutcome);
 	void updatePredictorWithResults(FU_Element entry);
+
+	void printPredictionStatistics();
 
 //moved the below to private since the stages that reference this don't need to know the
 //logic it uses... the predictor should be a magic 8-ball to them

@@ -35,6 +35,8 @@ void determineStatistics() {
     cout << "Cycle count: " << cyclesCompleted << endl;
     cout << "IPC, then, is " << IPC << endl << endl;
 
+    branchPredictor.printPredictionStatistics();
+
     cout << "ROB entries used per cycle = " << (float) rob_total / cyclesCompleted << endl;
     cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl;
     cout << "RS INT used per cycle = " << (float) rs_int_total / cyclesCompleted << endl;
