@@ -102,8 +102,8 @@ void dumpRegs() {
 int runSimulation() {
     bool notDone = true;
 //	int i = 0;
-	unsigned int max = 25;
-//    unsigned int max = 500000; // if this thing runs away... don't wait
+//	unsigned int max = 25;
+    unsigned int max = 500000; // if this thing runs away... don't wait
     while (notDone) {
         DEBUG_COUT("Simulating cycle " << cyclesCompleted << endl);
 
