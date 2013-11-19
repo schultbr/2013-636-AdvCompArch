@@ -23,7 +23,7 @@ bool checkForFinished(std::vector<FU_Element> *targetFUs)
 {
     for(size_t i = 0; i < targetFUs->size(); i++) {
         if(isIssueFinished)
-            DEBUG_COUT_2 << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
+            DEBUG_COUT_2 ("Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n");
 
         if(targetFUs->at(i).count > 0) {
             return false;
@@ -145,7 +145,7 @@ void simulateExecuteStage()
         clockCount = 0;
         clockCountTotal = 0;
         if(isDispatchFinished)
-            DEBUG_COUT_2 << "Execute:\t" << "Checking mem FU " << m << " count: "<< fu_mem[m].count << endl;
+            DEBUG_COUT_2("Execute:\t" << "Checking mem FU " << m << " count: "<< fu_mem[m].count << endl);
         //treat mem read and mem writes the same, both access mem during execute
 
         if (fu_mem[m].isFirstClock) //access memory on first clock
@@ -176,7 +176,7 @@ void simulateExecuteStage()
             if ( fu_mem[m].count == 1 )
             {
                 if(isDispatchFinished)
-                    DEBUG_COUT_2 << "Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl;
+                    DEBUG_COUT_2("Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl);
                 if ( rob[reorder_tag].code == LOAD )
                 {
                     copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished

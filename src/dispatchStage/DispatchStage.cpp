@@ -227,7 +227,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) {
     int returnTag = -1;
 
-    DEBUG_COUT_2 << "Dispatch:\t" << "Dispatching " << inst.PC << " to ROB index " << robTail << endl;
+    DEBUG_COUT_2("Dispatch:\t" << "Dispatching " << inst.PC << " to ROB index " << robTail << endl);
 
     rob[robTail].busy = true;
     rob[robTail].finished = initAsFinished;
@@ -255,7 +255,7 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
 int dispatchToRRF(Instruction inst) {
     int returnTag = -1;
 
-    DEBUG_COUT_2 << "Dispatch:\tDispatching " << inst.PC << " to RRF" << endl;
+    DEBUG_COUT_2("Dispatch:\tDispatching " << inst.PC << " to RRF" << endl);
 
     //loop through from the start to the end of the rrf
     //find the first emtpy spot and sit 'er down.
@@ -328,7 +328,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
                 DEBUG_COUT << "Dispatch:\t" << "Found a memory instr " << instrToDispatch.front().PC << endl;
                 break;
             default:
-                DEBUG_COUT_2 << "Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT_2("Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl);
                 targetRS = NULL; //right? JUMP doesn't use a execution unit? maybe?
                 break;
         }

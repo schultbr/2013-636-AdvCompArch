@@ -17,12 +17,13 @@
 #endif
 
 
-#define DEBUG2 //for testing prints. Comment this line out to slim down the output.
-
+////#define DEBUG2 //for a small subset of testing prints for late-stage debugging. Comment this line out to slim down the output.
+//note: style varied from DEBUG_COUT in an effort to fix the segfault after fpppp.tra exits... not sure why that happens but
+//      it doesn't happen with DEBUG_COUT_2 on.. sooo. Also, yeah, this didn't fix that
 #ifdef DEBUG2
-#define DEBUG_COUT_2 cout
+#define DEBUG_COUT_2( x )  std::cout << x
 #else
-#define DEBUG_COUT_2 0 && cout
+#define DEBUG_COUT_2( x )
 #endif
 
 //#include "TraceReader.h"

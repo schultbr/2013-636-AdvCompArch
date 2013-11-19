@@ -69,7 +69,7 @@ void simulateCompleteStage() {
                     arf[dest_tag].busy = 0;			        //set not busy
             }
 
-            DEBUG_COUT_2 << "Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl;
+            DEBUG_COUT << "Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl;
             robHead++;
             if (robHead == (int) rob.size())				    //increment head of circular queue
                 robHead = 0;

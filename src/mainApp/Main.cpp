@@ -42,38 +42,38 @@ void determineStatistics() {
 //}
 
 void dumpRegs() {
-    DEBUG_COUT_2 << "\n======================" << cyclesCompleted << "====================\n";
+    DEBUG_COUT_2("\n======================" << cyclesCompleted << "====================\n");
 
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "\n=====================ARF========================\n";
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "Index\t| Data\t| Busy\t| RRF\t" << endl;
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("\n=====================ARF========================\n");
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("Index\t| Data\t| Busy\t| RRF\t" << endl);
     for (size_t i = 0; i < arf.size(); i++) {
-        DEBUG_COUT_2 << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl;
+        DEBUG_COUT_2(i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
     }
 
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "\n=====================RRF========================\n";
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl;
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("\n=====================RRF========================\n");
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl);
     for (size_t i = 0; i < rrf.size(); i++) {
-        DEBUG_COUT_2 << i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl;
+        DEBUG_COUT_2(i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl);
     }
 
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "\n=====================ROB========================\n";
-    DEBUG_COUT_2 << "\n================================================\n";
-    DEBUG_COUT_2 << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl;
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("\n=====================ROB========================\n");
+    DEBUG_COUT_2("\n================================================\n");
+    DEBUG_COUT_2("Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl);
     for (size_t i = 0; i < rob.size(); i++) {
-        DEBUG_COUT_2 << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
-                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC;
+        DEBUG_COUT_2(i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC );
         if((int) i == robHead)
-            DEBUG_COUT_2 << "<---HEAD";
+            DEBUG_COUT_2("<---HEAD");
 
         if((int) i == robTail)
-            DEBUG_COUT_2 << "<---TAIL";
+            DEBUG_COUT_2("<---TAIL");
 
-        DEBUG_COUT_2 << endl;
+        DEBUG_COUT_2(endl);
     }
 
 }
