@@ -59,19 +59,19 @@ void simulateCompleteStage() {
 
             done = false;
             rob[robHead].busy = false;			            //set not busy
+	    robEntries--;
+	    rob_inUse--;
             rename_tag = rob[robHead].rename;
 
             if (rename_tag != -1) {				        //has a destination register
                 dest_tag = rrf[rename_tag].dest;
                 arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
                 rrf[rename_tag].busy = false;			    //set not busy
-		rrf_inUse--;
+		//rrf_inUse--;
 
                 if (arf[dest_tag].rename == rename_tag)		//data being written to ARF is newest value
                     arf[dest_tag].busy = false;			        //set not busy
             }
-	    robEntries--;
-	    rob_inUse--;
 
             DEBUG_COUT("Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl);
             robHead++;

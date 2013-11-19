@@ -48,6 +48,15 @@ void determineStatistics() {
 	cout << "FU BR used per cycle = " << (float) fu_br_total/cyclesCompleted << endl << endl;
 }
 
+int rrf_count() {
+	int cnt = 0;
+	for (int i=0;i<rrf.size();i++)
+	{
+		if (rrf[i].busy == true)
+			cnt++;
+	}
+	return cnt;
+}
 
 //void clearQueue(){
 //	while(decodeDispatchBuffer.size() > 0)
@@ -114,6 +123,7 @@ int runSimulation() {
 
 	//update our running totals of the buffer entries in use each cycle
     	rob_total += rob_inUse;
+        rrf_inUse = rrf_count();
 	rrf_total += rrf_inUse;
         rs_int_total += rs_int_inUse;
 	rs_fp_total += rs_fp_inUse;

@@ -277,7 +277,14 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
 //            rob[i].OP = inst.GetOpcodeString();
-	    rrf_inUse++;
+	    //rrf_inUse++;
+	    
+	    /*if (db_cnt < 20)
+	    {
+	    	cout << "RRF inUse = " << rrf_inUse << endl;
+	    }
+	   db_cnt++;
+	    */
 
             break; //dont bother continuing. let's move on.
         }

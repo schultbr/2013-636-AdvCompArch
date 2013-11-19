@@ -95,6 +95,7 @@ extern int unresolvedBranchRobIndex;
 extern unsigned int cyclesCompleted;
 extern unsigned int instructionCount;
 
+extern int db_cnt;
 extern unsigned int rs_int_inUse;
 extern unsigned int rs_fp_inUse;
 extern unsigned int rs_br_inUse;

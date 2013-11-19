@@ -59,6 +59,7 @@ int unresolvedBranchRobIndex = 0;
 unsigned int cyclesCompleted = 0;
 unsigned int instructionCount = 0;
 
+int db_cnt = 0;
 unsigned int rs_int_inUse = 0;
 unsigned int rs_fp_inUse = 0;
 unsigned int rs_br_inUse = 0;
