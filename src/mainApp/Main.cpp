@@ -264,30 +264,6 @@ int main(int argc, char** argv) {
     //lets figure it out.
     determineStatistics();
 
-    //print final buffers
-    /*
-     cout << "Printing RRF" << endl;
-     for (int i=0;i<rrf.size();i++)
-     {
-     cout << "RRF[" << i << "] = ";
-     printRRF(rrf[i]);
-     }
-
-     cout << "Printing ARF" << endl;
-     for (int i=0;i<arf.size();i++)
-     {
-     cout << "ARF[" << i << "] = ";
-     printARF(arf[i]);
-     cout << endl;
-     }
-
-     cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
-     for (int i=0;i<rob.size();i++)
-     {
-     printROB(rob[i]);
-     }
-     */
-
     dumpRegs();
 
 	//print final buffers
@@ -304,8 +280,8 @@ int main(int argc, char** argv) {
 	{
 		cout << "ARF[" << i << "] = ";
 		printARF(arf[i]);
-		cout << endl;
 	}
+	cout << endl;
 
 	cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
 	cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
