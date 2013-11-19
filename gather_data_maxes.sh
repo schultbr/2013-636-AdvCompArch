@@ -132,16 +132,16 @@ done
 
 grep -R IPC simulationResults/ | tee ./simulationResults/IPC_results.log
 
-grep -R ROB simulationResults/ | tee ./simulationResults/ROB_results.log
-grep -R RRF simulationResults/ | tee ./simulationResults/RRF_results.log
-grep -R "RS INT" simulationResults/ | tee ./simulationResults/RS_INT_results.log
-grep -R "RS FP" simulationResults/ | tee ./simulationResults/RS_FP_results.log
-grep -R "RS MEM" simulationResults/ | tee ./simulationResults/RS_MEM_results.log
-grep -R "RS BR" simulationResults/ | tee ./simulationResults/RS_BR_results.log
-grep -R "FU ADD" simulationResults/ | tee ./simulationResults/FU_ADD_results.log
-grep -R "FU MULT" simulationResults/ | tee ./simulationResults/FU_MULT_results.log
-grep -R "FU FP" simulationResults/ | tee ./simulationResults/FU_FP_results.log
-grep -R "FU BR" simulationResults/ | tee ./simulationResults/FU_BR_results.log
+#grep -R ROB simulationResults/ | tee ./simulationResults/ROB_results.log
+#grep -R RRF simulationResults/ | tee ./simulationResults/RRF_results.log
+#grep -R "RS INT" simulationResults/ | tee ./simulationResults/RS_INT_results.log
+#grep -R "RS FP" simulationResults/ | tee ./simulationResults/RS_FP_results.log
+#grep -R "RS MEM" simulationResults/ | tee ./simulationResults/RS_MEM_results.log
+#grep -R "RS BR" simulationResults/ | tee ./simulationResults/RS_BR_results.log
+#grep -R "FU ADD" simulationResults/ | tee ./simulationResults/FU_ADD_results.log
+#grep -R "FU MULT" simulationResults/ | tee ./simulationResults/FU_MULT_results.log
+#grep -R "FU FP" simulationResults/ | tee ./simulationResults/FU_FP_results.log
+#grep -R "FU BR" simulationResults/ | tee ./simulationResults/FU_BR_results.log
 
 
 
