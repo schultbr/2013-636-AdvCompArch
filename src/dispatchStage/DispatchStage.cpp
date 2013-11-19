@@ -254,7 +254,6 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].valid = false;
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
-            rrf_inUse++;
 
             break;//dont bother continuing. let's move on.
         }
