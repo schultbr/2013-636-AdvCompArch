@@ -29,11 +29,14 @@ std::queue<Instruction> fetchDecodeBuffer;
 void determineStatistics() {
     //replace this with IPC calculations and whatnot
 
-    float CPI = (float) cyclesCompleted / instructionCount;
+    float IPC = (float) instructionCount / cyclesCompleted;
 
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
-    cout << "CPI, then, is " << CPI << endl;
+    cout << "IPC, then, is " << IPC << endl;
+
+
+
 }
 //
 //void clearQueue(){

@@ -176,7 +176,7 @@ int processCommandLine(int argc, char **argv) {
 		if(::btbSize == -1)
 			promptForInt("Enter BTB Size (max: 128):\t", ::btbSize, 128);
 		if(::rsEntries == -1)
-			promptForInt("Enter # of RS Entries (max: 128):\t", ::rsEntries, 128);
+			promptForInt("Enter # of RS Entries (max: 8):\t", ::rsEntries, 8);
 		if(::fuCount == -1)
 			promptForInt("Enter # of Functional Units (max: 8):\t", ::fuCount, 8);
 		if(::renameTableEntries == -1)
