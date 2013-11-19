@@ -3,9 +3,16 @@
 EXE=./bin/project2
 
 #TRACE=./traces/fpppp.tra
-TRACE=./traces/perl.tra
+#TRACE=./traces/perl.tra
 #TRACE=./traces/mpeg2d.tra
 #TRACE=./traces/short.tra
+#TRACE=./traces/applu.tra
+#TRACE=./traces/compress.tra
+#TRACE=./traces/epic.tra
+#TRACE=./traces/ijpeg.tra
+#TRACE=./traces/mpeg2e.tra
+#TRACE=./traces/pegwitd.tra
+TRACE=./traces/toast.tra
 
 SS_FACTOR=4
 BTB_SIZE=64

@@ -1,9 +1,9 @@
 #!/bin/sh
 EXE=./bin/project2
 
-#TRACE=./traces/fpppp.tra
-#TRACE=./traces/fpppp.tra
-TRACE=./traces/mpeg2d.tra
+TRACE=./traces/fpppp.tra
+#TRACE=./traces/perl.tra
+#TRACE=./traces/mpeg2d.tra
 #TRACE=./traces/short.tra
 
 SS_FACTOR=4

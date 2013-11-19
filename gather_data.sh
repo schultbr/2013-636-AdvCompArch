@@ -58,11 +58,11 @@ OUT_DIR_M=./simulationResults/mpeg/ssf
 
 for ssf in `echo $SSF_OPTS`
 do
-	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_FPPPP --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_F/run_output_$ssf.log &
+	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_FPPPP --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_F/run_output_$ssf.log 
 
-	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_PERL --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_P/run_output_$ssf.log &
+	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_PERL --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_P/run_output_$ssf.log 
 
-	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/run_output_$ssf.log &
+	$EXE --ss $ssf --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/run_output_$ssf.log 
 done
 
 
