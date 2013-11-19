@@ -1,8 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 #fpppp.tra
 #perl.tra
 #mpeg2d.tra
+
+echo "Starting at:"
+date
 
 rm -rf ./simulationResults
 
@@ -126,5 +129,10 @@ do
 	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $RRF_TEST --rob $rob --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/run_output_$rob.log
 done
 
-
+echo "Ended at:"
+date
+#let MIN = echo "$SECONDS/60" | bc
+echo "Test took $SECONDS seconds"
+echo "In minutes:"
+echo "scale=3; $SECONDS/60" | bc
 
