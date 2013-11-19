@@ -237,7 +237,8 @@ void simulateExecuteStage()
 				    next_tag++;
 				}
 
-				rob[next_tag].valid = true;
+				if (next_tag != robTail)
+				    rob[next_tag].valid = true;
 
 				if (rob[next_tag].code == BRANCH || next_tag == robTail)
 				    done = true;

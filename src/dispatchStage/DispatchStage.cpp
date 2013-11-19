@@ -274,13 +274,14 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
 //            rob[i].OP = inst.GetOpcodeString();
-
-#ifdef DEBUG3
-            printRRF(i, rrf[i]);
-#endif
-
-            DEBUG_COUT_2("Incrementing RRF usage by 1 from " << rrf_inUse << " to " << rrf_inUse+1 << endl);
-            rrf_inUse++;
+	    //rrf_inUse++;
+	    
+	    /*if (db_cnt < 20)
+	    {
+	    	cout << "RRF inUse = " << rrf_inUse << endl;
+	    }
+	   db_cnt++;
+	    */
 
             break; //dont bother continuing. let's move on.
         }
