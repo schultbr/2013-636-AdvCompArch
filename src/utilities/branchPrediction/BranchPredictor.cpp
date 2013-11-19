@@ -89,7 +89,7 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
 void BranchPredictor::printPredictionStatistics() {
     cout << endl;
     cout << "Branch predictor predicted " << branchPredictionCount << " branches and got " << predictionMissCount << " wrong... oops." << endl;
-    cout << "Branch mis-prediction rate: %" << ((float)predictionMissCount/ branchPredictionCount) * 100 << endl << endl;
+    cout << "Branch mis-prediction rate: " << ((float)predictionMissCount/ branchPredictionCount) * 100 << "%" << endl << endl;
 }
 
 //////////////////////////////////////////////////////////////

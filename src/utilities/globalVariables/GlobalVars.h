@@ -20,7 +20,6 @@
 #define DEBUG_COUT( x )
 #endif
 
-
 ////#define DEBUG2 //for a small subset of testing prints for late-stage debugging. Comment this line out to slim down the output.
 //note: style varied from DEBUG_COUT in an effort to fix the segfault after fpppp.tra exits... not sure why that happens but
 //      it doesn't happen with DEBUG_COUT_2 on.. sooo. Also, yeah, this didn't fix that
@@ -94,7 +93,6 @@ extern FU_Element fu_br;			//single Functional Unit
 extern bool anyUnresolvedBranches;
 extern int unresolvedBranchRobIndex;
 
-
 //////////////////////////////////////////////////////////
 //
 //          Statistical Variables
@@ -144,6 +142,5 @@ extern bool isDispatchFinished;
 extern bool isIssueFinished;
 extern bool isExecuteFinished;
 extern bool isCompleteFinished;
-
 
 #endif /* GLOBALVARS_H_ */

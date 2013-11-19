@@ -52,7 +52,7 @@ void determineStatistics() {
 
 int rrf_count() {
     int cnt = 0;
-    for (int i = 0; i < rrf.size(); i++) {
+    for (size_t i = 0; i < rrf.size(); i++) {
         if (rrf[i].busy == true)
             cnt++;
     }
@@ -206,14 +206,14 @@ void printARF(ARF_Element entry) {
 
 void printBuff() {
     cout << "Printing RRF" << endl;
-    for (int i = 0; i < rrf.size(); i++) {
+    for (size_t i = 0; i < rrf.size(); i++) {
         cout << "RRF[" << i << "] = ";
         printRRF(rrf[i]);
     }
     cout << endl;
 
     cout << "Printing ARF" << endl;
-    for (int i = 0; i < arf.size(); i++) {
+    for (size_t i = 0; i < arf.size(); i++) {
         cout << "ARF[" << i << "] = ";
         printARF(arf[i]);
     }
@@ -221,7 +221,7 @@ void printBuff() {
 
     cout << "Printing ROB -> Head = " << robHead << ", Tail = " << robTail << endl;
     cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
-    for (int i = 0; i < rob.size(); i++) {
+    for (size_t i = 0; i < rob.size(); i++) {
         printROB(rob[i]);
     }
     cout << endl;

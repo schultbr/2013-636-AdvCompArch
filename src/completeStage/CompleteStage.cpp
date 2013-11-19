@@ -30,9 +30,9 @@ bool sweepROBForFinished() {
 //    cout << "Completing:\tbusy: " << entry.busy << ", finished: " << entry.finished << ", valid: " << entry.valid << ", issued: " << entry.issued << ", OPcode: " << entry.code << ", PC: " << entry.PC
 //            << ", rename: " << entry.rename << endl;
 //}
-static void printRRF(int index, RRF_Element entry) {
-    cout << "Completing:\tindex: " << index << ", busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
-}
+//static void printRRF(int index, RRF_Element entry) {
+//    cout << "Completing:\tindex: " << index << ", busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
+//}
 
 void simulateCompleteStage() {
     int dest_tag, rename_tag;

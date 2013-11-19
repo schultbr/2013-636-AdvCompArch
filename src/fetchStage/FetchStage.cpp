@@ -49,18 +49,21 @@ bool checkBranchPrediction(Instruction &currentInstr) {
             return true; //Correct
         }
         else {
-            DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Stalling fetch until it's done!\n");
-            return false; //CORRECT PREDICTION
+            DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly. Stalling fetch until it's done!\n");
+            branchPredictor.incrementPredictionMissCount();
+            return false; //INCORRECT PREDICTION
         }
     }
     else { //if we were unable to predict... thats a miss
         DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n");
+        branchPredictor.incrementPredictionMissCount();
         return false;
     }
 
 //	DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
     //return false otherwise. oops. we missed. somehow.
+    branchPredictor.incrementPredictionMissCount();
     return false;
 }
 
