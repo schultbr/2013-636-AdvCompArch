@@ -119,12 +119,13 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						//copy RS entry to FU slot & set cycle count
 						copyToFU( targetRS->at(i), fu_add, FU_tag, 1 );
 						rob[targetRS->at(i).reorder].issued = true;
-
 						targetRS->erase( targetRS->begin()+i );	//"pop" RS entry off queue
 						i--;		//erase will reindex vector so i needs adjusted
 						cnt--;		//erase will reindex vector so cnt needs adjusted
 
 						targetRS->resize( targetRS->size()+1, RS_Element() ); //"push" empty RS entry onto queue
+						rs_int_inUse--;
+						fu_add_inUse++;
 					}
 					break;
 
@@ -141,7 +142,10 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
+
 						targetRS->resize( targetRS->size()+1, RS_Element());
+						rs_int_inUse--;
+						fu_mult_inUse++;
 					}
 					break;
 
@@ -158,7 +162,10 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
+
 						targetRS->resize( targetRS->size()+1, RS_Element() );
+						rs_fp_inUse--;
+						fu_fp_inUse++;
 					}
 					break;
 				
@@ -176,9 +183,12 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						DEBUG_COUT("Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n");
 						DEBUG_COUT("Resizing MEM RS" << endl << endl);
 						targetRS->erase( targetRS->begin()+i );	
-						targetRS->resize( targetRS->size()+1, RS_Element() );
 						i--;
 						cnt--;
+
+						targetRS->resize( targetRS->size()+1, RS_Element() );
+						rs_mem_inUse--;
+						fu_mem_inUse++;
 					}
 					break;
 			
@@ -192,8 +202,11 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						DEBUG_COUT("Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n");
 						DEBUG_COUT("Resizing BR RS" << endl << endl);
 						targetRS->erase( targetRS->begin()+i );	
+
 						targetRS->resize( targetRS->size()+1, RS_Element() );
 						//can only issue 1 per cycle so no reindexing needed
+						rs_br_inUse--;
+						fu_br_inUse++;
 					}
 					break;
 

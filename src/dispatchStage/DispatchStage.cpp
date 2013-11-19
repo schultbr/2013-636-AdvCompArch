@@ -238,6 +238,11 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
     rob[robTail].issued = false;
     returnTag = robTail;
 
+    rob_inUse++;
+    robEntries++;
+    if(robEntries > robEntriesMax)
+	robEntriesMax = robEntries;
+
     robTail++;
     if(robTail == ::reorderBufferEntries) //if we're at the end of the vector now, wrap it to 0
         robTail = 0;
@@ -272,6 +277,7 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
 //            rob[i].OP = inst.GetOpcodeString();
+	    rrf_inUse++;
 
             break; //dont bother continuing. let's move on.
         }
@@ -359,7 +365,29 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         //RS dispatch
         //does RS dispatch need RRF tag? I can't recall.
         if(usesRS)
+	{
             dispatchToRS(instrToDispatch.front(), targetRS, robTag);
+	    //update stats for RS entries in use
+	    switch(instrToDispatch.front().opCode)
+	    {
+		case ADD_SUB_I:
+            	case MULT_DIV_I:
+		case LOGICAL:
+			rs_int_inUse++;
+			break;
+		case FLOATING_POINT:
+			rs_fp_inUse++;
+			break;
+		case JUMP:
+            	case BRANCH:
+			rs_br_inUse++;
+			break;
+            	case LOAD:
+            	case STORE:
+			rs_mem_inUse++;
+			break;
+	    }
+	}
 
         //update ARF to show that the RRF now has the latest value
         if(usesRRF) {
@@ -374,7 +402,6 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     if(isStalled) {
         //do something useful.. or not? I think we just hang and let the decode/fetch stages
         //figure it out? maybe?
-
     }
 
 }

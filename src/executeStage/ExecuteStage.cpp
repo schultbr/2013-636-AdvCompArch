@@ -87,6 +87,7 @@ void simulateExecuteStage()
 	{   
             copyToRRF(fu_add[i]);
             DEBUG_COUT("Execute:\t" << "Moved add inst " << fu_add[i].PC << " to rrf" << endl);
+	    fu_add_inUse--;
         }
 
         if (fu_add[i].count > 0) 	//decrement cycle count
@@ -106,6 +107,7 @@ void simulateExecuteStage()
 	{   
             copyToRRF(fu_mult[j]);
             DEBUG_COUT("Execute:\t" << "Moved mult inst " << fu_mult[j].PC << " to rrf" << endl);
+	    fu_mult_inUse--;
         }
 
         if (fu_mult[j].count > 0) 
@@ -125,6 +127,7 @@ void simulateExecuteStage()
 	{    
 	    copyToRRF(fu_fp[k]);
 	    DEBUG_COUT("Execute:\t" << "Moved fp inst " << fu_fp[k].PC << " to rrf" << endl);
+            fu_fp_inUse--;
 	}
 
 	if (fu_fp[k].count > 0) 
@@ -170,29 +173,29 @@ void simulateExecuteStage()
             DEBUG_COUT("Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl);
         }
 
-        else	//we already accessed cache or calculated miss penalty
-        {
-            reorder_tag = fu_mem[m].reorder;
-            if ( fu_mem[m].count == 1 )
-            {
-                if(isDispatchFinished)
+	else	//we already accessed cache or calculated miss penalty
+	{
+		reorder_tag = fu_mem[m].reorder;
+		if ( fu_mem[m].count == 1 )
+		{
+			fu_mem_inUse--;
                     DEBUG_COUT_2("Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl);
-                if ( rob[reorder_tag].code == LOAD )
-                {
-                    copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
-                }
-                else if ( rob[reorder_tag].code == STORE )
-                {
-                    markROBFinished(fu_mem[m].reorder);	//just mark ROB finished
-                }
-            }
-
-            if (fu_mem[m].count > 0)
-            {
-                fu_mem[m].count--;
+			if ( rob[reorder_tag].code == LOAD )
+			{
+				copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
+			}
+			else if ( rob[reorder_tag].code == STORE )
+			{
+				markROBFinished(fu_mem[m].reorder);	//just mark ROB finished
+			}
+		}
+		
+		if (fu_mem[m].count > 0) 
+		{
+			fu_mem[m].count--;
                 DEBUG_COUT("Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl);
-            }
-        }
+        	}
+	}
     }
 
 // ----------------------------------------------------------------------------------------------
@@ -206,6 +209,7 @@ void simulateExecuteStage()
 
 	//update ROB to say that we're done:
 	markROBFinished(fu_br.reorder);
+    	fu_br_inUse--;
 
 	if (rob[fu_br.reorder].code == BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
 	{
