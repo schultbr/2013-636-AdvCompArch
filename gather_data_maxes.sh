@@ -109,7 +109,7 @@ do
 
 	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_PERL --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_P/rrf_$rrf.log
 
-i	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rrf.log
+	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rrf.log
 done
 
 

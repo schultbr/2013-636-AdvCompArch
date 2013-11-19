@@ -30,7 +30,7 @@
 #define DEBUG_COUT_2( x )
 #endif
 
-#define DEBUG3
+//#define DEBUG3 //disabling this for mass-testing
 
 #ifdef DEBUG3
 #define DEBUG_COUT_3( x )  std::cout << x

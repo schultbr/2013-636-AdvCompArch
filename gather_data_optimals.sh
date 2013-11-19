@@ -27,12 +27,12 @@ mkdir -pv ./simulationResults/mpeg/fu_count
 mkdir -pv ./simulationResults/mpeg/rrf_size
 mkdir -pv ./simulationResults/mpeg/rob_size
 
-#MAXES (or defaults to use... change these when running test 2 with all optimal values)
-SSF_TEST=8
-RS_TEST=8
-FU_TEST=8
-RRF_TEST=64
-ROB_TEST=64
+#OPTIMALS
+SSF_TEST=6
+RS_TEST=5
+FU_TEST=4
+RRF_TEST=23
+ROB_TEST=45
 
 #SWEEP RANGES
 SSF_OPTS="1 2 3 4 5 6 7 8"
@@ -109,7 +109,7 @@ do
 
 	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_PERL --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_P/rrf_$rrf.log
 
-i	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rrf.log
+	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rrf.log
 done
 
 
