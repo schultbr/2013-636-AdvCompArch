@@ -33,10 +33,10 @@ void determineStatistics() {
 
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
-    cout << "IPC, then, is " << IPC << endl;
+    cout << "IPC, then, is " << IPC << endl << endl;
 
-    cout << "ROB entries total = " << rob_total << " and #in Use per cycle = " << (float) rob_total / cyclesCompleted << endl;
-    cout << "RRF entries total = " << rrf_total << " and #in Use per cycle = " << (float) rrf_total / cyclesCompleted << endl << endl;
+    cout << "ROB entries used per cycle = " << (float) rob_total / cyclesCompleted << endl;
+    cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl;
     cout << "RS INT used per cycle = " << (float) rs_int_total / cyclesCompleted << endl;
     cout << "RS FP used per cycle = " << (float) rs_fp_total / cyclesCompleted << endl;
     cout << "RS MEM used per cycle = " << (float) rs_mem_total / cyclesCompleted << endl;
@@ -63,38 +63,38 @@ int rrf_count() {
 //}
 
 void dumpRegs() {
-    DEBUG_COUT_2("\n======================" << cyclesCompleted << "====================\n");
+    DEBUG_COUT_3("\n======================" << cyclesCompleted << "====================\n");
 
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("\n=====================ARF========================\n");
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("Index\t| Data\t| Busy\t| RRF\t" << endl);
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("\n=====================ARF========================\n");
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("Index\t| Data\t| Busy\t| RRF\t" << endl);
     for (size_t i = 0; i < arf.size(); i++) {
-        DEBUG_COUT_2(i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
+        DEBUG_COUT_3(i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
     }
 
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("\n=====================RRF========================\n");
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl);
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("\n=====================RRF========================\n");
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl);
     for (size_t i = 0; i < rrf.size(); i++) {
-        DEBUG_COUT_2(i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl);
+        DEBUG_COUT_3(i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl);
     }
 
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("\n=====================ROB========================\n");
-    DEBUG_COUT_2("\n================================================\n");
-    DEBUG_COUT_2("Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl);
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("\n=====================ROB========================\n");
+    DEBUG_COUT_3("\n================================================\n");
+    DEBUG_COUT_3("Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl);
     for (size_t i = 0; i < rob.size(); i++) {
-        DEBUG_COUT_2(i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
+        DEBUG_COUT_3(i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
                 "\t| " << (rob[i].finished ? "T" : "F") << "\t| " << rob[i].PC );
         if ((int) i == robHead)
-            DEBUG_COUT_2("<---HEAD");
+            DEBUG_COUT_3("<---HEAD");
 
         if ((int) i == robTail)
-            DEBUG_COUT_2("<---TAIL");
+            DEBUG_COUT_3("<---TAIL");
 
-        DEBUG_COUT_2(endl);
+        DEBUG_COUT_3(endl);
     }
 
 }
@@ -242,6 +242,32 @@ void printARF(ARF_Element entry) {
     cout << "busy: " << entry.busy << ", data: " << entry.data << ", rename: " << entry.rename << endl;
 }
 
+void printBuff() {
+     cout << "Printing RRF" << endl;
+     for (int i=0;i<rrf.size();i++)
+     {
+     cout << "RRF[" << i << "] = ";
+     printRRF(rrf[i]);
+     }
+     cout << endl;
+
+	cout << "Printing ARF" << endl;
+	for (int i=0;i<arf.size();i++)
+	{
+		cout << "ARF[" << i << "] = ";
+		printARF(arf[i]);
+	}
+	cout << endl;
+
+     cout << "Printing ROB -> Head = " << robHead << ", Tail = " << robTail << endl;
+     cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
+     for (int i=0;i<rob.size();i++)
+     {
+     printROB(rob[i]);
+     }
+     cout << endl;
+}
+
 int main(int argc, char** argv) {
 
     int returnVal = 0;
@@ -264,56 +290,10 @@ int main(int argc, char** argv) {
     //lets figure it out.
     determineStatistics();
 
-    //print final buffers
-    /*
-     cout << "Printing RRF" << endl;
-     for (int i=0;i<rrf.size();i++)
-     {
-     cout << "RRF[" << i << "] = ";
-     printRRF(rrf[i]);
-     }
-
-     cout << "Printing ARF" << endl;
-     for (int i=0;i<arf.size();i++)
-     {
-     cout << "ARF[" << i << "] = ";
-     printARF(arf[i]);
-     cout << endl;
-     }
-
-     cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
-     for (int i=0;i<rob.size();i++)
-     {
-     printROB(rob[i]);
-     }
-     */
-
     dumpRegs();
 
     //print final buffers
-    /*
-     cout << "Printing RRF" << endl;
-     for (int i=0;i<rrf.size();i++)
-     {
-     cout << "RRF[" << i << "] = ";
-     printRRF(rrf[i]);
-     }
-
-     cout << "Printing ARF" << endl;
-     for (int i=0;i<arf.size();i++)
-     {
-     cout << "ARF[" << i << "] = ";
-     printARF(arf[i]);
-     cout << endl;
-     }
-
-     cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
-     cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
-     for (int i=0;i<rob.size();i++)
-     {
-     printROB(rob[i]);
-     }
-     */
+    //printBuff();
 
     cout << "Exiting." << endl;
 

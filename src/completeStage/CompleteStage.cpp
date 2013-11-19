@@ -73,16 +73,16 @@ void simulateCompleteStage() {
             rename_tag = rob[robHead].rename;
 
             if (rename_tag != -1) {				        //has a destination register
-#ifdef DEBUG3
-                printRRF(rename_tag, rrf[rename_tag]);
-#endif
+//#ifdef DEBUG3
+                //printRRF(rename_tag, rrf[rename_tag]);
+//#endif
                 dest_tag = rrf[rename_tag].dest;
                 arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
                 rrf[rename_tag].busy = false;			    //set not busy
 		//rrf_inUse--;
 
                 DEBUG_COUT_2("Decrementing RRF usage by 1 from " << rrf_inUse << " to " << rrf_inUse-1 << endl);
-                (rrf_inUse == 0 ? 0 : rrf_inUse--);
+                //(rrf_inUse == 0 ? 0 : rrf_inUse--);
 
                 if (arf[dest_tag].rename == rename_tag)		//data being written to ARF is newest value
                     arf[dest_tag].busy = false;			        //set not busy
