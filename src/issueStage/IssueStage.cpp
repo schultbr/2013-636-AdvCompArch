@@ -113,7 +113,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 
 					if (FU_tag != -1)
 					{
-						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						
 						//copy RS entry to FU slot & set cycle count
@@ -123,7 +123,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						i--;		//erase will reindex vector so i needs adjusted
 						cnt--;		//erase will reindex vector so cnt needs adjusted
 
-						targetRS->resize( targetRS->size()+1 ); //"push" empty RS entry onto queue
+						targetRS->resize( targetRS->size()+1, RS_Element() ); //"push" empty RS entry onto queue
 						rs_int_inUse--;
 						fu_add_inUse++;
 					}
@@ -137,12 +137,13 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					{
 						copyToFU( targetRS->at(i), fu_mult, FU_tag, 3 );
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing INT RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
-						targetRS->resize( targetRS->size()+1 );	
+
+						targetRS->resize( targetRS->size()+1, RS_Element());
 						rs_int_inUse--;
 						fu_mult_inUse++;
 					}
@@ -156,12 +157,13 @@ void checkReady( std::vector<RS_Element> *targetRS )
 					{
 						copyToFU( targetRS->at(i), fu_fp, FU_tag, 5 );
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing FP RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
-						targetRS->resize( targetRS->size()+1 );
+
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 						rs_fp_inUse--;
 						fu_fp_inUse++;
 					}
@@ -178,12 +180,13 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						copyToFU( targetRS->at(i), fu_mem, FU_tag, 1 ); //only adding 1 cycle to count because L1 access time
 						//will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
 						rob[targetRS->at(i).reorder].issued = true;
-						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
+						DEBUG_COUT_2 << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
-						targetRS->resize( targetRS->size()+1 );
 						i--;
 						cnt--;
+
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 						rs_mem_inUse--;
 						fu_mem_inUse++;
 					}
@@ -199,7 +202,8 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing BR RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
-						targetRS->resize( targetRS->size()+1 );
+
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 						//can only issue 1 per cycle so no reindexing needed
 						rs_br_inUse--;
 						fu_br_inUse++;
@@ -220,6 +224,9 @@ void checkReady( std::vector<RS_Element> *targetRS )
 //returns false if any element is still busy
 bool checkForFinished(std::vector<RS_Element> *targetRS) {
     for (size_t i = 0; i < targetRS->size(); i++) {
+        if(isDispatchFinished)
+            DEBUG_COUT_2 << "Checking targetRS #" << i << " for busy (" << (targetRS->at(i).busy ? "true" :  "false") <<")" << endl;
+
         if (targetRS->at(i).busy)
             return false;
     }
@@ -228,8 +235,7 @@ bool checkForFinished(std::vector<RS_Element> *targetRS) {
 
 void simulateIssueStage() {
 
-    if (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br)) {
-
+    if (isIssueFinished || (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br))) {
         cout << "Issue is now finished\n";
         isIssueFinished = true;
         return;

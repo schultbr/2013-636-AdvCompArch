@@ -55,6 +55,8 @@ void determineStatistics() {
 //}
 
 void dumpRegs() {
+    DEBUG_COUT_2 << "\n======================" << cyclesCompleted << "====================\n";
+
     DEBUG_COUT_2 << "\n================================================\n";
     DEBUG_COUT_2 << "\n=====================ARF========================\n";
     DEBUG_COUT_2 << "\n================================================\n";
@@ -76,7 +78,15 @@ void dumpRegs() {
     DEBUG_COUT_2 << "\n================================================\n";
     DEBUG_COUT_2 << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl;
     for (size_t i = 0; i < rob.size(); i++) {
-        DEBUG_COUT_2 << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") << "\t| " << (rob[i].finished ? "T" : "F") << endl;
+        DEBUG_COUT_2 << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC;
+        if((int) i == robHead)
+            DEBUG_COUT_2 << "<---HEAD";
+
+        if((int) i == robTail)
+            DEBUG_COUT_2 << "<---TAIL";
+
+        DEBUG_COUT_2 << endl;
     }
 
 }
@@ -84,11 +94,10 @@ void dumpRegs() {
 int runSimulation() {
     bool notDone = true;
 //	int i = 0;
-//	unsigned int max = 150;
+//	unsigned int max = 500;
     unsigned int max = 500000; // if this thing runs away... don't wait
     while (notDone) {
         DEBUG_COUT << "Simulating cycle " << cyclesCompleted << endl;
-        DEBUG_COUT << "Size3: " << fetchDecodeBuffer.size() << endl;
 
         simulateCompleteStage();
         simulateExecuteStage();
@@ -123,8 +132,8 @@ int runSimulation() {
             notDone = false;
 
 #ifdef DEBUG2
-        if (cyclesCompleted > 89369)
-            dumpRegs(); //195605    //89469
+        if (cyclesCompleted > 91375)
+            dumpRegs(); //195605    //89469 //91475
 #endif
 
 //		if(i%50 == 0)
@@ -181,51 +190,46 @@ void resizeHardwareFromParameters() {
 //    }
 }
 
-void printFU(FU_Element entry)
-{
-	cout << "PC " << entry.PC << endl;
-	cout << "count: " << entry.count << endl;
-	cout << "op1: " << entry.op1  << endl;
-	cout << "op2: " << entry.op2 << endl;
-	cout << "reorder " << entry.reorder << endl;
-	cout << "data result " << entry.result << endl;
-	cout << "PredictionT Addr: " << entry.PTaddr << endl;
-	cout << "Branch Outcome: " << entry.BRoutcome << endl;
-	cout << "Branch Prediction " << entry.BRprediction << endl;
-	cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
+void printFU(FU_Element entry) {
+    cout << "PC " << entry.PC << endl;
+    cout << "count: " << entry.count << endl;
+    cout << "op1: " << entry.op1 << endl;
+    cout << "op2: " << entry.op2 << endl;
+    cout << "reorder " << entry.reorder << endl;
+    cout << "data result " << entry.result << endl;
+    cout << "PredictionT Addr: " << entry.PTaddr << endl;
+    cout << "Branch Outcome: " << entry.BRoutcome << endl;
+    cout << "Branch Prediction " << entry.BRprediction << endl;
+    cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
 }
 
-void printRS(RS_Element entry)
-{
-	cout << "PC " << entry.PC << endl;
-	cout << "busy: " << entry.busy << endl;
-	cout << "valid1: " << entry.valid1 << endl;
-	cout << "valid2: " << entry.valid2 << endl;
-	cout << "ready: " << entry.ready << endl;
-	cout << "op1: " << entry.op1  << endl;
-	cout << "op2: " << entry.op2 << endl;
-	cout << "reorder " << entry.reorder << endl;
-	cout << "OPcode " << entry.code << endl;
-	cout << "PredictionT Addr: " << entry.PTaddr << endl;
-	cout << "Branch Outcome: " << entry.BRoutcome << endl;
-	cout << "Branch Prediction " << entry.BRprediction << endl;
-	cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
+void printRS(RS_Element entry) {
+    cout << "PC " << entry.PC << endl;
+    cout << "busy: " << entry.busy << endl;
+    cout << "valid1: " << entry.valid1 << endl;
+    cout << "valid2: " << entry.valid2 << endl;
+    cout << "ready: " << entry.ready << endl;
+    cout << "op1: " << entry.op1 << endl;
+    cout << "op2: " << entry.op2 << endl;
+    cout << "reorder " << entry.reorder << endl;
+    cout << "OPcode " << entry.code << endl;
+    cout << "PredictionT Addr: " << entry.PTaddr << endl;
+    cout << "Branch Outcome: " << entry.BRoutcome << endl;
+    cout << "Branch Prediction " << entry.BRprediction << endl;
+    cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
 }
 
-void printROB(ROB_Element entry)
-{
-	cout << "busy: " << entry.busy << ", finished: " << entry.finished << ", valid: " << entry.valid << ", issued: " << entry.issued
-		<< ", OPcode: " << entry.code << ", PC: " << entry.PC << ", rename: " << entry.rename << endl;
+void printROB(ROB_Element entry) {
+    cout << "busy: " << entry.busy << ", finished: " << entry.finished << ", valid: " << entry.valid << ", issued: " << entry.issued << ", OPcode: " << entry.code << ", PC: " << entry.PC
+            << ", rename: " << entry.rename << endl;
 }
 
-void printRRF(RRF_Element entry)
-{
-	cout << "busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
+void printRRF(RRF_Element entry) {
+    cout << "busy: " << entry.busy << ", valid: " << entry.valid << ", data: " << entry.data << ", dest: " << entry.dest << endl;
 }
 
-void printARF(ARF_Element entry)
-{
-	cout << "busy: " << entry.busy << ", data: " << entry.data << ", rename: " << entry.rename << endl;
+void printARF(ARF_Element entry) {
+    cout << "busy: " << entry.busy << ", data: " << entry.data << ", rename: " << entry.rename << endl;
 }
 
 int main(int argc, char** argv) {
@@ -240,7 +244,7 @@ int main(int argc, char** argv) {
     //resize stuff from cmd line prompts
     resizeHardwareFromParameters();
 
-    dumpRegs();
+//    dumpRegs();
 
     //run simulation
     returnVal = runSimulation();
@@ -250,6 +254,31 @@ int main(int argc, char** argv) {
     //lets figure it out.
     determineStatistics();
 
+    //print final buffers
+    /*
+     cout << "Printing RRF" << endl;
+     for (int i=0;i<rrf.size();i++)
+     {
+     cout << "RRF[" << i << "] = ";
+     printRRF(rrf[i]);
+     }
+
+     cout << "Printing ARF" << endl;
+     for (int i=0;i<arf.size();i++)
+     {
+     cout << "ARF[" << i << "] = ";
+     printARF(arf[i]);
+     cout << endl;
+     }
+
+     cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
+     for (int i=0;i<rob.size();i++)
+     {
+     printROB(rob[i]);
+     }
+     */
+
+    dumpRegs();
 
 	//print final buffers
 	/*
@@ -276,7 +305,7 @@ int main(int argc, char** argv) {
 	}
 	*/
 
-    cout << "Exiting" << endl;
+    cout << "Exiting." << endl;
 
     return 0;
 }

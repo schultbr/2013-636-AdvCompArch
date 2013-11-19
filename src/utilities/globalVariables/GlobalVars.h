@@ -17,7 +17,7 @@
 #endif
 
 
-//#define DEBUG2 //for testing prints. Comment this line out to slim down the output.
+#define DEBUG2 //for testing prints. Comment this line out to slim down the output.
 
 #ifdef DEBUG2
 #define DEBUG_COUT_2 cout
@@ -89,6 +89,7 @@ extern int unresolvedBranchRobIndex;
 //////////////////////////////////////////////////////////
 extern unsigned int cyclesCompleted;
 extern unsigned int instructionCount;
+
 extern unsigned int rs_int_inUse;
 extern unsigned int rs_fp_inUse;
 extern unsigned int rs_br_inUse;

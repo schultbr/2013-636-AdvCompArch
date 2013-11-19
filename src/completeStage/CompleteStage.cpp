@@ -73,20 +73,17 @@ void simulateCompleteStage() {
 	    robEntries--;
 	    rob_inUse--;
 
+            DEBUG_COUT_2 << "Completing instruction in ROB index " << robHead << " and moving head to " << (robHead+1 == (int)rob.size() ? 0 : robHead+1) << endl;
             robHead++;
             if (robHead == (int) rob.size()) {				    //increment head of circular queue
                 robHead = 0;
 	    }
+
         }
         else { 			//do we do anything special for finished but not valid?
             DEBUG_COUT << "Complete:\t Hit else case. Done checking." << endl;
             done = true;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
         }
-
-//        if (!done && incrementer == ::robTail) {
-//            DEBUG_COUT << "Complete:\t Found robTail. Done checking." << endl;
-//            done = true;
-//        }
     }
 }
 
