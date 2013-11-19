@@ -31,7 +31,7 @@ void BranchPredictor::incrementPredictionMissCount() {
 }
 
 void BranchPredictor::resizeBTB(int size) {
-    btb.resize(size);
+    btb.resize(size, BTB_Element());
 }
 
 //returns true if we were able to predict it at all, and sets predictedTargetPC to either currPC+8 or TargetPC(offset)

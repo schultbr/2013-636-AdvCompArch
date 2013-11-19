@@ -41,15 +41,15 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS,
 
 
     //the following is over the top. try the new one/
-//    if(inst.opCode == BRANCH ||
-//            inst.opCode == JUMP ||
-//            inst.opCode == LOAD ||
-//            inst.opCode == STORE ||
-//            inst.opCode == NOP)
-//        usesRRF = false;
-//    else
-//        usesRRF = true;
-    usesRRF = (inst.dest == -1 ? false:  true);
+    if(inst.opCode == BRANCH ||
+            inst.opCode == JUMP ||
+            inst.opCode == LOAD ||
+            inst.opCode == STORE ||
+            inst.opCode == NOP)
+        usesRRF = false;
+    else
+        usesRRF = true;
+//    usesRRF = (inst.dest == -1 ? false:  true);
 
 //    if(inst.opCode == NOP)
 //        usesRS = false;
@@ -227,7 +227,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) {
     int returnTag = -1;
 
-    DEBUG_COUT << "Dispatch:\t" << "Dispatching to ROB." << endl;
+    DEBUG_COUT << "Dispatch:\t" << "Dispatching to ROB index " << robTail << endl;
 
     rob[robTail].busy = true;
     rob[robTail].finished = initAsFinished;
@@ -257,7 +257,7 @@ int dispatchToRRF(Instruction inst) {
 
     DEBUG_COUT << "Dispatch:\t" << "Dispatching to RRF" << endl;
 
-    //loop through from the start to the end of the ROB
+    //loop through from the start to the end of the rrf
     //find the first emtpy spot and sit 'er down.
     //then update the original ARF entry with the
     //chosen RRF tag
@@ -310,19 +310,22 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
             case ADD_SUB_I:
             case MULT_DIV_I:
             case LOGICAL: //todo verify these go here.
+                DEBUG_COUT << "Dispatch:\t" << "Found a add/sub or logical instr " << instrToDispatch.front().PC << endl;
                 targetRS =  &rs_int;
                 break;
             case FLOATING_POINT:
                 targetRS =  &rs_fp;
+                DEBUG_COUT << "Dispatch:\t" << "Found a fp instr " << instrToDispatch.front().PC << endl;
                 break;
             case JUMP:
             case BRANCH:
-                DEBUG_COUT << "Dispatch:\t" << "Found a ... branch instr " << instrToDispatch.front().PC << endl;
+                DEBUG_COUT << "Dispatch:\t" << "Found a branch instr " << instrToDispatch.front().PC << endl;
                 targetRS =  &rs_br;
                 break;
             case LOAD:
             case STORE:
                 targetRS =  &rs_mem;
+                DEBUG_COUT << "Dispatch:\t" << "Found a memory instr " << instrToDispatch.front().PC << endl;
                 break;
             default:
                 DEBUG_COUT << "Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl;
@@ -357,6 +360,12 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         //does RS dispatch need RRF tag? I can't recall.
         if(usesRS)
             dispatchToRS(instrToDispatch.front(), targetRS, robTag);
+
+        //update ARF to show that the RRF now has the latest value
+        if(usesRRF) {
+            arf[instrToDispatch.front().dest].busy = true;
+            arf[instrToDispatch.front().dest].rename = rrfTag;
+        }
 
         //we get here? that means the instruction was dispatched. bon voyage!
         instrToDispatch.pop();

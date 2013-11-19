@@ -40,60 +40,56 @@ void copyToBranchFU(RS_Element entry, FU_Element &targetFU) {	//single element F
 }
 
 //function to check for empty FU
-int checkFU( std::vector<FU_Element> *targetFU )
-{
-	int FU_tag = -1;				//default = no empty slots
-	DEBUG_COUT << "Issue: Check FU for empty slots" << endl;
+int checkFU(std::vector<FU_Element> *targetFU) {
+    int FU_tag = -1;				//default = no empty slots
+    DEBUG_COUT << "Issue: Check FU for empty slots" << endl;
 
-	for(size_t i = 0; i < targetFU->size(); i++)	//iterate through Functional Units
-	{
-        	DEBUG_COUT << "Issue:\t" << "FU #" << i << " has " << targetFU->at(i).count << " cycles remaining \n";
-		if(targetFU->at(i).count == 0)	//if not busy
-		{
-			FU_tag = i;
-			break;
-		}
-	}
-	DEBUG_COUT << "Empty Element = " << FU_tag << endl << endl;
-	return FU_tag;
+    for (size_t i = 0; i < targetFU->size(); i++)	//iterate through Functional Units
+    {
+        DEBUG_COUT << "Issue:\t" << "FU #" << i << " has " << targetFU->at(i).count << " cycles remaining \n";
+        if (targetFU->at(i).count == 0)	//if not busy
+        {
+            FU_tag = i;
+            break;
+        }
+    }
+    DEBUG_COUT << "Empty Element = " << FU_tag << endl << endl;
+    return FU_tag;
 }
 
 //function to compare waiting RS operands with "broadcast" results
-void checkValue( std::vector<RS_Element> *targetRS )
-{
-	int rename_tag = 0;
+void checkValue(std::vector<RS_Element> *targetRS) {
+    int rename_tag = 0;
 
-	DEBUG_COUT << "Issue: Check Values in RS" << endl;
+    DEBUG_COUT << "Issue: Check Values in RS" << endl;
 
-	for(size_t i = 0; i < targetRS->size(); i++) 
-	{
-		
-		if(targetRS->at(i).valid1 == false)			//check if op1 is valid
-		{	
-			//DEBUG_COUT << "Issue: checking for new op1 value" << endl;
-			rename_tag = targetRS->at(i).op1;	//set rrf tag
-			if(rename_tag != -1 && rrf[rename_tag].valid == true)	//if rrf is valid, copy data
-			{
-				DEBUG_COUT << "Issue: updating new op1 value" << endl;
-    				targetRS->at(i).op1 = rrf[rename_tag].data;
-    				targetRS->at(i).valid1 = true;
-			}
-		}
-		if(targetRS->at(i).valid2 == 0)			//check for valid op2 value
-		{
-			//DEBUG_COUT << "Issue: checking for new op2 value" << endl;
-			rename_tag = targetRS->at(i).op2;
-			if(rename_tag != -1 && rrf[rename_tag].valid == true)
-			{
-				DEBUG_COUT << "Issue: updating new op1 value" << endl;
-    				targetRS->at(i).op2 = rrf[rename_tag].data;
-    				targetRS->at(i).valid2 = true;
-			}
-		}
-		if(targetRS->at(i).valid1 == true && targetRS->at(i).valid2 == true)	//set ready bit
-			targetRS->at(i).ready = true;
-	}
-	DEBUG_COUT << endl;
+    for (size_t i = 0; i < targetRS->size(); i++) {
+
+        if (targetRS->at(i).valid1 == false)			//check if op1 is valid
+        {
+            rename_tag = targetRS->at(i).op1;	//set rrf tag
+//            DEBUG_COUT << "Issue: checking for new op1 value at rrf[" << rename_tag << "]" << endl;
+            if (rename_tag != -1 && rrf[rename_tag].valid == true)	//if rrf is valid, copy data
+            {
+                DEBUG_COUT << "Issue: updating new op1 value" << endl;
+                targetRS->at(i).op1 = rrf[rename_tag].data;
+                targetRS->at(i).valid1 = true;
+            }
+        }
+        if (targetRS->at(i).valid2 == 0)			//check for valid op2 value
+        {
+            rename_tag = targetRS->at(i).op2;
+//            DEBUG_COUT << "Issue: checking for new op2 value at rrf[" << rename_tag << "]" << endl;
+            if (rename_tag != -1 && rrf[rename_tag].valid == true) {
+                DEBUG_COUT << "Issue: updating new op2 value" << endl;
+                targetRS->at(i).op2 = rrf[rename_tag].data;
+                targetRS->at(i).valid2 = true;
+            }
+        }
+        if (targetRS->at(i).valid1 == true && targetRS->at(i).valid2 == true)	//set ready bit
+            targetRS->at(i).ready = true;
+    }
+    DEBUG_COUT << endl;
 }
 
 //function to check RS for ready instructions and issue if FU is not busy
@@ -207,15 +203,15 @@ void checkReady( std::vector<RS_Element> *targetRS )
 			}
 		}
 	}
-}
 
+}
 
 //quick sweep to see if all of our RS's are empty.
 //returns true if empty
 //returns false if any element is still busy
 bool checkForFinished(std::vector<RS_Element> *targetRS) {
-    for(size_t i = 0; i < targetRS->size(); i++) {
-        if(targetRS->at(i).busy)
+    for (size_t i = 0; i < targetRS->size(); i++) {
+        if (targetRS->at(i).busy)
             return false;
     }
     return true;
@@ -223,11 +219,7 @@ bool checkForFinished(std::vector<RS_Element> *targetRS) {
 
 void simulateIssueStage() {
 
-    if(isDispatchFinished &&
-        checkForFinished(&rs_int) &&
-        checkForFinished(&rs_fp) &&
-        checkForFinished(&rs_mem) &&
-        checkForFinished(&rs_br) ) {
+    if (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br)) {
 
         cout << "Issue is now finished\n";
         isIssueFinished = true;

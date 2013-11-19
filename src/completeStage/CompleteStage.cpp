@@ -47,8 +47,6 @@ void simulateCompleteStage() {
         return;
     }
 
-//    int incrementer = robHead;
-
     DEBUG_COUT << "Complete:\t" << "Completing instructions\n";
 
     while (!done) {
