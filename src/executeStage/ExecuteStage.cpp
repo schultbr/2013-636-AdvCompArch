@@ -22,7 +22,7 @@ using namespace std;
 bool checkForFinished(std::vector<FU_Element> *targetFUs) {
     for(size_t i = 0; i < targetFUs->size(); i++) {
         if(targetFUs->at(i).count > 0) {
-            DEBUG_COUT << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
+            DEBUG_COUT_2 << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
             return false;
         }
     }
@@ -205,7 +205,7 @@ void simulateExecuteStage()
 
         fu_br.count = 0;    	//set finished
 
-	if (rob[fu_br.reorder].code = BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
+	if (rob[fu_br.reorder].code == BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
 	{
 		next_tag = fu_br.reorder;
 

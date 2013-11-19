@@ -93,10 +93,10 @@ int runSimulation() {
             notDone = false;
 
 #ifdef DEBUG2
-//        if (cyclesCompleted > 186000)
-//            dumpRegs();
+        if (cyclesCompleted > 89369)
+            dumpRegs(); //195605    //89469
 #endif
-//
+
 //		if(i%50 == 0)
 //		    fetchStalled = false;
         //todo: remove when done testing fetch
