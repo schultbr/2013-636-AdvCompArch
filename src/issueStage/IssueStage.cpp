@@ -93,107 +93,117 @@ void checkValue(std::vector<RS_Element> *targetRS) {
 }
 
 //function to check RS for ready instructions and issue if FU is not busy
-void checkReady(std::vector<RS_Element> *targetRS) {
-    int FU_tag = 0;
-    int cnt = targetRS->size();
+void checkReady( std::vector<RS_Element> *targetRS )
+{
+	int FU_tag= 0;
+	int cnt = targetRS->size();
 
-    //DEBUG_COUT << "Issue: Check if RS is Ready" << endl;
-    for (int i = 0; i < cnt; i++) {
-        if (targetRS->at(i).ready == true)		//RS entry is ready
-                {
-            DEBUG_COUT << "Issue\tRS at: [" << i << "] is ready to issue" << endl << endl;
-            switch (targetRS->at(i).code)	//check FU for empty slot
-            {
-                case LOGICAL:
-                case ADD_SUB_I:
-                    FU_tag = checkFU(&fu_add);
-                    DEBUG_COUT << "Issue:\t" << "Checking ADD FU returned tag: " << FU_tag << endl;
+	//DEBUG_COUT << "Issue: Check if RS is Ready" << endl;
+	for(int i = 0; i < cnt; i++)
+	{
+		if(targetRS->at(i).ready == true)		//RS entry is ready
+		{	
+			DEBUG_COUT << "RS at: [" << i << "] is ready to issue" << endl << endl;
+			switch(targetRS->at(i).code)	//check FU for empty slot
+			{
+				case LOGICAL:
+				case ADD_SUB_I: 
+					FU_tag = checkFU( &fu_add );
+					DEBUG_COUT << "Issue:\t" << "Checking ADD FU returned tag: " << FU_tag << endl;
 
-                    if (FU_tag != -1) {
-                        //copy RS entry to FU slot & set cycle count
-                        copyToFU(targetRS->at(i), fu_add, FU_tag, 1);
-                        DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
-                        DEBUG_COUT << "Resizing INT RS" << endl << endl;
-                        //DEBUG_COUT << "RS size starting = " << targetRS->size() << "\n";
+					if (FU_tag != -1)
+					{
+						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to ADD FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing INT RS" << endl << endl;
+						
+						//copy RS entry to FU slot & set cycle count
+						copyToFU( targetRS->at(i), fu_add, FU_tag, 1 );
+						rob[targetRS->at(i).reorder].issued = true;
 
-                        targetRS->erase(targetRS->begin() + i);	//"pop" RS entry off queue
-                        i--;		//erase will reindex vector so i needs adjusted
-                        cnt--;		//erase will reindex vector so cnt needs adjusted
-                        //DEBUG_COUT << "RS size after issue pop = " << targetRS->size() << "\n";
+						targetRS->erase( targetRS->begin()+i );	//"pop" RS entry off queue
+						i--;		//erase will reindex vector so i needs adjusted
+						cnt--;		//erase will reindex vector so cnt needs adjusted
 
-                        targetRS->resize(targetRS->size() + 1, RS_Element()); //"push" empty RS entry onto queue
-                        //DEBUG_COUT << "RS size after issue push = " << targetRS->size() << "\n" << "\n";
-                    }
-                    break;
+						targetRS->resize( targetRS->size()+1 ); //"push" empty RS entry onto queue
+					}
+					break;
 
-                case MULT_DIV_I:
-                    FU_tag = checkFU(&fu_mult);
-                    DEBUG_COUT << "Issue:\t" << "Checking MULT FU returned tag: " << FU_tag << endl;
+				case MULT_DIV_I:
+					FU_tag = checkFU( &fu_mult );
+					DEBUG_COUT << "Issue:\t" << "Checking MULT FU returned tag: " << FU_tag << endl;
 
-                    if (FU_tag != -1) {
-                        copyToFU(targetRS->at(i), fu_mult, FU_tag, 3);
-                        DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
-                        DEBUG_COUT << "Resizing INT RS" << endl << endl;
-                        targetRS->erase(targetRS->begin() + i);
-                        i--;
-                        cnt--;
-                        targetRS->resize(targetRS->size() + 1, RS_Element());
-                    }
-                    break;
+					if (FU_tag != -1)
+					{
+						copyToFU( targetRS->at(i), fu_mult, FU_tag, 3 );
+						rob[targetRS->at(i).reorder].issued = true;
+						DEBUG_COUT << "Issuing INT RS[" << i << "]: " << targetRS->at(i).PC << " to MULT FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing INT RS" << endl << endl;
+						targetRS->erase( targetRS->begin()+i );	
+						i--;
+						cnt--;
+						targetRS->resize( targetRS->size()+1 );	
+					}
+					break;
 
-                case FLOATING_POINT:
-                    FU_tag = checkFU(&fu_fp);
-                    DEBUG_COUT << "Issue:\t" << "Checking FP FU returned tag: " << FU_tag << endl;
+				case FLOATING_POINT:
+					FU_tag = checkFU( &fu_fp );
+					DEBUG_COUT << "Issue:\t" << "Checking FP FU returned tag: " << FU_tag << endl;
 
-                    if (FU_tag != -1) {
-                        copyToFU(targetRS->at(i), fu_fp, FU_tag, 5);
-                        DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
-                        DEBUG_COUT << "Resizing FP RS" << endl << endl;
-                        targetRS->erase(targetRS->begin() + i);
-                        i--;
-                        cnt--;
-                        targetRS->resize(targetRS->size() + 1, RS_Element());
-                    }
-                    break;
+					if (FU_tag != -1)
+					{
+						copyToFU( targetRS->at(i), fu_fp, FU_tag, 5 );
+						rob[targetRS->at(i).reorder].issued = true;
+						DEBUG_COUT << "Issuing FP RS[" << i << "]: " << targetRS->at(i).PC << " to FP FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing FP RS" << endl << endl;
+						targetRS->erase( targetRS->begin()+i );	
+						i--;
+						cnt--;
+						targetRS->resize( targetRS->size()+1 );
+					}
+					break;
+				
+				case LOAD:
+				case STORE:
+					//if(i == 0)	Would implement if we needed to issue MEM instr in order
+					FU_tag = checkFU( &fu_mem );
+					DEBUG_COUT << "Issue:\t" << "Checking MEM FU returned tag: " << FU_tag << endl;
 
-                case LOAD:
-                case STORE:
-                    //if(i == 0)	Would implement if we needed to issue MEM instr in order
-                    FU_tag = checkFU(&fu_mem);
-                    DEBUG_COUT << "Issue:\t" << "Checking MEM FU returned tag: " << FU_tag << endl;
+					if (FU_tag != -1)
+					{
+						copyToFU( targetRS->at(i), fu_mem, FU_tag, 1 ); //only adding 1 cycle to count because L1 access time
+						//will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
+						rob[targetRS->at(i).reorder].issued = true;
+						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
+						targetRS->erase( targetRS->begin()+i );	
+						targetRS->resize( targetRS->size()+1 );
+						i--;
+						cnt--;
+					}
+					break;
+			
+				case JUMP:
+				case BRANCH:
+					DEBUG_COUT << "Issue:\t" << "Checking if single Branch FU is empty" << endl;
+					if(fu_br.count == 0)	//FU empty
+					{
+						copyToBranchFU( targetRS->at(i), fu_br );
+						rob[targetRS->at(i).reorder].issued = true;
+						DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
+						DEBUG_COUT << "Resizing BR RS" << endl << endl;
+						targetRS->erase( targetRS->begin()+i );	
+						targetRS->resize( targetRS->size()+1 );
+						//can only issue 1 per cycle so no reindexing needed
+					}
+					break;
 
-                    if (FU_tag != -1) {
-                        copyToFU(targetRS->at(i), fu_mem, FU_tag, 1); //only adding 1 cycle to count because L1 access time
-                        //will add at least 1 additional cycle during ExecuteStage, for a min of 2 cycles
-                        DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
-                        DEBUG_COUT << "Resizing MEM RS" << endl << endl;
-                        targetRS->erase(targetRS->begin() + i);
-                        targetRS->resize(targetRS->size() + 1, RS_Element());
-                        i--;
-                        cnt--;
-                    }
-                    break;
+                		case NOP: //NOP goes straight to ROB with complete marked as true -- brs
+                		default:
+                    			break;
+			}
+		}
+	}
 
-                case JUMP:
-                case BRANCH:
-                    DEBUG_COUT << "Issue:\t" << "Checking if single Branch FU is empty" << endl;
-                    if (fu_br.count == 0)	//FU empty
-                            {
-                        copyToBranchFU(targetRS->at(i), fu_br);
-                        DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
-                        DEBUG_COUT << "Resizing BR RS" << endl << endl;
-                        targetRS->erase(targetRS->begin() + i);
-                        targetRS->resize(targetRS->size() + 1, RS_Element());
-                        //can only issue 1 per cycle so no reindexing needed
-                    }
-                    break;
-
-                case NOP: //NOP goes straight to ROB with complete marked as true -- brs
-                default:
-                    break;
-            }
-        }
-    }
 }
 
 //quick sweep to see if all of our RS's are empty.
