@@ -119,8 +119,8 @@ void grabNextInstructionGroup() {
 		instrToAdd = instructionTrace.getNextInstruction();
 
 		//debug print:
-		DEBUG_COUT("Fetch:\t" << "Fetched: ");
-		instrToAdd.Print();
+//		DEBUG_COUT("Fetch:\t" << "Fetched: ");
+//		instrToAdd.Print();
 
 		//we got an empty instruction due to being at the end of the file. big day.
 //		if(instrToAdd.PC == -2 && instrToAdd.GetOpcodeString() == "")
@@ -189,11 +189,13 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 //
 void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
-    if(instructionsInPipeline.size() == 0 && endOfTraceReached) {
+    if(!isFetchFinished && instructionsInPipeline.size() == 0 && endOfTraceReached) {
         isFetchFinished = true;
         cout << "Fetch is now finished" << endl;
         return;
     }
+    else if(isFetchFinished)
+        return;
 
     if((int)fetchedInstructions.size() == ::superScalarFactor) {
         DEBUG_COUT("Error: Fetch buffer full at start of stage. Dispatch must be stalled. Waiting until that's kosher\n");

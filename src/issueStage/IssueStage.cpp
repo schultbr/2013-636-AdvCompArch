@@ -216,7 +216,6 @@ void checkReady( std::vector<RS_Element> *targetRS )
 			}
 		}
 	}
-
 }
 
 //quick sweep to see if all of our RS's are empty.
@@ -235,11 +234,13 @@ bool checkForFinished(std::vector<RS_Element> *targetRS) {
 
 void simulateIssueStage() {
 
-    if (isIssueFinished || (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br))) {
+    if (!isIssueFinished && (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br))) {
         cout << "Issue is now finished\n";
         isIssueFinished = true;
         return;
     }
+    else if(isIssueFinished)
+        return;
 
     //DEBUG_COUT("Issue Stage\n";
 
