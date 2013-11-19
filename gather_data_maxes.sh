@@ -97,7 +97,7 @@ do
 done
 
 
-mkdir -pv ./simulationResults/mpeg/rrf_size
+#mkdir -pv ./simulationResults/mpeg/rrf_size
 
 OUT_DIR_F=./simulationResults/fpppp/rrf_size
 OUT_DIR_P=./simulationResults/perl/rrf_size
@@ -109,12 +109,12 @@ do
 
 	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_PERL --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_P/rrf_$rrf.log
 
-	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rff.log
+i	$EXE --ss $SSF_TEST --rs $RS_TEST --fu $FU_TEST --rnt $rrf --rob $ROB_TEST --btb $BTB_SIZE --l1hr $L1_HR --l1at $L1_AT --l2hr $L2_HR --l2at $L2_AT --trace $TRACE_MPEG --inshr $IC_HR --mmat $MM_AT | tee $OUT_DIR_M/rrf_$rrf.log
 done
 
 
 
-mkdir -pv ./simulationResults/mpeg/rob_size
+#mkdir -pv ./simulationResults/mpeg/rob_size
 
 OUT_DIR_F=./simulationResults/fpppp/rob_size
 OUT_DIR_P=./simulationResults/perl/rob_size
