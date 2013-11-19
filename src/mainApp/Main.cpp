@@ -66,8 +66,14 @@ void dumpRegs() {
     DEBUG_COUT_2 << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl;
     for (size_t i = 0; i < rob.size(); i++) {
         DEBUG_COUT_2 << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
-                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC
-                << endl;
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC;
+        if((int) i == robHead)
+            DEBUG_COUT_2 << "<---HEAD";
+
+        if((int) i == robTail)
+            DEBUG_COUT_2 << "<---TAIL";
+
+        DEBUG_COUT_2 << endl;
     }
 
 }

@@ -211,6 +211,9 @@ void checkReady( std::vector<RS_Element> *targetRS )
 //returns false if any element is still busy
 bool checkForFinished(std::vector<RS_Element> *targetRS) {
     for (size_t i = 0; i < targetRS->size(); i++) {
+        if(isDispatchFinished)
+            DEBUG_COUT_2 << "Checking targetRS #" << i << " for busy (" << (targetRS->at(i).busy ? "true" :  "false") <<")" << endl;
+
         if (targetRS->at(i).busy)
             return false;
     }
@@ -219,8 +222,7 @@ bool checkForFinished(std::vector<RS_Element> *targetRS) {
 
 void simulateIssueStage() {
 
-    if (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br)) {
-
+    if (isIssueFinished || (isDispatchFinished && checkForFinished(&rs_int) && checkForFinished(&rs_fp) && checkForFinished(&rs_mem) && checkForFinished(&rs_br))) {
         cout << "Issue is now finished\n";
         isIssueFinished = true;
         return;

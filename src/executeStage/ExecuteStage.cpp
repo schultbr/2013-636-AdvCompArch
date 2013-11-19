@@ -22,8 +22,10 @@ using namespace std;
 bool checkForFinished(std::vector<FU_Element> *targetFUs) 
 {
     for(size_t i = 0; i < targetFUs->size(); i++) {
+        if(isIssueFinished)
+            DEBUG_COUT_2 << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
+
         if(targetFUs->at(i).count > 0) {
-            DEBUG_COUT << "Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n";
             return false;
         }
     }
@@ -57,13 +59,7 @@ void simulateExecuteStage()
     int reorder_tag = 0;
     bool done = false;
 
-    bool chk_add = checkForFinished(&fu_add);
-    bool chk_mult = checkForFinished(&fu_add);
-    bool chk_mem = checkForFinished(&fu_add);
-    bool chk_fp = checkForFinished(&fu_add);
-    bool chk_br = fu_br.count == 0;
-
-    if(isIssueFinished && chk_add && chk_mult && chk_mem && chk_fp && chk_br) 
+    if(isIssueFinished && checkForFinished(&fu_add) && checkForFinished(&fu_add) && checkForFinished(&fu_add) && checkForFinished(&fu_add) && fu_br.count == 0)
     {
         cout << "Execute is now finished" << endl;
         isExecuteFinished = true;

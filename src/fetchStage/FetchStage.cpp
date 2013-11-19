@@ -125,7 +125,7 @@ void grabNextInstructionGroup() {
 		//we got an empty instruction due to being at the end of the file. big day.
 //		if(instrToAdd.PC == -2 && instrToAdd.GetOpcodeString() == "")
 		if(instrToAdd.getIsEOF())
-		    return;
+		    break;
 
 		currentFetchedItem.instructions.push(instrToAdd);
 		instructionCount++;
