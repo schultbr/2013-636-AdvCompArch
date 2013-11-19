@@ -16,6 +16,15 @@
 #define DEBUG_COUT 0 && cout
 #endif
 
+
+#define DEBUG2 //for testing prints. Comment this line out to slim down the output.
+
+#ifdef DEBUG2
+#define DEBUG_COUT_2 cout
+#else
+#define DEBUG_COUT_2 0 && cout
+#endif
+
 //#include "TraceReader.h"
 #include "StructureDefs.h"
 #include "BranchPredictor.h"

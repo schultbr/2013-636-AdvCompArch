@@ -271,6 +271,11 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].dest = inst.dest;
 //            rob[i].OP = inst.GetOpcodeString();
 
+            //update ARF to show that the RRF now has the latest value
+            arf[inst.dest].busy = true;
+            arf[inst.dest].rename = returnTag;
+
+
             break; //dont bother continuing. let's move on.
         }
     }
