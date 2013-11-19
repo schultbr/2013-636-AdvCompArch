@@ -200,6 +200,7 @@ void Instruction::Print() {
     DEBUG_COUT_2(" op: " << opCode);
     DEBUG_COUT_2(" src1: " << src1);//"\t src1Str:\t" << src1Reg << endl);
     DEBUG_COUT_2(" src2:" << src2);//"\t src2Str:\t" << src2Reg << endl);
+    DEBUG_COUT_2(" btaddress:" << predictedTargetPC);//"\t src2Str:\t" << src2Reg << endl);
     DEBUG_COUT_2(endl);
 }
 

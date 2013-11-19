@@ -51,8 +51,9 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
     instrToPredict.predictedTargetPC = -1;
 
     //else, well, it's already false
-    if (instrToPredict.predictedTargetPC) {
+    if (instrToPredict.wasBranchPredictedAsTaken) {
         for (size_t i = 0; i < btb.size(); i++) {
+//            DEBUG_COUT_3("BTB[" << i << "].PC is " << btb[i].instrPC << endl);
             if (btb[i].instrPC == instrToPredict.PC) {
                 instrToPredict.predictedTargetPC = btb[i].targetPC;
                 return true;
@@ -83,6 +84,7 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
         dec_state(entry.PTaddr);
     }
 
+//    DEBUG_COUT_3("Updating BTB record for " << entry.PC << endl);
     updateBTBRecord(entry.PC, entry.BTaddr, entry.BRoutcome);
 }
 
@@ -167,6 +169,8 @@ void BranchPredictor::dec_state(int hashAddr) {
 }
 
 void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTaken) {
+
+    //find the entry in the btb that matches the branch PC we're updating
     for (size_t i = 0; i < btb.size(); i++) {
         if (btb[i].instrPC == instrPC) {
 //            btb[i].lastPredictedTaken = wasTaken;
@@ -175,10 +179,16 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
         }
     }
 
+    //if it ins't there, insert the branch's PC into the index @ btbInsertIndex's location. Round-robin insert
     btb[btbInsertIndex].instrPC = instrPC;
 //    btb[btbInsertIndex].lastPredictedTaken = wasTaken;
     btb[btbInsertIndex].targetPC = brachTarget;
+
+    DEBUG_COUT("BranchPredictor:\tBTB Updated index " << btbInsertIndex << " to have PC: " << btb[btbInsertIndex].instrPC << " and targetPC: " << btb[btbInsertIndex].targetPC << endl);
+
     btbInsertIndex++; //next entry
+
+
 
     if (btbInsertIndex == (int) btb.size()) {
         btbInsertIndex = 0; //if we reached the max size, wrap around to 0;

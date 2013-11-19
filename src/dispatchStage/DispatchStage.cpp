@@ -194,6 +194,9 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
             targetRS->at(i).BTaddr = inst.predictedTargetPC;
             targetRS->at(i).code = inst.opCode;
 
+            if(inst.opCode == BRANCH || inst.opCode == JUMP)
+                DEBUG_COUT("Dispatch: BTAddr for " << i << " is now " << targetRS->at(i).BTaddr << " due to inst.btpc being " << inst.predictedTargetPC << endl);
+
             break; //we got our parking spot. quit the loop.
         }
     }

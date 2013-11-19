@@ -201,55 +201,55 @@ void simulateExecuteStage()
 
         fu_br.count = 0;    	//set finished
 
-	//update ROB to say that we're done:
-	markROBFinished(fu_br.reorder);
+        //update ROB to say that we're done:
+        markROBFinished(fu_br.reorder);
     	fu_br_inUse--;
 
-	if (rob[fu_br.reorder].code == BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
-	{
-		next_tag = fu_br.reorder;
+        if (rob[fu_br.reorder].code == BRANCH)	//as opposed to JUMP which are already marked as finished in ROB
+        {
+            next_tag = fu_br.reorder;
 
-		if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
-		{
-		    fetchStalled = false;                                       //stop stalling Fetch Stage
-		}
+            if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC)    //if mispredicted
+            {
+                fetchStalled = false;                                       //stop stalling Fetch Stage
+            }
 
-		if (fu_br.BRoutcome == true)                               	//branch is taken
-		{
-		    branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB
-		}
+//            if (fu_br.BRoutcome == true)                               	//branch is taken
+//            {
+                branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
+//            }
 
-		//if prediction was not correct, Fetch is stalled to simulate "flushing" 
-		//so there will be no new instrs in the ROB that need flushed
-		if (fu_br.BRoutcome == fu_br.BRprediction) 
-		{ 
-			//check if prediction was correct
-			//when branch resolves, set instructions in ROB valid up until next branch
-			//because of trace file, all instructions will end up being valid, no flushing from ROB
-			while (!done)	
-			{
-				if (next_tag == (int) rob.size() - 1)
-				{
-				    next_tag = 0;
-				}
-				else
-				{
-				    next_tag++;
-				}
+            //if prediction was not correct, Fetch is stalled to simulate "flushing"
+            //so there will be no new instrs in the ROB that need flushed
+            if (fu_br.BRoutcome == fu_br.BRprediction)
+            {
+                //check if prediction was correct
+                //when branch resolves, set instructions in ROB valid up until next branch
+                //because of trace file, all instructions will end up being valid, no flushing from ROB
+                while (!done)
+                {
+                    if (next_tag == (int) rob.size() - 1)
+                    {
+                        next_tag = 0;
+                    }
+                    else
+                    {
+                        next_tag++;
+                    }
 
-				if (next_tag != robTail)
-				    rob[next_tag].valid = true;
+                    if (next_tag != robTail)
+                        rob[next_tag].valid = true;
 
-				if (rob[next_tag].code == BRANCH || next_tag == robTail)
-				    done = true;
-			}
-		}
+                    if (rob[next_tag].code == BRANCH || next_tag == robTail)
+                        done = true;
+                }
+            }
 
-		if (fu_br.reorder == unresolvedBranchRobIndex)	//check if ROB has additional unresolved branches
-		{
-		    anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
-		}
-	}
+            if (fu_br.reorder == unresolvedBranchRobIndex)	//check if ROB has additional unresolved branches
+            {
+                anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
+            }
+        }
     }
 }
 

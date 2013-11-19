@@ -42,6 +42,8 @@ bool checkBranchPrediction(Instruction &currentInstr) {
 
     currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC != normalNextPC);
 
+    DEBUG_COUT("Predicted Target PC: " << currentInstr.predictedTargetPC << " Actual next pc: " << actualNextPC << " normal (non branch) next pc: " << normalNextPC << endl);
+
     if (wasBranchPredicted) {
         //return true if our predicted PC matches the trace's next PC
         if (currentInstr.predictedTargetPC == actualNextPC) {
@@ -70,6 +72,8 @@ bool checkBranchPrediction(Instruction &currentInstr) {
 void grabNextInstructionGroup() {
     //	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
     FetchPipelineItem currentFetchedItem;
+
+    bool takeBranchCheck = false;
 
     if (endOfTraceReached) {
         return;
@@ -121,17 +125,19 @@ void grabNextInstructionGroup() {
         if (instrToAdd.getIsEOF())
             break;
 
+        //do branch checks here..
+        if (instrToAdd.IsBranch()) {
+            takeBranchCheck = checkBranchPrediction(instrToAdd);
+        }
+
         currentFetchedItem.instructions.push(instrToAdd);
         instructionCount++;
 
-        //do branch checks here..
-        if (instrToAdd.IsBranch()) {
-            if (!checkBranchPrediction(instrToAdd)) {
-                fetchStalledInstrPC = instrToAdd.PC;
-                fetchStalled = true; //flip this to false once this mis-predicted branch finishes execution
-                instructionsInPipeline.push_back(currentFetchedItem);
-                return;
-            }
+        if (instrToAdd.IsBranch() && takeBranchCheck) {
+            fetchStalledInstrPC = instrToAdd.PC;
+            fetchStalled = true; //flip this to false once this mis-predicted branch finishes execution
+            instructionsInPipeline.push_back(currentFetchedItem);
+            return;
         }
     }
 
