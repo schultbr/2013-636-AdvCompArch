@@ -31,7 +31,7 @@ void simulateCompleteStage() {
     int dest_tag, rename_tag;
     bool done = false;
 
-    if(isExecuteFinished) {
+    if(!isCompleteFinished && isExecuteFinished) {
         if(sweepROBForFinished()) {
             cout << "Complete is now finished" << endl;
             isCompleteFinished = true;
@@ -40,6 +40,8 @@ void simulateCompleteStage() {
         else
             finishNext = true;
     }
+    else if(isCompleteFinished)
+        return;
 
     if(finishNext) {
         cout << "Complete being forced to finish" << endl;

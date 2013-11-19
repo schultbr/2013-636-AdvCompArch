@@ -22,7 +22,7 @@ using namespace std;
 bool checkForFinished(std::vector<FU_Element> *targetFUs) 
 {
     for(size_t i = 0; i < targetFUs->size(); i++) {
-        if(isIssueFinished)
+        if(isIssueFinished) //prevent the debug crap from showing up until issue is done..
             DEBUG_COUT_2 ("Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n");
 
         if(targetFUs->at(i).count > 0) {
@@ -59,21 +59,15 @@ void simulateExecuteStage()
     int reorder_tag = 0;
     bool done = false;
 
-    if(isIssueFinished && checkForFinished(&fu_add) && checkForFinished(&fu_mult) && checkForFinished(&fu_mem) && checkForFinished(&fu_fp) && fu_br.count == 0)
+    if(!isExecuteFinished && isIssueFinished && checkForFinished(&fu_add) && checkForFinished(&fu_mult)
+            && checkForFinished(&fu_mem) && checkForFinished(&fu_fp) && fu_br.count == 0)
     {
         cout << "Execute is now finished" << endl;
         isExecuteFinished = true;
         return;
     }
-//    else {
-//        cout << "Execute:\t issueFinished? " << (isIssueFinished ? "true" : "false") <<
-//                " chk_add? " << (chk_add ? "true" : "false") <<
-//                " chk_mult? " << (chk_mult ? "true" : "false") <<
-//                " chk_mem? " << (chk_mem ? "true" : "false") <<
-//                " chk_fp? " << (chk_fp ? "true" : "false") <<
-//                " chk_br? " << (chk_br ? "true" : "false") <<
-//                "br_size? " << fu_br.count << endl;
-//    }
+    else if(isExecuteFinished)
+        return;
 
     DEBUG_COUT("Execute:\t" << "Execute Stage\n");
 

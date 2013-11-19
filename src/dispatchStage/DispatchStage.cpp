@@ -305,14 +305,16 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     bool usesRRF = false;
     bool usesRS = false;
 
-    if(isDispatchFinished || (isDecodeFinished && instrToDispatch.size() == 0)) {
+    if(!isDispatchFinished && (isDecodeFinished && instrToDispatch.size() == 0)) {
         isDispatchFinished = true;
         cout << "Dispatch is now finished" << endl;
         return;
     }
+    else if(isDispatchFinished)
+        return;
 
     while(instrToDispatch.size() > 0 && !isStalled) {
-        switch(instrToDispatch.front().opCode){
+        switch(instrToDispatch.front().opCode) {
             case ADD_SUB_I:
             case MULT_DIV_I:
             case LOGICAL: //todo verify these go here.
@@ -370,22 +372,25 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 	    //update stats for RS entries in use
 	    switch(instrToDispatch.front().opCode)
 	    {
-		case ADD_SUB_I:
-            	case MULT_DIV_I:
-		case LOGICAL:
-			rs_int_inUse++;
-			break;
-		case FLOATING_POINT:
-			rs_fp_inUse++;
-			break;
-		case JUMP:
-            	case BRANCH:
-			rs_br_inUse++;
-			break;
-            	case LOAD:
-            	case STORE:
-			rs_mem_inUse++;
-			break;
+            case ADD_SUB_I:
+            case MULT_DIV_I:
+            case LOGICAL:
+                rs_int_inUse++;
+                break;
+            case FLOATING_POINT:
+                rs_fp_inUse++;
+                break;
+            case JUMP:
+            case BRANCH:
+                rs_br_inUse++;
+                break;
+            case LOAD:
+            case STORE:
+                rs_mem_inUse++;
+                break;
+            case NOP:
+            default:
+                break;
 	    }
 	}
 
