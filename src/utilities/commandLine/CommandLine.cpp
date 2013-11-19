@@ -51,14 +51,20 @@ static struct option long_options[] = {
 	{0,         0,                 0,  0   }
 };
 
-void promptForInt(std::string promptTextString, int &targetInt) {
+void promptForInt(std::string promptTextString, int &targetInt, int max) {
 	cout <<  promptTextString;
 	cin >> targetInt;
+
+	if(max != 0 && targetInt > max)
+	    targetInt = max;
 }
 
-void promptForFloat(std::string promptTextString, float &targetFloat) {
+void promptForFloat(std::string promptTextString, float &targetFloat, float max) {
 	cout <<  promptTextString;
 	cin >> targetFloat;
+
+	if(max != 0 && targetFloat > max)
+	    targetFloat = max;
 }
 
 void promptForString(std::string promptTextString, std::string &targetStr) {
@@ -166,35 +172,35 @@ int processCommandLine(int argc, char **argv) {
 		DEBUG_COUT << "Found opt=" << opt << "\t" << foundCount << " of " << targetFound << " required flags found\n";
 //		print_usage();
 		if(::superScalarFactor == -1)
-			promptForInt("Enter Superscalar Width:\t", ::superScalarFactor);
+			promptForInt("Enter Superscalar Width (max: 8):\t", ::superScalarFactor, 8);
 		if(::btbSize == -1)
-			promptForInt("Enter BTB Size:\t", ::btbSize);
+			promptForInt("Enter BTB Size (max: 128):\t", ::btbSize, 128);
 		if(::rsEntries == -1)
-			promptForInt("Enter # of RS Entries:\t", ::rsEntries);
+			promptForInt("Enter # of RS Entries (max: 128):\t", ::rsEntries, 128);
 		if(::fuCount == -1)
-			promptForInt("Enter # of Functional Units:\t", ::fuCount);
+			promptForInt("Enter # of Functional Units (max: 8):\t", ::fuCount, 8);
 		if(::renameTableEntries == -1)
-			promptForInt("Enter Rename Table size:\t", ::renameTableEntries);
+			promptForInt("Enter Rename Table size (max 128):\t", ::renameTableEntries, 128);
 		if(::reorderBufferEntries == -1)
-			promptForInt("Enter ROB Size:\t", ::reorderBufferEntries);
+			promptForInt("Enter ROB size (max 128):\t", ::reorderBufferEntries, 128);
 
 		if(::instrCacheHitRate == -1)
-			promptForFloat("Enter Instruction Cache Hit Rate:\t", ::instrCacheHitRate);
+			promptForFloat("Enter Instruction Cache Hit Rate (max 100):\t", ::instrCacheHitRate, 100);
 //		if(::instrCacheAccessTime == -1)
 //			promptForInt("Enter Instruction Cache Access Time:\t", ::instrCacheAccessTime);
 
 		if(::level1CacheHitRate == -1)
-			promptForFloat("Enter L1 Cache Hit Rate:\t", ::level1CacheHitRate);
+			promptForFloat("Enter L1 Cache Hit Rate (max 100):\t", ::level1CacheHitRate, 100);
 		if(::level1CacheAccessTime == -1)
-			promptForInt("Enter L1 Cache Access Time:\t", ::level1CacheAccessTime);
+			promptForInt("Enter L1 Cache Access Time:\t", ::level1CacheAccessTime, 0);
 
 		if(::level2CacheHitRate == -1)
-			promptForFloat("Enter L2 Cache Hit Rate:\t", ::level2CacheHitRate);
+			promptForFloat("Enter L2 Cache Hit Rate (max 100):\t", ::level2CacheHitRate, 100);
 		if(::level2CacheAccessTime == -1)
-			promptForInt("Enter L2 Cache Access Time:\t", ::level2CacheAccessTime);
+			promptForInt("Enter L2 Cache Access Time:\t", ::level2CacheAccessTime, 0);
 
 		if(::systemMemoryAccessTime == -1)
-		    promptForInt("Enter Main Memory Access Time:\t", ::systemMemoryAccessTime);
+		    promptForInt("Enter Main Memory Access Time:\t", ::systemMemoryAccessTime, 0);
 
 		if(::inputTraceFile.size() == 0)
 		    promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
