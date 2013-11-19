@@ -124,7 +124,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						i--;		//erase will reindex vector so i needs adjusted
 						cnt--;		//erase will reindex vector so cnt needs adjusted
 
-						targetRS->resize( targetRS->size()+1 ); //"push" empty RS entry onto queue
+						targetRS->resize( targetRS->size()+1, RS_Element() ); //"push" empty RS entry onto queue
 					}
 					break;
 
@@ -141,7 +141,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
-						targetRS->resize( targetRS->size()+1 );	
+						targetRS->resize( targetRS->size()+1, RS_Element());
 					}
 					break;
 
@@ -158,7 +158,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						targetRS->erase( targetRS->begin()+i );	
 						i--;
 						cnt--;
-						targetRS->resize( targetRS->size()+1 );
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 					}
 					break;
 				
@@ -176,7 +176,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						DEBUG_COUT << "Issuing MEM RS[" << i << "]: " << targetRS->at(i).PC << " to MEM FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing MEM RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
-						targetRS->resize( targetRS->size()+1 );
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 						i--;
 						cnt--;
 					}
@@ -192,7 +192,7 @@ void checkReady( std::vector<RS_Element> *targetRS )
 						DEBUG_COUT << "Issuing BR RS[" << i << "]: " << targetRS->at(i).PC << " to BR FU[" << FU_tag << "]\n";
 						DEBUG_COUT << "Resizing BR RS" << endl << endl;
 						targetRS->erase( targetRS->begin()+i );	
-						targetRS->resize( targetRS->size()+1 );
+						targetRS->resize( targetRS->size()+1, RS_Element() );
 						//can only issue 1 per cycle so no reindexing needed
 					}
 					break;

@@ -31,6 +31,9 @@ public:
     void Print();
     std::string ToString();
 
+    void setIsEOF(bool val);
+    bool getIsEOF();
+
     int PC;
     int src1;
     int src2;
@@ -48,6 +51,7 @@ private:
     int opCodeDecodeType;
     std::string opCodeStr;
     bool isBranch;
+    bool isEOF;
 
     std::string src1Reg;
     std::string src2Reg;

@@ -49,8 +49,9 @@ Instruction TraceReader::getNextInstruction(){
 	line = getNextTraceLine();
 
 //	cout<< "Line:\t" <<  line << endl;
-	if(line == "") {
+	if(line == "" && endOfTraceReached) {
 	    Instruction ret;
+	    ret.setIsEOF(true);
 	    return ret;
 	}
 	else {

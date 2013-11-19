@@ -23,7 +23,7 @@ static const int hiloRegIndex = 63;
 static const int fccRegIndex = 64;
 
 Instruction::Instruction() {
-    PC = -1;
+    PC = -2; //-2 to know when we are past the EOF
     dest = -1;
     imm = -1;
     opCodeStr = "";
@@ -36,6 +36,7 @@ Instruction::Instruction() {
     opCode = NOP;
     wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
+    isEOF = false;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
     	FillMaps();
@@ -59,6 +60,7 @@ Instruction::Instruction(string line) {
     wasBranchPredictedAsTaken = false;
     predictedTargetPC = -1;
     opCode = NOP; //initial opCode. Gets set in decode.
+    isEOF = false;
 
     if(opcodeTypeMap.size() == 0 && instructionTypeMap.size() == 0)
 		FillMaps();
@@ -75,6 +77,13 @@ int Instruction::GetOpcodeRegisterType() {
 
 bool Instruction::IsBranch(){
 	return isBranch;
+}
+
+void Instruction::setIsEOF(bool val){
+    isEOF = val;
+}
+bool Instruction::getIsEOF(){
+    return isEOF;
 }
 
 //returns the ops corresponding to this instr... -1 is default and means "not used" and

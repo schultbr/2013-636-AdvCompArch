@@ -122,6 +122,11 @@ void grabNextInstructionGroup() {
 		DEBUG_COUT << "Fetch:\t" << "Fetched: ";
 		instrToAdd.Print();
 
+		//we got an empty instruction due to being at the end of the file. big day.
+//		if(instrToAdd.PC == -2 && instrToAdd.GetOpcodeString() == "")
+		if(instrToAdd.getIsEOF())
+		    return;
+
 		currentFetchedItem.instructions.push(instrToAdd);
 		instructionCount++;
 
@@ -216,8 +221,8 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
         DEBUG_COUT << "Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n";
 //        return;  //don't return, we need to decrement still. only new instruction fetching is stalled
     }
-    else //add another instruction set to the group, if we can.
-        grabNextInstructionGroup();
+    else if((int)fetchedInstructions.size() == 0 && instructionsInPipeline.size() == 0)//add another instruction set to the group, if we can. if size is > 0, we shoudln't grab more
+        grabNextInstructionGroup(); //prevent us from grabbing too many instructions by subtracting buffersize from ss_size
 
 
 	//always continue to grab more, unless fetched instructions is full already. then we stop.
