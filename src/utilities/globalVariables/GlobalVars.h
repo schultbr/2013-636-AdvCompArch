@@ -60,6 +60,8 @@ extern std::string inputTraceFile;
 //////////////////////////////////////////////////////////
 extern int robHead;
 extern int robTail;
+extern int robEntries;
+extern int robEntriesMax;
 
 extern BranchPredictor branchPredictor;
 
@@ -87,7 +89,29 @@ extern int unresolvedBranchRobIndex;
 //////////////////////////////////////////////////////////
 extern unsigned int cyclesCompleted;
 extern unsigned int instructionCount;
+extern unsigned int rs_int_inUse;
+extern unsigned int rs_fp_inUse;
+extern unsigned int rs_br_inUse;
+extern unsigned int rs_mem_inUse;
+extern unsigned int fu_add_inUse;
+extern unsigned int fu_mult_inUse;
+extern unsigned int fu_fp_inUse;
+extern unsigned int fu_br_inUse;
+extern unsigned int fu_mem_inUse;
+extern unsigned int rrf_inUse;
+extern unsigned int rob_inUse;
 
+extern unsigned int rs_int_total;
+extern unsigned int rs_fp_total;
+extern unsigned int rs_br_total;
+extern unsigned int rs_mem_total;
+extern unsigned int fu_add_total;
+extern unsigned int fu_mult_total;
+extern unsigned int fu_fp_total;
+extern unsigned int fu_br_total;
+extern unsigned int fu_mem_total;
+extern unsigned int rrf_total;
+extern unsigned int rob_total;
 //branch info is tracked by the predictor itself..
 
 //////////////////////////////////////////////////////////

@@ -34,8 +34,21 @@ void determineStatistics() {
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
     cout << "CPI, then, is " << CPI << endl;
+
+	cout << "ROB entries total = " << rob_total << " and #in Use per cycle = " << (float) rob_total/cyclesCompleted << endl;
+	cout << "RRF entries total = " << rrf_total << " and #in Use per cycle = " << (float) rrf_total/cyclesCompleted << endl << endl;
+	cout << "RS INT used per cycle = " << (float) rs_int_total/cyclesCompleted << endl; 
+	cout << "RS FP used per cycle = " << (float) rs_fp_total/cyclesCompleted << endl;
+	cout << "RS MEM used per cycle = " << (float) rs_mem_total/cyclesCompleted << endl;
+	cout << "RS BR used per cycle = " << (float) rs_br_total/cyclesCompleted << endl;
+	cout << "FU ADD used per cycle = " << (float) fu_add_total/cyclesCompleted << endl;
+	cout << "FU MULT used per cycle = " << (float) fu_mult_total/cyclesCompleted << endl;
+	cout << "FU FP used per cycle = " << (float) fu_fp_total/cyclesCompleted << endl;
+	cout << "FU MEM used per cycle = " << (float) fu_mem_total/cyclesCompleted << endl;
+	cout << "FU BR used per cycle = " << (float) fu_br_total/cyclesCompleted << endl << endl;
 }
-//
+
+
 //void clearQueue(){
 //	while(decodeDispatchBuffer.size() > 0)
 //		decodeDispatchBuffer.pop();
@@ -80,7 +93,24 @@ int runSimulation() {
         simulateCompleteStage();
         simulateExecuteStage();
         simulateIssueStage();
+
+	//update our running totals of the buffer entries in use each cycle
+	fu_br_total += fu_br_inUse;
+	fu_mem_total += fu_mem_inUse;
+	fu_fp_total += fu_fp_inUse;
+	fu_mult_total += fu_mult_inUse;
+	fu_add_total += fu_add_inUse;
+
         simulateDispatchStage(decodeDispatchBuffer);
+
+	//update our running totals of the buffer entries in use each cycle
+    	rob_total += rob_inUse;
+	rrf_total += rrf_inUse;
+        rs_int_total += rs_int_inUse;
+	rs_fp_total += rs_fp_inUse;
+	rs_mem_total += rs_mem_inUse;
+	rs_br_total += rs_br_inUse;
+
         simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
         simulateFetchStage(fetchDecodeBuffer);
 
@@ -239,13 +269,14 @@ int main(int argc, char** argv) {
 	}
 
 	cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
+	cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
 	for (int i=0;i<rob.size();i++)
 	{
 		printROB(rob[i]);
 	}
 	*/
 
-    cout << "Exiting.\n";
+    cout << "Exiting" << endl;
 
     return 0;
 }

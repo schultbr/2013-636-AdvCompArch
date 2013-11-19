@@ -53,25 +53,30 @@ void simulateCompleteStage() {
         DEBUG_COUT << "Complete:\t Checking " << robHead << " busy=" << rob[robHead].busy << endl;
         DEBUG_COUT << "Complete:\t Checking " << robHead << " finished=" << rob[robHead].finished << endl;
         DEBUG_COUT << "Complete:\t Checking " << robHead << " valid=" << rob[robHead].valid << endl;
+
         if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1) {
             DEBUG_COUT << "Complete:\t Found #" << robHead << " to be ready for complete" << endl;
 
             done = false;
-            rob[robHead].busy = 0;			            //set not busy
+            rob[robHead].busy = false;			            //set not busy
             rename_tag = rob[robHead].rename;
 
             if (rename_tag != -1) {				        //has a destination register
                 dest_tag = rrf[rename_tag].dest;
                 arf[dest_tag].data = rrf[rename_tag].data;	//copy data from RRF to ARF
-                rrf[rename_tag].busy = 0;			    //set not busy
+                rrf[rename_tag].busy = false;			    //set not busy
+		rrf_inUse--;
 
                 if (arf[dest_tag].rename == rename_tag)		//data being written to ARF is newest value
-                    arf[dest_tag].busy = 0;			        //set not busy
+                    arf[dest_tag].busy = false;			        //set not busy
             }
+	    robEntries--;
+	    rob_inUse--;
 
             robHead++;
-            if (robHead == (int) rob.size())				    //increment head of circular queue
+            if (robHead == (int) rob.size()) {				    //increment head of circular queue
                 robHead = 0;
+	    }
         }
         else { 			//do we do anything special for finished but not valid?
             DEBUG_COUT << "Complete:\t Hit else case. Done checking." << endl;
