@@ -18,11 +18,12 @@ void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queu
     DEBUG_COUT("Decode:\tDecoding " << instuctionsToDecode.size() << " instructions\n");
 
 	if(!isDecodeFinished && isFetchFinished) {
+//	    cout << "Decode can finish... (size: " << instuctionsToDecode.size() << ")" << endl;
 	    if(instuctionsToDecode.size() == 0) {
 	        cout << "Decode is now finished" << endl;
 	        isDecodeFinished = true;
+	        return;
 	    }
-	    return;
 	}
 	else if(isDecodeFinished)
 	    return;
