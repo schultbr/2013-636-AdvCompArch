@@ -44,7 +44,7 @@ struct ARF_Element {
 
 	ARF_Element() {
 		busy = false;
-		data = -1;
+		data = 0;
 		rename = -1;
 	}
 };
@@ -60,7 +60,7 @@ struct RRF_Element {
 		busy = false;
 		valid = false;
 		data = 0;
-		dest = 0;
+		dest = -1;
 	}
 };
 
