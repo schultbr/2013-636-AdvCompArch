@@ -35,19 +35,18 @@ void determineStatistics() {
     cout << "Cycle count: " << cyclesCompleted << endl;
     cout << "IPC, then, is " << IPC << endl;
 
-	cout << "ROB entries total = " << rob_total << " and #in Use per cycle = " << (float) rob_total/cyclesCompleted << endl;
-	cout << "RRF entries total = " << rrf_total << " and #in Use per cycle = " << (float) rrf_total/cyclesCompleted << endl << endl;
-	cout << "RS INT used per cycle = " << (float) rs_int_total/cyclesCompleted << endl; 
-	cout << "RS FP used per cycle = " << (float) rs_fp_total/cyclesCompleted << endl;
-	cout << "RS MEM used per cycle = " << (float) rs_mem_total/cyclesCompleted << endl;
-	cout << "RS BR used per cycle = " << (float) rs_br_total/cyclesCompleted << endl;
-	cout << "FU ADD used per cycle = " << (float) fu_add_total/cyclesCompleted << endl;
-	cout << "FU MULT used per cycle = " << (float) fu_mult_total/cyclesCompleted << endl;
-	cout << "FU FP used per cycle = " << (float) fu_fp_total/cyclesCompleted << endl;
-	cout << "FU MEM used per cycle = " << (float) fu_mem_total/cyclesCompleted << endl;
-	cout << "FU BR used per cycle = " << (float) fu_br_total/cyclesCompleted << endl << endl;
+    cout << "ROB entries total = " << rob_total << " and #in Use per cycle = " << (float) rob_total / cyclesCompleted << endl;
+    cout << "RRF entries total = " << rrf_total << " and #in Use per cycle = " << (float) rrf_total / cyclesCompleted << endl << endl;
+    cout << "RS INT used per cycle = " << (float) rs_int_total / cyclesCompleted << endl;
+    cout << "RS FP used per cycle = " << (float) rs_fp_total / cyclesCompleted << endl;
+    cout << "RS MEM used per cycle = " << (float) rs_mem_total / cyclesCompleted << endl;
+    cout << "RS BR used per cycle = " << (float) rs_br_total / cyclesCompleted << endl;
+    cout << "FU ADD used per cycle = " << (float) fu_add_total / cyclesCompleted << endl;
+    cout << "FU MULT used per cycle = " << (float) fu_mult_total / cyclesCompleted << endl;
+    cout << "FU FP used per cycle = " << (float) fu_fp_total / cyclesCompleted << endl;
+    cout << "FU MEM used per cycle = " << (float) fu_mem_total / cyclesCompleted << endl;
+    cout << "FU BR used per cycle = " << (float) fu_br_total / cyclesCompleted << endl << endl;
 }
-
 
 //void clearQueue(){
 //	while(decodeDispatchBuffer.size() > 0)
@@ -79,11 +78,11 @@ void dumpRegs() {
     DEBUG_COUT_2("Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl);
     for (size_t i = 0; i < rob.size(); i++) {
         DEBUG_COUT_2(i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
-                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " <<  rob[i].PC );
-        if((int) i == robHead)
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " << rob[i].PC );
+        if ((int) i == robHead)
             DEBUG_COUT_2("<---HEAD");
 
-        if((int) i == robTail)
+        if ((int) i == robTail)
             DEBUG_COUT_2("<---TAIL");
 
         DEBUG_COUT_2(endl);
@@ -94,8 +93,8 @@ void dumpRegs() {
 int runSimulation() {
     bool notDone = true;
 //	int i = 0;
-//	unsigned int max = 500;
-    unsigned int max = 500000; // if this thing runs away... don't wait
+	unsigned int max = 25;
+//    unsigned int max = 500000; // if this thing runs away... don't wait
     while (notDone) {
         DEBUG_COUT("Simulating cycle " << cyclesCompleted << endl);
 
@@ -103,22 +102,23 @@ int runSimulation() {
         simulateExecuteStage();
         simulateIssueStage();
 
-	//update our running totals of the buffer entries in use each cycle
-	fu_br_total += fu_br_inUse;
-	fu_mem_total += fu_mem_inUse;
-	fu_fp_total += fu_fp_inUse;
-	fu_mult_total += fu_mult_inUse;
-	fu_add_total += fu_add_inUse;
+        //update our running totals of the buffer entries in use each cycle
+        fu_br_total += fu_br_inUse;
+        fu_mem_total += fu_mem_inUse;
+        fu_fp_total += fu_fp_inUse;
+        fu_mult_total += fu_mult_inUse;
+        fu_add_total += fu_add_inUse;
 
         simulateDispatchStage(decodeDispatchBuffer);
 
-	//update our running totals of the buffer entries in use each cycle
-    	rob_total += rob_inUse;
-	rrf_total += rrf_inUse;
+        //update our running totals of the buffer entries in use each cycle
+        rob_total += rob_inUse;
+//        DEBUG_COUT_2("Incrementing RRF total by " << rrf_inUse << " from " << rrf_total << " to " << rrf_total+rrf_inUse << endl);
+        rrf_total += rrf_inUse;
         rs_int_total += rs_int_inUse;
-	rs_fp_total += rs_fp_inUse;
-	rs_mem_total += rs_mem_inUse;
-	rs_br_total += rs_br_inUse;
+        rs_fp_total += rs_fp_inUse;
+        rs_mem_total += rs_mem_inUse;
+        rs_br_total += rs_br_inUse;
 
         simulateDecodeStage(fetchDecodeBuffer, decodeDispatchBuffer);
         simulateFetchStage(fetchDecodeBuffer);
@@ -131,9 +131,9 @@ int runSimulation() {
         if (cyclesCompleted == max)
             notDone = false;
 
-#ifdef DEBUG2
-        if (cyclesCompleted > 91375)
-            dumpRegs(); //195605    //89469 //91475
+#ifdef DEBUG3
+//        if (cyclesCompleted > 91375)
+        dumpRegs(); //195605    //89469 //91475
 #endif
 
 //		if(i%50 == 0)
@@ -190,7 +190,7 @@ void resizeHardwareFromParameters() {
 //    }
 }
 
-void printFU(FU_Element entry) {
+static void printFU(FU_Element entry) {
     cout << "PC " << entry.PC << endl;
     cout << "count: " << entry.count << endl;
     cout << "op1: " << entry.op1 << endl;
@@ -203,7 +203,7 @@ void printFU(FU_Element entry) {
     cout << "Branch Target Addr: " << entry.BTaddr << endl << endl;
 }
 
-void printRS(RS_Element entry) {
+static void printRS(RS_Element entry) {
     cout << "PC " << entry.PC << endl;
     cout << "busy: " << entry.busy << endl;
     cout << "valid1: " << entry.valid1 << endl;
@@ -280,30 +280,30 @@ int main(int argc, char** argv) {
 
     dumpRegs();
 
-	//print final buffers
-	/*
-	cout << "Printing RRF" << endl;
-	for (int i=0;i<rrf.size();i++)
-	{
-		cout << "RRF[" << i << "] = ";
-		printRRF(rrf[i]);
-	}
+    //print final buffers
+    /*
+     cout << "Printing RRF" << endl;
+     for (int i=0;i<rrf.size();i++)
+     {
+     cout << "RRF[" << i << "] = ";
+     printRRF(rrf[i]);
+     }
 
-	cout << "Printing ARF" << endl;
-	for (int i=0;i<arf.size();i++)
-	{
-		cout << "ARF[" << i << "] = ";
-		printARF(arf[i]);
-		cout << endl;
-	}
+     cout << "Printing ARF" << endl;
+     for (int i=0;i<arf.size();i++)
+     {
+     cout << "ARF[" << i << "] = ";
+     printARF(arf[i]);
+     cout << endl;
+     }
 
-	cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
-	cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
-	for (int i=0;i<rob.size();i++)
-	{
-		printROB(rob[i]);
-	}
-	*/
+     cout << "Printing ROB - Head = " << robHead << ", Tail = " << robTail << endl;
+     cout << "current ROB entries = " << robEntries << ", Max used = " << robEntriesMax << endl;
+     for (int i=0;i<rob.size();i++)
+     {
+     printROB(rob[i]);
+     }
+     */
 
     cout << "Exiting." << endl;
 

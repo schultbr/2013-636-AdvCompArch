@@ -119,8 +119,8 @@ void grabNextInstructionGroup() {
 		instrToAdd = instructionTrace.getNextInstruction();
 
 		//debug print:
-		DEBUG_COUT("Fetch:\t" << "Fetched: ");
-		instrToAdd.Print();
+//		DEBUG_COUT("Fetch:\t" << "Fetched: ");
+//		instrToAdd.Print();
 
 		//we got an empty instruction due to being at the end of the file. big day.
 //		if(instrToAdd.PC == -2 && instrToAdd.GetOpcodeString() == "")

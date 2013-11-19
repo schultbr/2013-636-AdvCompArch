@@ -216,7 +216,6 @@ void checkReady( std::vector<RS_Element> *targetRS )
 			}
 		}
 	}
-
 }
 
 //quick sweep to see if all of our RS's are empty.
