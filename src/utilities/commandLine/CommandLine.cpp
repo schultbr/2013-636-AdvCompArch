@@ -16,6 +16,14 @@
 
 using namespace std;
 
+static int maxSSF = 8;
+static int maxBTB = 128;
+static int maxRS = 8;
+static int maxFU = 8;
+static int maxRRF = 128;
+static int maxROB = 128;
+static float maxHR = 100;
+
 void print_usage() {
     cout << "Usage: project2 --ss NUM --btb NUM --rs NUM \n";
     cout << "                 --fu NUM --rnt NUM --rob NUM \n";
@@ -74,7 +82,7 @@ int processCommandLine(int argc, char **argv) {
     int opt = 0;
     int long_index = 0;
     int foundCount = 0;
-    int targetFound = 12;
+    int targetFound = 13;
 
     DEBUG_COUT("Processing command line for " << argc << " options\n");
 
@@ -84,61 +92,85 @@ int processCommandLine(int argc, char **argv) {
             case 's':
                 DEBUG_COUT("Found s\n");
                 ::superScalarFactor = atoi(optarg);
+                if(::superScalarFactor > maxSSF)
+                    ::superScalarFactor = maxSSF;
                 foundCount++;
                 break;
             case 'b':
                 DEBUG_COUT("Found b\n");
                 ::btbSize = atoi(optarg);
+                if(::btbSize > maxBTB)
+                    ::btbSize = maxBTB;
                 foundCount++;
                 break;
             case 'r':
                 DEBUG_COUT("Found r\n");
                 ::rsEntries = atoi(optarg);
+                if(::rsEntries > maxRS)
+                    ::rsEntries = maxRS;
                 foundCount++;
                 break;
             case 'f':
                 DEBUG_COUT("Found f\n");
                 ::fuCount = atoi(optarg);
+                if(::fuCount > maxFU)
+                    ::fuCount = maxFU;
                 foundCount++;
                 break;
             case 'n':
                 DEBUG_COUT("Found n\n");
                 ::renameTableEntries = atoi(optarg);
+                if(::renameTableEntries > maxRRF)
+                    ::renameTableEntries = maxRRF;
                 foundCount++;
                 break;
             case 'o':
                 DEBUG_COUT("Found o\n");
                 ::reorderBufferEntries = atoi(optarg);
+                if(::reorderBufferEntries > maxROB)
+                    ::reorderBufferEntries = maxROB;
                 foundCount++;
                 break;
             case 'i':
                 DEBUG_COUT("Found i\n");
                 ::instrCacheHitRate = atoi(optarg);
+                if(::instrCacheHitRate > maxHR)
+                    ::instrCacheHitRate = maxHR;
                 foundCount++;
                 break;
             case '1':
                 DEBUG_COUT("Found 1\n");
                 ::level1CacheHitRate = atoi(optarg);
+                if(::level1CacheHitRate > maxHR)
+                    ::level1CacheHitRate = maxHR;
                 foundCount++;
                 break;
             case '!':
                 DEBUG_COUT("Found !\n");
                 ::level1CacheAccessTime = atoi(optarg);
+                if(::level1CacheAccessTime <= 0)
+                    ::level1CacheAccessTime = 1;
                 foundCount++;
                 break;
             case '2':
                 DEBUG_COUT("Found 2\n");
                 ::level2CacheHitRate = atoi(optarg);
+                if(::level2CacheHitRate > maxHR)
+                    ::level2CacheHitRate = maxHR;
                 foundCount++;
                 break;
             case '@':
                 DEBUG_COUT("Found @\n");
                 ::level2CacheAccessTime = atoi(optarg);
+                if(::level2CacheAccessTime <= 0)
+                    ::level2CacheAccessTime = 1;
                 foundCount++;
                 break;
             case 'm':
                 DEBUG_COUT("Found m\n");
                 ::systemMemoryAccessTime = atoi(optarg);
+                if(::systemMemoryAccessTime <= 0)
+                    ::systemMemoryAccessTime = 1;
                 foundCount++;
                 break;
             case 't': {
