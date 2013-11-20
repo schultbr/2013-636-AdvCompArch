@@ -188,10 +188,10 @@ void simulateExecuteStage() {
             }
 
             //commented out... btb should get updated with all branches, not just taken ones. right?
-//            if (fu_br.BRoutcome == true)                      //branch is taken
-//            {
-            branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
-//            }
+            if (fu_br.BRoutcome == true)                      //branch is taken
+            {
+                branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
+            }
 
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed

@@ -136,6 +136,8 @@ int processCommandLine(int argc, char **argv) {
                 ::instrCacheHitRate = atoi(optarg);
                 if(::instrCacheHitRate > maxHR)
                     ::instrCacheHitRate = maxHR;
+                else if(::instrCacheHitRate < 1 )
+                    ::instrCacheHitRate = 1;
                 foundCount++;
                 break;
             case '1':
@@ -143,6 +145,8 @@ int processCommandLine(int argc, char **argv) {
                 ::level1CacheHitRate = atoi(optarg);
                 if(::level1CacheHitRate > maxHR)
                     ::level1CacheHitRate = maxHR;
+                else if(::level1CacheHitRate < 1 )
+                    ::level1CacheHitRate = 1;
                 foundCount++;
                 break;
             case '!':
@@ -157,6 +161,8 @@ int processCommandLine(int argc, char **argv) {
                 ::level2CacheHitRate = atoi(optarg);
                 if(::level2CacheHitRate > maxHR)
                     ::level2CacheHitRate = maxHR;
+                else if(::level2CacheHitRate < 1 )
+                    ::level2CacheHitRate = 1;
                 foundCount++;
                 break;
             case '@':
@@ -228,7 +234,7 @@ int processCommandLine(int argc, char **argv) {
         if (::inputTraceFile.size() == 0)
             promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
 
-        ::instrCacheAccessTime = ::level1CacheAccessTime;
+//        ::instrCacheAccessTime = ::level1CacheAccessTime;
     }
 
     return 0; //return 0 for success, <0 for failure. handle that on the calling side.

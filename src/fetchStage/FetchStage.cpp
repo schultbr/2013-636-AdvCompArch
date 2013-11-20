@@ -91,12 +91,12 @@ void grabNextInstructionGroup() {
     //per discussion in class 11/14/2013 -> pipeline buffers fill up if dispatch fills up.
     for (int i = 0; i < ::superScalarFactor; i++) {
         //lets check to see if we get a cache hit or miss...
-        currentFetchedItem.cyclesUntilReturned = instrCacheAccessTime; //we always have instrCacheAccessTime
+        currentFetchedItem.cyclesUntilReturned = ::level1CacheAccessTime; //we always have instrCacheAccessTime
         penaltyTime = checkCache(instrCacheHitRate, level2CacheAccessTime);
 
         if (penaltyTime > 0) { //failed l1 instruction cache hit
             DEBUG_COUT("Cache hit missed. Checking level 2 to see how bad the penalty is.\n");
-            cacheMissWaitTimeRemaining += penaltyTime + instrCacheAccessTime;
+            cacheMissWaitTimeRemaining += penaltyTime + level1CacheAccessTime;
 
             //check level 2 and hope we don't miss
             penaltyTime = checkCache(level2CacheHitRate, systemMemoryAccessTime);

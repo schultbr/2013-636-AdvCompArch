@@ -8,7 +8,7 @@
 #ifndef GLOBALVARS_H_
 #define GLOBALVARS_H_
 
-//#define DEBUG //for testing prints. Comment this line out to slim down the output.
+#define DEBUG //for testing prints. Comment this line out to slim down the output.
 
 #ifdef DEBUG
 //#define DEBUG_COUT cout
@@ -20,7 +20,7 @@
 #define DEBUG_COUT( x )
 #endif
 
-////#define DEBUG2 //for a small subset of testing prints for late-stage debugging. Comment this line out to slim down the output.
+//#define DEBUG2 //for a small subset of testing prints for late-stage debugging. Comment this line out to slim down the output.
 //note: style varied from DEBUG_COUT in an effort to fix the segfault after fpppp.tra exits... not sure why that happens but
 //      it doesn't happen with DEBUG_COUT_2 on.. sooo. Also, yeah, this didn't fix that
 #ifdef DEBUG2
@@ -29,7 +29,7 @@
 #define DEBUG_COUT_2( x )
 #endif
 
-//#define DEBUG3 //disabling this for mass-testing
+#define DEBUG3 //disabling this for mass-testing
 
 #ifdef DEBUG3
 #define DEBUG_COUT_3( x )  std::cout << x
