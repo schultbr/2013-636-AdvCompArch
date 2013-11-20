@@ -70,6 +70,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
         return true;
     }
 
+//    cout << "ERRORERRORERROR" << endl;
     return false; //if we got here, stuff is super screwed up.
 }
 
@@ -79,9 +80,11 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
     if (entry.BRoutcome) {
         //update the state machine with the current results
         inc_state(entry.PTaddr);
+        shift_left(1);
     }
     else {
         dec_state(entry.PTaddr);
+        shift_left(0);
     }
 
 //    DEBUG_COUT_3("Updating BTB record for " << entry.PC << endl);
@@ -89,9 +92,11 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
 }
 
 void BranchPredictor::printPredictionStatistics() {
+    unsigned int correctPredictions = branchPredictionCount - predictionMissCount;
     cout << endl;
     cout << "Branch predictor predicted " << branchPredictionCount << " branches and got " << predictionMissCount << " wrong... oops." << endl;
-    cout << "Branch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
+    cout << "\tBranch correct prediction rate: " << ((float)correctPredictions / branchPredictionCount) * 100 << "%" << endl;
+    cout << "\tBranch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
 }
 
 //////////////////////////////////////////////////////////////
@@ -101,6 +106,7 @@ void BranchPredictor::printPredictionStatistics() {
 //////////////////////////////////////////////////////////////
 //shift function
 void BranchPredictor::shift_left(bool bit) {
+    DEBUG_COUT_3("Shifting the branch" << endl);
     shiftReg = shiftReg << 1;			//shift 0 into lsb
     shiftReg = shiftReg & 0x03FF; 			//only use lower 10 bits
     if (bit == 1)

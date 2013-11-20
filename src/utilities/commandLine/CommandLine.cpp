@@ -233,9 +233,10 @@ int processCommandLine(int argc, char **argv) {
 
         if (::inputTraceFile.size() == 0)
             promptForString("Enter Path and Trace File Name (ex: ./traces/applu.tra):\t", ::inputTraceFile);
+    }
+
 
 //        ::instrCacheAccessTime = ::level1CacheAccessTime;
-    }
 
     return 0; //return 0 for success, <0 for failure. handle that on the calling side.
 }
