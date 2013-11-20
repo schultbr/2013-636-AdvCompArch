@@ -28,11 +28,11 @@ mkdir -pv ./simulationResults/mpeg/rrf_size
 mkdir -pv ./simulationResults/mpeg/rob_size
 
 #OPTIMALS
-SSF_TEST=6
-RS_TEST=5
-FU_TEST=4
-RRF_TEST=23
-ROB_TEST=45
+SSF_TEST=5
+RS_TEST=4
+FU_TEST=5
+RRF_TEST=26
+ROB_TEST=38
 
 #SWEEP RANGES
 SSF_OPTS="1 2 3 4 5 6 7 8"
