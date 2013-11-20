@@ -36,7 +36,7 @@ int robEntriesMax = 0;
 
 std::vector<ARF_Element> arf;
 std::vector<ROB_Element> rob;
-std::vector<RRF_Element> rrf;	
+std::vector<RRF_Element> rrf;
 
 std::vector<RS_Element> rs_int;
 std::vector<RS_Element> rs_fp;

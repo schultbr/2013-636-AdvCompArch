@@ -194,7 +194,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
             targetRS->at(i).BTaddr = inst.predictedTargetPC;
             targetRS->at(i).code = inst.opCode;
 
-            if(inst.opCode == BRANCH || inst.opCode == JUMP)
+            if (inst.opCode == BRANCH || inst.opCode == JUMP)
                 DEBUG_COUT("Dispatch: BTAddr for " << i << " is now " << targetRS->at(i).BTaddr << " due to inst.btpc being " << inst.predictedTargetPC << endl);
 
             break; //we got our parking spot. quit the loop.
@@ -258,7 +258,7 @@ int dispatchToRRF(Instruction inst) {
             rrf[i].data = 0;
             rrf[i].dest = inst.dest;
 
-            break;//dont bother continuing. let's move on.
+            break;    //dont bother continuing. let's move on.
         }
     }
 
@@ -324,10 +324,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         string boolResTrue = "true";
         string boolResFalse = "false";
 
-        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl);
-        DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl);
-        DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl);
-        DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
+        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl); DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
 
         if (isStalled)
             break;

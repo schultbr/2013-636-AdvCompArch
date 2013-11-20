@@ -14,17 +14,17 @@
 
 class TraceReader {
 public:
-	TraceReader();
-	virtual ~TraceReader();
+    TraceReader();
+    virtual ~TraceReader();
 
-	Instruction getNextInstruction();
-	std::string getNextTraceLine();
-	bool isTraceOpen();
-	int peekNextPC();
-	int openTrace(std::string traceName);
+    Instruction getNextInstruction();
+    std::string getNextTraceLine();
+    bool isTraceOpen();
+    int peekNextPC();
+    int openTrace(std::string traceName);
 
 private:
-	std::ifstream *traceFile;
+    std::ifstream *traceFile;
 };
 
 #endif /* TRACEREADER_H_ */

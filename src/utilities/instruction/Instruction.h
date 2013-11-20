@@ -20,12 +20,9 @@ public:
     virtual ~Instruction();
 
     bool IsBranch();
-//    bool GetWasBranchPredictedTaken();
-//    void SetWasBranchPredictionTaken(bool opt);
     void DecodeInstructionString();
     int GetRegisterIndexFromName(std::string regName);
-    void TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &op2,
-                            bool &valid2, bool &isReg2, int &op3);
+    void TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &op2, bool &valid2, bool &isReg2, int &op3);
     int GetOpcodeRegisterType();
     std::string GetOpcodeString();
     void Print();
@@ -66,7 +63,6 @@ private:
 
     void DecodeRegisters(std::string regStr);
 
-//    bool CheckIfBranchOrJump();
 };
 
 #endif /* INSTRUCTION_H_ */

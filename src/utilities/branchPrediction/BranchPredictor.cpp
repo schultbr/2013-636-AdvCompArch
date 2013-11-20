@@ -91,7 +91,7 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
 void BranchPredictor::printPredictionStatistics() {
     cout << endl;
     cout << "Branch predictor predicted " << branchPredictionCount << " branches and got " << predictionMissCount << " wrong... oops." << endl;
-    cout << "Branch mis-prediction rate: " << ((float)predictionMissCount/ branchPredictionCount) * 100 << "%" << endl << endl;
+    cout << "Branch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
 }
 
 //////////////////////////////////////////////////////////////
@@ -187,8 +187,6 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
     DEBUG_COUT("BranchPredictor:\tBTB Updated index " << btbInsertIndex << " to have PC: " << btb[btbInsertIndex].instrPC << " and targetPC: " << btb[btbInsertIndex].targetPC << endl);
 
     btbInsertIndex++; //next entry
-
-
 
     if (btbInsertIndex == (int) btb.size()) {
         btbInsertIndex = 0; //if we reached the max size, wrap around to 0;
