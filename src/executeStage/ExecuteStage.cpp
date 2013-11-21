@@ -185,13 +185,18 @@ void simulateExecuteStage() {
 
             if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC) {    //if mispredicted
                 fetchStalled = false;                                       //stop stalling Fetch Stage
+                fetchStalledInstrPC = -1;
             }
 
+            //done in decode
+//            fu_br.BTaddr = fu_br.PC + fu_br.
+
             //commented out... btb should get updated with all branches, not just taken ones. right?
-            if (fu_br.BRoutcome == true)                      //branch is taken
-            {
-                branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
-            }
+//            if (fu_br.BRoutcome == true)                      //branch is taken
+//            {
+                DEBUG_COUT_3("Execute:\t Updating branch predictor with results.\n");
+                branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
+//            }
 
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed

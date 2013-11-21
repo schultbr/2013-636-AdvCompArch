@@ -264,6 +264,9 @@ void Instruction::DecodeInstructionString() {
     opCode = opcodeTypeMap[opCodeStr]; // get the opcode type for FU routing later
     if (tokens.size() > 1)
         DecodeRegisters(tokens[1]);
+
+    if(opCode == BRANCH)
+        predictedTargetPC = PC + offset; //set this here so execute can use it later
 }
 
 int Instruction::GetRegisterIndexFromName(std::string regName) {
@@ -372,9 +375,9 @@ void Instruction::DecodeRegisters(std::string regStr) {
             src1Reg = regs[0];
             offset = atoi(regs[1].c_str());
             break;
-        case 5: // IMM & SRC1=FCC
+        case 5: // OFFSET & SRC1=FCC
             src1Reg = "FCC";
-            imm = atoi(regs[0].c_str());
+            offset = atoi(regs[0].c_str());
             break;
         case 6: //DEST & IMM & SRC1 (in that order)
             destReg = regs[0];
@@ -431,7 +434,7 @@ void Instruction::FillMaps() {
      * 2 = SRC1 & SRC2
      * 3 = SRC1 & SRC2 & OFFSET
      * 4 = SRC1 & OFFSET
-     * 5 = IMM & SRC1=FCC
+     * 5 = OFFSET & SRC1=FCC
      * 6 = DEST & IMM & SRC1 (in that order)
      * 7 = DEST & SRC1 & SRC2
      * 8 = DEST & SRC1 & IMM
@@ -473,7 +476,7 @@ void Instruction::FillMaps() {
     instructionTypeMap["bltz"] = 4;
     instructionTypeMap["bgez"] = 4;
 
-    //5 = IMM & SRC1=FCC
+    //5 = OFFSET & SRC1=FCC
     instructionTypeMap["bc1f"] = 5;
     instructionTypeMap["bc1t"] = 5;
 

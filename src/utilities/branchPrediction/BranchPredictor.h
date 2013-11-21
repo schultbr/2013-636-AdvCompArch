@@ -25,6 +25,7 @@ public:
 	void updatePredictorWithResults(FU_Element entry);
 
 	void printPredictionStatistics();
+	void printBTB();
 
 //moved the below to private since the stages that reference this don't need to know the
 //logic it uses... the predictor should be a magic 8-ball to them
