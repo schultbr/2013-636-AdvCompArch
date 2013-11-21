@@ -194,10 +194,11 @@ void simulateExecuteStage() {
             //commented out... btb should get updated with all branches, not just taken ones. right?
 //            if (fu_br.BRoutcome == true)                      //branch is taken
 //            {
-                DEBUG_COUT_3("Execute:\t Updating branch predictor with results. BROutcome = " << (fu_br.BRoutcome ? "true" : "false") << endl);
-                branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
+            DEBUG_COUT_3("Execute:\t Updating branch predictor with results. BROutcome = " << (fu_br.BRoutcome ? "true" : "false") << endl);
+            branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
 //            }
 
+            // this keeps stalling, so now if we get here and a see a branch, mark all after it as valid:
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed
 //            if (fu_br.BRoutcome == fu_br.BRprediction) {

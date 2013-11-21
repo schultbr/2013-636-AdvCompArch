@@ -40,19 +40,21 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
     instrToPredict.branchPredictorTableAddress = hash(instrToPredict.PC);
 
     int predictionTableState = predictionTable[instrToPredict.branchPredictorTableAddress];
-    bool res = false;
+    bool prediction = false;
 
     branchPredictionCount++;
 
     if (predictionTableState == 2 || predictionTableState == 3) { //predict this branch is taken
-        res = true;
+        prediction = true;
     }
 
     instrToPredict.predictedTargetPC = -1;
 
-    //else, well, it's already false
-    if (res) {
+    //if our state machine says to take the branch, lets see if we can!
+    if (prediction) {
         DEBUG_COUT_3("Branch predicted as taken" << endl);
+
+        //check btb for the branch PC to see if we have a target address. Won't be here if this is the first time through for this PC...
         for (size_t i = 0; i < btb.size(); i++) {
 //            DEBUG_COUT_3("BTB[" << i << "].PC is " << btb[i].instrPC << endl);
             if (btb[i].instrPC == instrToPredict.PC) {
@@ -62,10 +64,8 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
             }
         }
 
-        if (instrToPredict.predictedTargetPC == -1) {
-            DEBUG_COUT_3("BTB didn't have the target PC..." << endl);
-            return false; //branch predicted taken but BTB miss
-        }
+        DEBUG_COUT_3("BTB didn't have the target PC..." << endl);
+        return false; //branch predicted taken but BTB miss
     }
     else {
 //        instrToPredict.predictedTargetPC = instrToPredict.PC + 8; //don't do this here. do it in fetch...
@@ -73,7 +73,6 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
         return false; //branch predicted not taken
     }
 
-    cout << "ERRORERRORERROR" << endl;
     return false; //if we got here, stuff is super screwed up.
 }
 
@@ -101,7 +100,7 @@ void BranchPredictor::printPredictionStatistics() {
     cout << "\tBranch correct prediction rate: " << ((float)correctPredictions / branchPredictionCount) * 100 << "%" << endl;
     cout << "\tBranch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
 
-    printBTB();
+//    printBTB();
 }
 
 //////////////////////////////////////////////////////////////
@@ -155,7 +154,6 @@ void BranchPredictor::inc_state(int hashAddr) {
             predictionTable[hashAddr] = 3;
             break;
         default:
-            cout << "ERRORERRORERROR - inc_state" << endl;
             break; //should we bother with a default?
     }
 }
@@ -178,7 +176,6 @@ void BranchPredictor::dec_state(int hashAddr) {
             predictionTable[hashAddr] = 2;
             break;
         default:
-            cout << "ERRORERRORERROR - dec state" << endl;
             break; //should we bother with a default?
     }
 }
