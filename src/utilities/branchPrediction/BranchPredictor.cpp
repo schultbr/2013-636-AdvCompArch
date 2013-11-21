@@ -185,18 +185,13 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
     //find the entry in the btb that matches the branch PC we're updating
     for (size_t i = 0; i < btb.size(); i++) {
         if (btb[i].instrPC == instrPC) {
-            DEBUG_COUT_3("Checking index " << i << " in btb for PC " << instrPC << ". Found " << btb[i].instrPC << endl);
-//            btb[i].lastPredictedTaken = wasTaken;
             btb[i].targetPC = brachTarget;
             return;
         }
     }
     //if it ins't there, insert the branch's PC into the index @ btbInsertIndex's location. Round-robin insert
     btb[btbInsertIndex].instrPC = instrPC;
-//    btb[btbInsertIndex].lastPredictedTaken = wasTaken;
     btb[btbInsertIndex].targetPC = brachTarget;
-
-    DEBUG_COUT_3("BranchPredictor:\tBTB Updated index " << btbInsertIndex << " to have PC: " << btb[btbInsertIndex].instrPC << " and targetPC: " << btb[btbInsertIndex].targetPC << endl);
 
     btbInsertIndex++; //next entry
 
@@ -207,17 +202,17 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
 }
 
 void BranchPredictor::printBTB(){
-    DEBUG_COUT_3("Branch Address \t\t| Target Address" << endl;)
+    cout << "Branch Address \t\t| Target Address" << endl;
     for(size_t i = 0; i < btb.size(); i++)
-        DEBUG_COUT_3("\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl);
+        cout << "\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl;
 
-    DEBUG_COUT_3(endl << endl);
+    cout << endl << endl;
 
 
-    DEBUG_COUT_3("PTable Addr\t\t|PTable State" << endl);
+    cout << "PTable Addr\t\t|PTable State" << endl;
     for(int i = 0; i < 1024; i++)
-        DEBUG_COUT_3("\t" << i << "\t\t|\t" << predictionTable[i] << endl);
+        cout << "\t" << i << "\t\t|\t" << predictionTable[i] << endl;
 
-    DEBUG_COUT_3(endl << endl);
+    cout << endl << endl;
 }
 

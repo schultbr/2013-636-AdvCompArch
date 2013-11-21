@@ -630,4 +630,7 @@ void Instruction::FillMaps() {
     opcodeTypeMap["c.le.d"] = FLOATING_POINT;
     opcodeTypeMap["sqrt.d"] = FLOATING_POINT;
 
+    opcodeTypeMap["nop"] = NOP;
+    opcodeTypeMap["syscall"] = NOP;
+
 }

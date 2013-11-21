@@ -373,6 +373,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
         //update ARF to show that the RRF now has the latest value
         if (usesRRF) {
+//            instrToDispatch.front().dest
             arf[instrToDispatch.front().dest].busy = true;
             arf[instrToDispatch.front().dest].rename = rrfTag;
         }

@@ -41,10 +41,12 @@ void copyToRRF(FU_Element entry) {
     reorder_tag = entry.reorder;
     rename_tag = rob[reorder_tag].rename;
 
-    DEBUG_COUT("Execute:\t" << "Updating " << entry.PC << " in ROB/RRF.\n"); DEBUG_COUT("Execute:\t" << "  ROB tag " << reorder_tag << endl); DEBUG_COUT("Execute:\t" << "  RRF tag " << rename_tag << endl);
+    //prevent things from invalidly writing to rrf... if they shouldn't be. fixing segfault.
+    if(rename_tag >= 0 && rename_tag < ::renameTableEntries) {
+        rrf[rename_tag].data = entry.result;    	//write result to RRF
+        rrf[rename_tag].valid = true;              	//set RRF valid bit
+    }
 
-    rrf[rename_tag].data = entry.result;    	//write result to RRF
-    rrf[rename_tag].valid = true;              	//set RRF valid bit
     markROBFinished(reorder_tag); 		//set ROB finished bit
 }
 
