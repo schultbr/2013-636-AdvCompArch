@@ -8,7 +8,7 @@
 #ifndef GLOBALVARS_H_
 #define GLOBALVARS_H_
 
-#define DEBUG //for testing prints. Comment this line out to slim down the output.
+//#define DEBUG //for testing prints. Comment this line out to slim down the output.
 
 #ifdef DEBUG
 //#define DEBUG_COUT cout
@@ -29,7 +29,7 @@
 #define DEBUG_COUT_2( x )
 #endif
 
-#define DEBUG3 //disabling this for mass-testing
+//#define DEBUG3 //disabling this for mass-testing
 
 #ifdef DEBUG3
 #define DEBUG_COUT_3( x )  std::cout << x

@@ -20,7 +20,6 @@ BranchPredictor::BranchPredictor() {
     btbInsertIndex = 0;
     branchPredictionCount = 0;
     predictionMissCount = 0;
-
 }
 
 BranchPredictor::~BranchPredictor() {
@@ -45,8 +44,10 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
 
     branchPredictionCount++;
 
-    if (predictionTableState == 2 || predictionTableState == 3) //predict this branch is taken
+    if (predictionTableState == 2 || predictionTableState == 3) { //predict this branch is taken
         instrToPredict.wasBranchPredictedAsTaken = true;
+
+    }
 
     instrToPredict.predictedTargetPC = -1;
 

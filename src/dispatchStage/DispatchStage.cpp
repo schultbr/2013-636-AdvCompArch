@@ -190,7 +190,14 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 
             targetRS->at(i).reorder = robTag;
             targetRS->at(i).PTaddr = inst.branchPredictorTableAddress;
-            targetRS->at(i).BRoutcome = inst.wasBranchPredictedAsTaken;
+            targetRS->at(i).BRprediction = inst.wasBranchPredictedAsTaken;
+
+            if(inst.wasBranchPredictedAsTaken)
+                targetRS->at(i).BRoutcome =  (inst.wasBranchPredictionCorrect ? true : false);
+            else
+                targetRS->at(i).BRoutcome =  (inst.wasBranchPredictionCorrect ? false : true);
+
+//            targetRS->at(i).BRoutcome = ( ? true : false);
             targetRS->at(i).BTaddr = inst.predictedTargetPC;
             targetRS->at(i).code = inst.opCode;
 

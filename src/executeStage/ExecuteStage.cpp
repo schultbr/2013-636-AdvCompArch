@@ -194,29 +194,29 @@ void simulateExecuteStage() {
             //commented out... btb should get updated with all branches, not just taken ones. right?
 //            if (fu_br.BRoutcome == true)                      //branch is taken
 //            {
-                DEBUG_COUT_3("Execute:\t Updating branch predictor with results.\n");
+                DEBUG_COUT_3("Execute:\t Updating branch predictor with results. BROutcome = " << (fu_br.BRoutcome ? "true" : "false") << endl);
                 branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
 //            }
 
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed
-            if (fu_br.BRoutcome == fu_br.BRprediction) {
+//            if (fu_br.BRoutcome == fu_br.BRprediction) {
                 //check if prediction was correct
                 //when branch resolves, set instructions in ROB valid up until next branch
                 //because of trace file, all instructions will end up being valid, no flushing from ROB
-                while (!done) {
-                    if (next_tag == (int) rob.size() - 1)
-                        next_tag = 0;
-                    else
-                        next_tag++;
+            while (!done) {
+                if (next_tag == (int) rob.size() - 1)
+                    next_tag = 0;
+                else
+                    next_tag++;
 
-                    if (next_tag != robTail)
-                        rob[next_tag].valid = true;
+                if (next_tag != robTail)
+                    rob[next_tag].valid = true;
 
-                    if (rob[next_tag].code == BRANCH || next_tag == robTail)
-                        done = true;
-                }
+                if (rob[next_tag].code == BRANCH || next_tag == robTail)
+                    done = true;
             }
+//            }
 
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches
                 anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
