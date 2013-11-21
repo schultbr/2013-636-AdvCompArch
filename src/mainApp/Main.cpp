@@ -31,6 +31,25 @@ void determineStatistics() {
 
     float IPC = (float) instructionCount / cyclesCompleted;
 
+    float intRSUsage = (float) rs_int_total / cyclesCompleted;
+    float memRSUsage = (float) rs_mem_total / cyclesCompleted;
+    float brRSUsage = (float) rs_br_total / cyclesCompleted;
+    float fpRSUsage = (float) rs_fp_total / cyclesCompleted;
+
+    float rsAverageUsage = (intRSUsage + memRSUsage + brRSUsage + fpRSUsage) / 4;
+    float rsSlotCountAverage = (rsAverageUsage  / ::rsEntries) * 4;
+
+    float addFUUsage = (float) fu_add_total / cyclesCompleted;
+    float multFUUsage = (float) fu_mult_total / cyclesCompleted;
+    float fpFUUsage = (float) fu_fp_total / cyclesCompleted;
+    float memFUUsage = (float) fu_mem_total / cyclesCompleted;
+    float brFUUsage = (float) fu_br_total / cyclesCompleted;
+
+    float fuAverageUsage = (addFUUsage + multFUUsage + fpFUUsage + memFUUsage + brFUUsage) / 5;
+    float fuUsedAverage = (fuAverageUsage / (::fuCount + 1));
+
+
+
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
     cout << "IPC, then, is " << IPC << endl << endl;
@@ -38,16 +57,22 @@ void determineStatistics() {
     branchPredictor.printPredictionStatistics();
 
     cout << "ROB entries used per cycle = " << (float) rob_total / cyclesCompleted << endl;
-    cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl;
-    cout << "RS INT used per cycle = " << (float) rs_int_total / cyclesCompleted << endl;
-    cout << "RS FP used per cycle = " << (float) rs_fp_total / cyclesCompleted << endl;
-    cout << "RS MEM used per cycle = " << (float) rs_mem_total / cyclesCompleted << endl;
-    cout << "RS BR used per cycle = " << (float) rs_br_total / cyclesCompleted << endl;
-    cout << "FU ADD used per cycle = " << (float) fu_add_total / cyclesCompleted << endl;
-    cout << "FU MULT used per cycle = " << (float) fu_mult_total / cyclesCompleted << endl;
-    cout << "FU FP used per cycle = " << (float) fu_fp_total / cyclesCompleted << endl;
-    cout << "FU MEM used per cycle = " << (float) fu_mem_total / cyclesCompleted << endl;
-    cout << "FU BR used per cycle = " << (float) fu_br_total / cyclesCompleted << endl << endl;
+    cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl << endl;
+    cout << "RS INT used per cycle = " << intRSUsage << endl;
+    cout << "RS FP used per cycle = " << fpRSUsage << endl;
+    cout << "RS MEM used per cycle = " << memRSUsage << endl;
+    cout << "RS BR used per cycle = " << brRSUsage << endl;
+    cout << "Average RS usage per cycle = " << rsAverageUsage << endl;
+    cout << "Average slots used for RS = " << rsSlotCountAverage << endl << endl;
+
+
+    cout << "FU ADD used per cycle = " << addFUUsage << endl;
+    cout << "FU MULT used per cycle = " << multFUUsage << endl;
+    cout << "FU FP used per cycle = " << fpFUUsage << endl;
+    cout << "FU MEM used per cycle = " << memFUUsage << endl;
+    cout << "FU BR used per cycle = " << brFUUsage << endl;
+    cout << "Average FU used per cycle = " << fuAverageUsage << endl;
+    cout << "Average FU used = " << fuUsedAverage << endl << endl;
 }
 
 int rrf_count() {
@@ -68,17 +93,15 @@ void dumpRegs() {
     cout << "\n=====================ARF========================\n";
     cout << "\n================================================\n";
     cout << "Index\t| Data\t| Busy\t| RRF\t" << endl;
-    for (size_t i = 0; i < arf.size(); i++) {
-        cout << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
-    }
+    for (size_t i = 0; i < arf.size(); i++)
+        cout << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl;
 
     cout << "\n================================================\n";
     cout << "\n=====================RRF========================\n";
     cout << "\n================================================\n";
     cout << "Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl;
-    for (size_t i = 0; i < rrf.size(); i++) {
+    for (size_t i = 0; i < rrf.size(); i++)
         cout << i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl;
-    }
 
     cout << "\n================================================\n";
     cout << "\n=====================ROB========================\n";

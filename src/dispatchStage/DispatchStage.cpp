@@ -213,7 +213,7 @@ int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag
 int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) {
     int returnTag = -1;
 
-    DEBUG_COUT_2("Dispatch:\t" << "Dispatching " << inst.PC << " to ROB index " << robTail << endl);
+    DEBUG_COUT("Dispatch:\t" << "Dispatching " << inst.PC << " to ROB index " << robTail << endl);
 
     rob[robTail].busy = true;
     rob[robTail].finished = initAsFinished;
@@ -245,7 +245,7 @@ int dispatchToROB(Instruction inst, int renameTag, bool initAsFinished = false) 
 int dispatchToRRF(Instruction inst) {
     int returnTag = -1;
 
-    DEBUG_COUT_2("Dispatch:\tDispatching " << inst.PC << " to RRF" << endl);
+    DEBUG_COUT("Dispatch:\tDispatching " << inst.PC << " to RRF" << endl);
 
     //loop through from the start to the end of the rrf
     //find the first emtpy spot and sit 'er down.
@@ -299,26 +299,21 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
             case ADD_SUB_I:
             case MULT_DIV_I:
             case LOGICAL: //todo verify these go here.
-                DEBUG_COUT("Dispatch:\t" << "Found a add/sub or logical instr " << instrToDispatch.front().PC << endl);
                 targetRS = &rs_int;
                 break;
             case FLOATING_POINT:
                 targetRS = &rs_fp;
-                DEBUG_COUT("Dispatch:\t" << "Found a fp instr " << instrToDispatch.front().PC << endl);
                 break;
             case JUMP:
             case BRANCH:
-                DEBUG_COUT("Dispatch:\t" << "Found a branch instr " << instrToDispatch.front().PC << endl);
                 targetRS = &rs_br;
                 break;
             case LOAD:
             case STORE:
                 targetRS = &rs_mem;
-                DEBUG_COUT("Dispatch:\t" << "Found a memory instr " << instrToDispatch.front().PC << endl);
                 break;
             default:
-                DEBUG_COUT_2("Dispatch:\t" << "Found a ... nop? " << instrToDispatch.front().PC << endl);
-                targetRS = NULL; //right? JUMP doesn't use a execution unit? maybe?
+                targetRS = NULL;
                 break;
         }
 
@@ -327,8 +322,6 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
 
         string boolResTrue = "true";
         string boolResFalse = "false";
-
-        DEBUG_COUT("Dispatch:\t" << "Instruction PC: " << instrToDispatch.front().PC << endl); DEBUG_COUT("Dispatch:\t" << "Is dispatch stalled? " << (!checkRet ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RRF " << (usesRRF ? boolResTrue : boolResFalse) << endl); DEBUG_COUT("Dispatch:\t" << "Uses RS? " << (usesRS ? boolResTrue : boolResFalse) << endl);
 
         if (isStalled)
             break;

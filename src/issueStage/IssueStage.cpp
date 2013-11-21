@@ -45,12 +45,11 @@ int checkFU(std::vector<FU_Element> *targetFU) {
     DEBUG_COUT("Issue: Check FU for empty slots" << endl);
 
     for (size_t i = 0; i < targetFU->size(); i++) { //iterate through Functional Units
-        DEBUG_COUT("Issue:\t" << "FU #" << i << " has " << targetFU->at(i).count << " cycles remaining \n");
         if (targetFU->at(i).count == 0)	{ //if not busy
             FU_tag = i;
             break;
         }
-    } DEBUG_COUT("Empty Element = " << FU_tag << endl << endl);
+    }
     return FU_tag;
 }
 
@@ -64,7 +63,6 @@ void checkValue(std::vector<RS_Element> *targetRS) {
 
         if (targetRS->at(i).valid1 == false) {        //check if op1 is valid
             rename_tag = targetRS->at(i).op1;	//set rrf tag
-//            DEBUG_COUT("Issue: checking for new op1 value at rrf[" << rename_tag << "]" << endl;
             if (rename_tag != -1 && rrf[rename_tag].valid == true){ //if rrf is valid, copy data
                 DEBUG_COUT("Issue: updating new op1 value" << endl);
                 targetRS->at(i).op1 = rrf[rename_tag].data;

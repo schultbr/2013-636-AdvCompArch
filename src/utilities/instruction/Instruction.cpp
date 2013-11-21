@@ -189,11 +189,11 @@ void Instruction::TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &o
 //}
 
 void Instruction::Print() {
-    DEBUG_COUT_2(" PC: " << PC); DEBUG_COUT_2(" dest: " << dest); //"\t destStr:\t" << destReg << endl);
-    DEBUG_COUT_2(" imm: " << imm ); DEBUG_COUT_2(" offset: " << offset); DEBUG_COUT_2(" op: " << opCode); DEBUG_COUT_2(" src1: " << src1); //"\t src1Str:\t" << src1Reg << endl);
-    DEBUG_COUT_2(" src2:" << src2); //"\t src2Str:\t" << src2Reg << endl);
-    DEBUG_COUT_2(" btaddress:" << predictedTargetPC); //"\t src2Str:\t" << src2Reg << endl);
-    DEBUG_COUT_2(endl);
+    DEBUG_COUT(" PC: " << PC); DEBUG_COUT_2(" dest: " << dest); //"\t destStr:\t" << destReg << endl);
+    DEBUG_COUT(" imm: " << imm ); DEBUG_COUT_2(" offset: " << offset); DEBUG_COUT_2(" op: " << opCode); DEBUG_COUT_2(" src1: " << src1); //"\t src1Str:\t" << src1Reg << endl);
+    DEBUG_COUT(" src2:" << src2); //"\t src2Str:\t" << src2Reg << endl);
+    DEBUG_COUT(" btaddress:" << predictedTargetPC); //"\t src2Str:\t" << src2Reg << endl);
+    DEBUG_COUT(endl);
 }
 
 string Instruction::ToString() {
@@ -275,7 +275,7 @@ int Instruction::GetRegisterIndexFromName(std::string regName) {
     int indexOffset = 0;
     string numberStr;
 
-    DEBUG_COUT_2("For PC " << this->PC << ". Translating " << regName << " to a vector index" << endl);
+    DEBUG_COUT("For PC " << this->PC << ". Translating " << regName << " to a vector index" << endl);
 
     if (regName.length() == 0)
         return -1;
@@ -296,16 +296,13 @@ int Instruction::GetRegisterIndexFromName(std::string regName) {
         if (charPos == string::npos)
             return -1; //we didnt find a r or f in the string... wat
 
-        DEBUG_COUT_2("Found " << regName << " to be FP register. Adding 32 to offset." << endl);
         indexOffset = fpRegIndex;
     }
 
     numberStr = regName.substr(charPos + 1);
-    DEBUG_COUT_2("Found reg " << regName << " to be #" << numberStr << endl);
-
     retVal = atoi(numberStr.c_str());
 
-    DEBUG_COUT_2("Return val is " << retVal << " plus " << indexOffset << " giving " << retVal+indexOffset<< endl);
+    DEBUG_COUT("Return val is " << retVal << " plus " << indexOffset << " giving " << retVal+indexOffset<< endl);
 
     retVal += indexOffset;
 

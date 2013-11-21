@@ -21,8 +21,6 @@ using namespace std;
 //returns false if any element is still busy
 bool checkForFinished(std::vector<FU_Element> *targetFUs) {
     for (size_t i = 0; i < targetFUs->size(); i++) {
-        if (isIssueFinished) //prevent the debug crap from showing up until issue is done..
-            DEBUG_COUT_2 ("Functional unit #" << i << " has " << targetFUs->at(i).count << " remaining\n");
 
         if (targetFUs->at(i).count > 0) {
             return false;
@@ -69,16 +67,13 @@ void simulateExecuteStage() {
 // ------------------------- integer addition & logic FU - 1 cycle  -----------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned i = 0; i < fu_add.size(); i++) {
-        DEBUG_COUT("Execute:\t" << "Checking add FU " << i << " count: " << fu_add[i].count << endl);
         if (fu_add[i].count == 1) {     //move data to Rename Register File
             copyToRRF(fu_add[i]);
-            DEBUG_COUT("Execute:\t" << "Moved add inst " << fu_add[i].PC << " to rrf" << endl);
             fu_add_inUse--;
         }
 
         if (fu_add[i].count > 0) {  //decrement cycle count
             fu_add[i].count--;
-            DEBUG_COUT("Execute:\t" << "Decrement add inst " << fu_add[i].PC << endl);
         }
     }
 
@@ -86,16 +81,13 @@ void simulateExecuteStage() {
 // ------------------------- integer mult & div FU - 3 cycles -----------------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned j = 0; j < fu_mult.size(); j++) {
-        DEBUG_COUT("Execute:\t" << "Checking mult FU " << j << " count: " << fu_mult[j].count << endl);
         if (fu_mult[j].count == 1) {    //move data to Rename Register File
             copyToRRF(fu_mult[j]);
-            DEBUG_COUT("Execute:\t" << "Moved mult inst " << fu_mult[j].PC << " to rrf" << endl);
             fu_mult_inUse--;
         }
 
         if (fu_mult[j].count > 0) {
             fu_mult[j].count--;
-            DEBUG_COUT("Execute:\t" << "Decrement mult inst " << fu_mult[j].PC << endl);
         }
     }
 
@@ -103,16 +95,13 @@ void simulateExecuteStage() {
 // ------------------------- floating point FU - 5 cycles ---------------------------------------
 // ----------------------------------------------------------------------------------------------
     for (unsigned k = 0; k < fu_fp.size(); k++) {
-        DEBUG_COUT("Execute:\t" << "Checking fp FU " << k << " count: " << fu_fp[k].count << endl);
         if (fu_fp[k].count == 1) {  //move data to Rename Register File
             copyToRRF(fu_fp[k]);
-            DEBUG_COUT("Execute:\t" << "Moved fp inst " << fu_fp[k].PC << " to rrf" << endl);
             fu_fp_inUse--;
         }
 
         if (fu_fp[k].count > 0) {
             fu_fp[k].count--;
-            DEBUG_COUT("Execute:\t" << "Decrement fp inst " << fu_fp[k].PC << endl);
         }
     }
 
@@ -125,10 +114,8 @@ void simulateExecuteStage() {
     for (unsigned m = 0; m < fu_mem.size(); m++) {
         clockCount = 0;
         clockCountTotal = 0;
-        if (isDispatchFinished)
-            DEBUG_COUT_2("Execute:\t" << "Checking mem FU " << m << " count: "<< fu_mem[m].count << endl);
-        //treat mem read and mem writes the same, both access mem during execute
 
+        //treat mem read and mem writes the same, both access mem during execute
         if (fu_mem[m].isFirstClock) { //access memory on first clock
             fu_mem[m].isFirstClock = false;
 
@@ -153,7 +140,6 @@ void simulateExecuteStage() {
             reorder_tag = fu_mem[m].reorder;
             if (fu_mem[m].count == 1) {
                 fu_mem_inUse--;
-                DEBUG_COUT_2("Execute:\t" << "Marking mem inst " << fu_mem[m].PC << " complete (ROBTag " << reorder_tag << ")" << endl);
                 if (rob[reorder_tag].code == LOAD) {
                     copyToRRF(fu_mem[m]); 	//LOAD data into RRF and mark ROB finished
                 }
@@ -164,7 +150,6 @@ void simulateExecuteStage() {
 
             if (fu_mem[m].count > 0) {
                 fu_mem[m].count--;
-                DEBUG_COUT("Execute:\t" << "Decrement mem inst " << fu_mem[m].PC << " to " << fu_mem[m].count << endl);
             }
         }
     }
@@ -190,13 +175,9 @@ void simulateExecuteStage() {
                 fetchStalledInstrPC = -1;
             }
 
-            //done in decode
-//            fu_br.BTaddr = fu_br.PC + fu_br.
-
             //commented out... btb should get updated with all branches, not just taken ones. right?
 //            if (fu_br.BRoutcome == true)                      //branch is taken
 //            {
-            DEBUG_COUT_3("Execute:\t Updating branch predictor with results. BROutcome = " << (fu_br.BRoutcome ? "true" : "false") << endl);
             branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
 //            }
 

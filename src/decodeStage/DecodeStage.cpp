@@ -35,7 +35,7 @@ void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queu
 
         instuctionsToDecode.front().DecodeInstructionString();
 
-        DEBUG_COUT_2("Decode:\tDecoded: \n");
+        DEBUG_COUT("Decode:\tDecoded: \n");
         instuctionsToDecode.front().Print();
 
         decodedInstructions.push(instuctionsToDecode.front());

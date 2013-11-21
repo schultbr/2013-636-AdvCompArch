@@ -36,7 +36,7 @@ bool checkBranchPrediction(Instruction &currentInstr) {
 //    int normalNextPC = currentInstr.PC + 8;
 
     DEBUG_COUT("Fetch:\tBRANCH PREDICTING" << endl);
-    DEBUG_COUT_3(endl<<endl);
+    DEBUG_COUT(endl<<endl);
 
     //did our branch predictor say to take the branch *AND* was it found in the btb, then true. Otherwise false.
     currentInstr.wasBranchPredictedAsTaken = branchPredictor.getPredictionForInstruction(currentInstr);
@@ -48,11 +48,11 @@ bool checkBranchPrediction(Instruction &currentInstr) {
     //did we predict NT and the branch actually wasn't taken??  Correct! Return true.
     if((currentInstr.wasBranchPredictedAsTaken && currentInstr.wasBranchActuallyTaken) ||
             (!(currentInstr.wasBranchPredictedAsTaken) && !(currentInstr.wasBranchActuallyTaken))){
-        DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n\n");
+        DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n\n");
         return true; //Correct
     }
     else {
-        DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly.  Stalling fetch until it's done!\n\n");
+        DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly.  Stalling fetch until it's done!\n\n");
         branchPredictor.incrementPredictionMissCount();
 //            currentInstr.wasBranchActuallyTaken = false;
         return false; //MISSED

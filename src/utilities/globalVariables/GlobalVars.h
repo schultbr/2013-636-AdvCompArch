@@ -29,14 +29,6 @@
 #define DEBUG_COUT_2( x )
 #endif
 
-//#define DEBUG3 //disabling this for mass-testing
-
-#ifdef DEBUG3
-#define DEBUG_COUT_3( x )  std::cout << x
-#else
-#define DEBUG_COUT_3( x )
-#endif
-
 //#include "TraceReader.h"
 #include "StructureDefs.h"
 #include "BranchPredictor.h"
