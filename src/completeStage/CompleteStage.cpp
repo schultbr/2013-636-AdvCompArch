@@ -71,9 +71,8 @@ void simulateCompleteStage() {
             }
 
             robHead++;
-            if (robHead == (int) rob.size()) {				    //increment head of circular queue
+            if (robHead == (int) rob.size())				    //increment head of circular queue
                 robHead = 0;
-            }
 
         }
         else { 			//do we do anything special for finished but not valid?
