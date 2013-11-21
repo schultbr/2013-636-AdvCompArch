@@ -70,6 +70,7 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
         return true;
     }
 
+    cout << "Stuff got screwed up in BranchPredictor::getBranchforInstruction() " << endl << endl;
 //    cout << "ERRORERRORERROR" << endl;
     return false; //if we got here, stuff is super screwed up.
 }
@@ -80,6 +81,7 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
     if (entry.BRoutcome) {
         //update the state machine with the current results
         inc_state(entry.PTaddr);
+	//update the Branch History Shift Register
         shift_left(1);
     }
     else {
@@ -97,6 +99,18 @@ void BranchPredictor::printPredictionStatistics() {
     cout << "Branch predictor predicted " << branchPredictionCount << " branches and got " << predictionMissCount << " wrong... oops." << endl;
     cout << "\tBranch correct prediction rate: " << ((float)correctPredictions / branchPredictionCount) * 100 << "%" << endl;
     cout << "\tBranch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
+}
+
+//return Prediction from Table
+int BranchPredictor::get_bp(int hashAddr) {
+    return predictionTable[hashAddr];
+}
+
+void BranchPredictor::printBTB() {
+    for (size_t i = 0; i < btb.size(); i++) {
+        cout << "BTB[" << i << "] instr PC = " << btb[i].instrPC << ", target PC = " << btb[i].targetPC << endl;
+    }
+    cout << endl;
 }
 
 //////////////////////////////////////////////////////////////
@@ -123,11 +137,6 @@ short BranchPredictor::hash(int pc) {
     hash = shiftReg ^ x;	//bitwise XOR
 
     return hash;
-}
-
-//return Prediction from Table
-int BranchPredictor::get_bp(int hashAddr) {
-    return predictionTable[hashAddr];
 }
 
 //increment Prediction State

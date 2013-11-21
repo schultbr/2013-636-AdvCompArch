@@ -252,6 +252,14 @@ int main(int argc, char** argv) {
     //print final buffers
     //printBuff();
 
+    /*
+    for (int i = 0; i < 10; i++) {
+        cout << "BranchPredictionTable[" << i << "] = " << branchPredictor.get_bp(i) << endl;
+    }
+    */
+
+    branchPredictor.printBTB();
+
     cout << "Exiting." << endl;
 
     return 0;

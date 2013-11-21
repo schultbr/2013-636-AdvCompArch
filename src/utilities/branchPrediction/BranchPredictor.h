@@ -26,6 +26,10 @@ public:
 
 	void printPredictionStatistics();
 
+	int get_bp (int hashAddr);
+
+	void printBTB();
+
 //moved the below to private since the stages that reference this don't need to know the
 //logic it uses... the predictor should be a magic 8-ball to them
 private:
@@ -40,7 +44,7 @@ private:
 
 	void shift_left(bool bit);
 	short hash (int pc);
-	int	get_bp (int hashAddr);
+	//int	get_bp (int hashAddr);
 	void inc_state(int hashAddr);
 	void dec_state(int hashAddr);
 
