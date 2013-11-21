@@ -41,7 +41,7 @@ public:
     OpcodeType opCode;
     int predictedTargetPC;
     bool wasBranchPredictedAsTaken;
-    bool wasBranchActuallyTaken;
+    bool wasBranchPredictionCorrect;
 
 private:
     std::string instructionLine;

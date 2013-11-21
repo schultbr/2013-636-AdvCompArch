@@ -186,10 +186,12 @@ void simulateExecuteStage() {
 	    cout <<"PC:= " << fu_br.PC << ", hash:= " << fu_br.PTaddr << ", BT State:= " << branchPredictor.get_bp(fu_br.PTaddr);
 	    cout << ", Stored Prediction:= " << fu_br.BRprediction << ", BRoutcome:= " << fu_br.BRoutcome << ", BrTargetAddr:= " << fu_br.BTaddr;
 	    cout << ", OPcode:= " << fu_br.code << ", ROB_tag:= " << fu_br.reorder << endl;
+
             branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
 
             if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC) {    //if mispredicted
                 fetchStalled = false;                                       //stop stalling Fetch Stage
+                fetchStalledInstrPC = -1;
             }
 
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
@@ -197,19 +199,19 @@ void simulateExecuteStage() {
             if (fu_br.BRoutcome == fu_br.BRprediction) {
                 //check if prediction was correct
                 //when branch resolves, set instructions in ROB valid up until next branch
-                //because of trace file, all instructions will end up being valid, nothing actually gets flushed from ROB
-                while (!done) {
-                    if (next_tag == (int) rob.size() - 1)
-                        next_tag = 0;
-                    else
-                        next_tag++;
+                //because of trace file, all instructions will end up being valid, no flushing from ROB
+              while (!done) {
+                  if (next_tag == (int) rob.size() - 1)
+                      next_tag = 0;
+                  else
+                      next_tag++;
 
-                    if (next_tag != robTail)
-                        rob[next_tag].valid = true;
+                  if (next_tag != robTail)
+                      rob[next_tag].valid = true;
 
-                    if (rob[next_tag].code == BRANCH || next_tag == robTail)
-                        done = true;
-                }
+                  if (rob[next_tag].code == BRANCH || next_tag == robTail)
+                      done = true;
+              }
             }
 
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches

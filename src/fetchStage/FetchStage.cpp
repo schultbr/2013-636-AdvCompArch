@@ -37,32 +37,44 @@ bool checkBranchPrediction(Instruction &currentInstr) {
 //	int predictedNextPC = 0;
 
     DEBUG_COUT("Fetch:\tBRANCH PREDICTING" << endl);
+    DEBUG_COUT_3(endl<<endl);
 
-    bool wasBranchPredicted = branchPredictor.getPredictionForInstruction(currentInstr);
+    branchPredictor.getPredictionForInstruction(currentInstr);
 
-    currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC != normalNextPC);
+//    currentInstr.wasBranchActuallyTaken = (currentInstr.predictedTargetPC == actualNextPC);
+    currentInstr.wasBranchPredictionCorrect = false;
 
-    DEBUG_COUT("Predicted Target PC: " << currentInstr.predictedTargetPC << " Actual next pc: " << actualNextPC << " normal (non branch) next pc: " << normalNextPC << endl);
+    DEBUG_COUT_3("Current PC: " << currentInstr.PC << " Predicted Target PC: " << currentInstr.predictedTargetPC << " Actual next pc: " << actualNextPC << " normal (non branch) next pc: " << normalNextPC << endl);
 
-    if (wasBranchPredicted) {
-        //return true if our predicted PC matches the trace's next PC
-        if (currentInstr.predictedTargetPC == actualNextPC) {
-            DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n");
+    if(currentInstr.wasBranchPredictedAsTaken) {
+        if(currentInstr.predictedTargetPC == -1) { //-1 means we predicted as branch taken, but this PC isn't in the btb yet.
+            DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n");
+            branchPredictor.incrementPredictionMissCount();
+            return false; //MISSED
+        }
+        else if(currentInstr.predictedTargetPC != actualNextPC) { //predicted as taken, and btb had an entry, but the trace says its the wrong one
+            DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly.  Stalling fetch until it's done!\n\n");
+            branchPredictor.incrementPredictionMissCount();
+            return false; //MISSED
+        }
+        else { //branch predicted as taken, and target pc was set from the btb and it matches the actual next pc from the trace
+            currentInstr.wasBranchPredictionCorrect = true;
+            DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n\n");
             return true; //Correct
         }
-        else {
-            DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly. Stalling fetch until it's done!\n");
+    }
+    else { //Branch predicted as not taken
+        if(currentInstr.PC + 8 != actualNextPC) { //if the branch was predicted not taken, but the trace says it should have been... miss
+            DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted incorrectly.  Stalling fetch until it's done!\n\n");
             branchPredictor.incrementPredictionMissCount();
-            return false; //INCORRECT PREDICTION
+            return false; //MISSED
+        }
+        else {
+            currentInstr.wasBranchPredictionCorrect = true;
+            DEBUG_COUT_3("Fetch:\t" << "PC " << currentInstr.PC << " was predicted correctly. Proceeding!\n\n");
+            return true; //Correct
         }
     }
-    else { //if we were unable to predict... thats a miss
-        DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " was not in the btb after being predicted as taken. Thats a miss\n");
-        branchPredictor.incrementPredictionMissCount();
-        return false;
-    }
-
-//	DEBUG_COUT("Fetch:\t" << "PC " << currentInstr.PC << " wasn't even found in the table...Gonna call this a miss\n";
 
     //return false otherwise. oops. we missed. somehow.
     branchPredictor.incrementPredictionMissCount();
@@ -73,7 +85,7 @@ void grabNextInstructionGroup() {
     //	cout << "FETCHING... current buff size " << fetchedInstructions.size() << endl;
     FetchPipelineItem currentFetchedItem;
 
-    bool takeBranchCheck = false;
+    bool isPredictionCorrect = false;
 
     if (endOfTraceReached) {
         return;
@@ -114,6 +126,9 @@ void grabNextInstructionGroup() {
             return;
         }
 
+        //reset bool
+        isPredictionCorrect = false;
+
         instrToAdd = instructionTrace.getNextInstruction();
 
         //debug print:
@@ -127,13 +142,13 @@ void grabNextInstructionGroup() {
 
         //do branch checks here..
         if (instrToAdd.IsBranch()) {
-            takeBranchCheck = checkBranchPrediction(instrToAdd);
+            isPredictionCorrect = checkBranchPrediction(instrToAdd);
         }
 
         currentFetchedItem.instructions.push(instrToAdd);
         instructionCount++;
 
-        if (instrToAdd.IsBranch() && takeBranchCheck) {
+        if (instrToAdd.IsBranch() && isPredictionCorrect) {
             fetchStalledInstrPC = instrToAdd.PC;
             fetchStalled = true; //flip this to false once this mis-predicted branch finishes execution
             instructionsInPipeline.push_back(currentFetchedItem);
