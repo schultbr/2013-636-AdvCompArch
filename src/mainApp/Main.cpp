@@ -37,7 +37,7 @@ void determineStatistics() {
     float fpRSUsage = (float) rs_fp_total / cyclesCompleted;
 
     float rsAverageUsage = (intRSUsage + memRSUsage + brRSUsage + fpRSUsage) / 4;
-    float rsSlotCountAverage = (rsAverageUsage  / ::rsEntries) * 4;
+    float rsAveragePercentage = (rsAverageUsage  / (::rsEntries * 4) ) * 100;
 
     float addFUUsage = (float) fu_add_total / cyclesCompleted;
     float multFUUsage = (float) fu_mult_total / cyclesCompleted;
@@ -46,9 +46,14 @@ void determineStatistics() {
     float brFUUsage = (float) fu_br_total / cyclesCompleted;
 
     float fuAverageUsage = (addFUUsage + multFUUsage + fpFUUsage + memFUUsage + brFUUsage) / 5;
-    float fuUsedAverage = (fuAverageUsage / (::fuCount + 1));
+    float fuUsedPercentage = (fuAverageUsage / ((::fuCount * 4) + 1)) * 100;
 
 
+    float robAverageUsage = (float) rob_total / cyclesCompleted;
+    float robTotalUsagePercentage = (robAverageUsage / ::reorderBufferEntries) * 100;
+
+    float rrfAverageUsage = (float) rrf_total / cyclesCompleted;
+    float rrfTotalUsagePercentage = ( rrfAverageUsage / ::renameTableEntries ) * 100;
 
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
@@ -56,23 +61,21 @@ void determineStatistics() {
 
     branchPredictor.printPredictionStatistics();
 
-    cout << "ROB entries used per cycle = " << (float) rob_total / cyclesCompleted << endl;
-    cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl << endl;
+    cout << "ROB entries used per cycle = " << robAverageUsage << " with " << robTotalUsagePercentage << "% of slots used" << endl;
+    cout << "RRF entries used per cyle = " << rrfAverageUsage << " with " << rrfTotalUsagePercentage << "% of slots used" <<  endl;
+    cout << "Average RS usage per cycle = " << rsAverageUsage << "with " << rsAveragePercentage <<  "% of RS slots used."<< endl;
+    cout << "Average FU used per cycle = " << fuAverageUsage << " with " << fuUsedPercentage << "% of FU used" << endl << endl;
+
     cout << "RS INT used per cycle = " << intRSUsage << endl;
     cout << "RS FP used per cycle = " << fpRSUsage << endl;
     cout << "RS MEM used per cycle = " << memRSUsage << endl;
     cout << "RS BR used per cycle = " << brRSUsage << endl;
-    cout << "Average RS usage per cycle = " << rsAverageUsage << endl;
-    cout << "Average slots used for RS = " << rsSlotCountAverage << endl << endl;
-
 
     cout << "FU ADD used per cycle = " << addFUUsage << endl;
     cout << "FU MULT used per cycle = " << multFUUsage << endl;
     cout << "FU FP used per cycle = " << fpFUUsage << endl;
     cout << "FU MEM used per cycle = " << memFUUsage << endl;
     cout << "FU BR used per cycle = " << brFUUsage << endl;
-    cout << "Average FU used per cycle = " << fuAverageUsage << endl;
-    cout << "Average FU used = " << fuUsedAverage << endl << endl;
 }
 
 int rrf_count() {
@@ -83,10 +86,6 @@ int rrf_count() {
     }
     return cnt;
 }
-//void clearQueue(){
-//	while(decodeDispatchBuffer.size() > 0)
-//		decodeDispatchBuffer.pop();
-//}
 
 void dumpRegs() {
     cout << "\n================================================\n";
