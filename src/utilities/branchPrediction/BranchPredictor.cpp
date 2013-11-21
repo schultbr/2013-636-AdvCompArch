@@ -40,38 +40,37 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
     instrToPredict.branchPredictorTableAddress = hash(instrToPredict.PC);
 
     int predictionTableState = predictionTable[instrToPredict.branchPredictorTableAddress];
-    instrToPredict.wasBranchPredictedAsTaken = false;
+    bool res = false;
 
     branchPredictionCount++;
 
     if (predictionTableState == 2 || predictionTableState == 3) { //predict this branch is taken
-        instrToPredict.wasBranchPredictedAsTaken = true;
-
+        res = true;
     }
 
     instrToPredict.predictedTargetPC = -1;
 
     //else, well, it's already false
-    if (instrToPredict.wasBranchPredictedAsTaken) {
+    if (res) {
         DEBUG_COUT_3("Branch predicted as taken" << endl);
         for (size_t i = 0; i < btb.size(); i++) {
 //            DEBUG_COUT_3("BTB[" << i << "].PC is " << btb[i].instrPC << endl);
             if (btb[i].instrPC == instrToPredict.PC) {
                 instrToPredict.predictedTargetPC = btb[i].targetPC;
                 DEBUG_COUT_3("BTB found target pc at " << i << endl);
-                return true;
+                return true; //branch predicted taken _AND_ we have a target pc
             }
         }
 
         if (instrToPredict.predictedTargetPC == -1) {
             DEBUG_COUT_3("BTB didn't have the target PC..." << endl);
-            return false;
+            return false; //branch predicted taken but BTB miss
         }
     }
     else {
 //        instrToPredict.predictedTargetPC = instrToPredict.PC + 8; //don't do this here. do it in fetch...
         DEBUG_COUT_3("Branch predicted as not taken" << endl);
-        return true;
+        return false; //branch predicted not taken
     }
 
     cout << "ERRORERRORERROR" << endl;
