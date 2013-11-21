@@ -42,7 +42,6 @@ bool checkBranchPrediction(Instruction &currentInstr) {
     currentInstr.wasBranchPredictedAsTaken = branchPredictor.getPredictionForInstruction(currentInstr);
 
     currentInstr.wasBranchActuallyTaken = !((currentInstr.PC + 8) == actualNextPC);
-//    currentInstr.wasBranchActuallyTaken = false;
 
     //did we predict taken _and_ did the branch actually get taken? -OR-
     //did we predict NT and the branch actually wasn't taken??  Correct! Return true.
