@@ -61,8 +61,6 @@ void simulateExecuteStage() {
     else if (isExecuteFinished)
         return;
 
-    DEBUG_COUT("Execute:\t" << "Execute Stage\n");
-
 // ----------------------------------------------------------------------------------------------
 // ------------------------- integer addition & logic FU - 1 cycle  -----------------------------
 // ----------------------------------------------------------------------------------------------
@@ -119,11 +117,7 @@ void simulateExecuteStage() {
         if (fu_mem[m].isFirstClock) { //access memory on first clock
             fu_mem[m].isFirstClock = false;
 
-            DEBUG_COUT("Execute:\t" << "Determining cache latency\n");
-
             clockCount = checkCache(::level1CacheHitRate, ::level2CacheAccessTime);   //add any cache miss penalty
-
-            DEBUG_COUT("Execute:\t" << "First cache latency check ? " << (clockCount == 0? "pass" :"failed") << endl);
 
             clockCountTotal = clockCount + ::level1CacheAccessTime; //we always have level 1 access time;
 
@@ -132,8 +126,6 @@ void simulateExecuteStage() {
                 clockCountTotal += clockCount; //add the result... either systemMemoryAccessTime or 0
             }
             fu_mem[m].count = clockCountTotal;
-
-            DEBUG_COUT("Execute:\t" << "Cache latency will be " << fu_mem[m].count << endl);
         }
 
         else {    //we already accessed cache or calculated miss penalty
@@ -159,8 +151,6 @@ void simulateExecuteStage() {
 // ----------------------------------------------------------------------------------------------
     if (fu_br.count == 1) {     //active instr in FU
 
-        DEBUG_COUT("Execute:\t" << "Checking the branch FU\n");
-
         fu_br.count = 0;    	//set finished
 
         //update ROB to say that we're done:
@@ -170,24 +160,18 @@ void simulateExecuteStage() {
         if (rob[fu_br.reorder].code == BRANCH) {    //as opposed to JUMP which are already marked as finished in ROB
             next_tag = fu_br.reorder;
 
+            //if prediction was not correct, Fetch is stalled to simulate "flushing"
+            //so there will be no new instrs in the ROB that need flushed
             if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC) {    //if mispredicted
                 fetchStalled = false;                                       //stop stalling Fetch Stage
                 fetchStalledInstrPC = -1;
             }
 
-            //commented out... btb should get updated with all branches, not just taken ones. right?
-//            if (fu_br.BRoutcome == true)                      //branch is taken
-//            {
             branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
-//            }
 
-            // this keeps stalling, so now if we get here and a see a branch, mark all after it as valid:
-            //if prediction was not correct, Fetch is stalled to simulate "flushing"
-            //so there will be no new instrs in the ROB that need flushed
-//            if (fu_br.BRoutcome == fu_br.BRprediction) {
-                //check if prediction was correct
-                //when branch resolves, set instructions in ROB valid up until next branch
-                //because of trace file, all instructions will end up being valid, no flushing from ROB
+            //check if prediction was correct
+            //when branch resolves, set instructions in ROB valid up until next branch
+            //because of trace file, all instructions will end up being valid, no flushing from ROB
             while (!done) {
                 if (next_tag == (int) rob.size() - 1)
                     next_tag = 0;
@@ -200,7 +184,6 @@ void simulateExecuteStage() {
                 if (rob[next_tag].code == BRANCH || next_tag == robTail)
                     done = true;
             }
-//            }
 
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches
                 anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid

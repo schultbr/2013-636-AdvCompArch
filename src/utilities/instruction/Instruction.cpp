@@ -180,14 +180,6 @@ void Instruction::TraslateToFUEntry(int &op1, bool &valid1, bool &isReg1, int &o
 
 }
 
-//void Instruction::SetWasBranchPredictionTaken(bool opt){
-//    wasBranchPredictedAsTaken = opt;
-//}
-//
-//bool Instruction::GetWasBranchPredictedTaken(){
-//	return wasBranchPredictedAsTaken;
-//}
-
 void Instruction::Print() {
     DEBUG_COUT(" PC: " << PC); DEBUG_COUT_2(" dest: " << dest); //"\t destStr:\t" << destReg << endl);
     DEBUG_COUT(" imm: " << imm ); DEBUG_COUT_2(" offset: " << offset); DEBUG_COUT_2(" op: " << opCode); DEBUG_COUT_2(" src1: " << src1); //"\t src1Str:\t" << src1Reg << endl);
@@ -309,17 +301,14 @@ int Instruction::GetRegisterIndexFromName(std::string regName) {
     return retVal;
 }
 
-//void Instruction::DecodeRegisters(vector<string> tokens){
 void Instruction::DecodeRegisters(std::string regStr) {
     vector<string> regs;
     std::stringstream ss(regStr);
     char tempChar;
     std::stringstream *token = new std::stringstream();
     while (ss >> tempChar) {
-//		cout << "Adding " << tempChar << "\t";
         *token << tempChar;
         if (ss.peek() == ',' || ss.peek() == '(' || ss.peek() == ')') {
-            DEBUG_COUT("Found " << token->str() << endl);
             regs.push_back(token->str());
             ss.ignore();
             delete token;
@@ -327,11 +316,8 @@ void Instruction::DecodeRegisters(std::string regStr) {
         }
     }
     if (token->str().size() > 0) {
-        DEBUG_COUT("Found " << token->str() << endl);
         regs.push_back(token->str());
     }
-
-    DEBUG_COUT("Total of " << regs.size() << " tokens\n");
 
     /* Opcode input instruction types
      * 0 = IMM ONLY

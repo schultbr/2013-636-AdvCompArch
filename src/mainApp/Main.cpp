@@ -161,13 +161,6 @@ int runSimulation() {
 
         if (cyclesCompleted == max)
             notDone = false;
-
-        //use the below to debug the regs after every cycle, beginning after a certain cycle count
-//#ifdef DEBUG3
-//        if (cyclesCompleted > 91375)
-//            dumpRegs(); //195605    //89469 //91475
-//#endif
-
     }
 
     return 1;
