@@ -64,40 +64,39 @@ int rrf_count() {
 //}
 
 void dumpRegs() {
-    DEBUG_COUT_3("\n======================" << cyclesCompleted << "====================\n");
-
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("\n=====================ARF========================\n");
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("Index\t| Data\t| Busy\t| RRF\t" << endl);
+    cout << "\n================================================\n";
+    cout << "\n=====================ARF========================\n";
+    cout << "\n================================================\n";
+    cout << "Index\t| Data\t| Busy\t| RRF\t" << endl;
     for (size_t i = 0; i < arf.size(); i++) {
-        DEBUG_COUT_3(i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
+        cout << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
     }
 
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("\n=====================RRF========================\n");
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl);
+    cout << "\n================================================\n";
+    cout << "\n=====================RRF========================\n";
+    cout << "\n================================================\n";
+    cout << "Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl;
     for (size_t i = 0; i < rrf.size(); i++) {
-        DEBUG_COUT_3(i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl);
+        cout << i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl;
     }
 
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("\n=====================ROB========================\n");
-    DEBUG_COUT_3("\n================================================\n");
-    DEBUG_COUT_3("Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl);
+    cout << "\n================================================\n";
+    cout << "\n=====================ROB========================\n";
+    cout << "\n================================================\n";
+    cout << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl;
     for (size_t i = 0; i < rob.size(); i++) {
-        DEBUG_COUT_3(i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
-                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " << rob[i].PC );
+        cout << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " << rob[i].PC ;
         if ((int) i == robHead)
-            DEBUG_COUT_3("<---HEAD");
+            cout << "<---HEAD";
 
         if ((int) i == robTail)
-            DEBUG_COUT_3("<---TAIL");
+            cout << "<---TAIL";
 
-        DEBUG_COUT_3(endl);
+        cout << endl;
     }
 
+    branchPredictor.printBTB();
 }
 
 int runSimulation() {
@@ -243,11 +242,10 @@ int main(int argc, char** argv) {
 
     cout << "Return code from simulation: " << returnVal << endl << endl;
 
+    dumpRegs();
+
     //lets figure it out.
     determineStatistics();
-
-    //only does something with DEBUG3 defined (see top of GlobalVars.h)
-    dumpRegs();
 
     //print final buffers
     //printBuff();

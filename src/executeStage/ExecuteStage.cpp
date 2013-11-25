@@ -41,10 +41,12 @@ void copyToRRF(FU_Element entry) {
     reorder_tag = entry.reorder;
     rename_tag = rob[reorder_tag].rename;
 
-    DEBUG_COUT("Execute:\t" << "Updating " << entry.PC << " in ROB/RRF.\n"); DEBUG_COUT("Execute:\t" << "  ROB tag " << reorder_tag << endl); DEBUG_COUT("Execute:\t" << "  RRF tag " << rename_tag << endl);
+    //prevent things from invalidly writing to rrf... if they shouldn't be. fixing segfault.
+    if(rename_tag >= 0 && rename_tag < ::renameTableEntries) {
+        rrf[rename_tag].data = entry.result;    	//write result to RRF
+        rrf[rename_tag].valid = true;              	//set RRF valid bit
+    }
 
-    rrf[rename_tag].data = entry.result;    	//write result to RRF
-    rrf[rename_tag].valid = true;              	//set RRF valid bit
     markROBFinished(reorder_tag); 		//set ROB finished bit
 }
 
@@ -183,9 +185,9 @@ void simulateExecuteStage() {
         if (rob[fu_br.reorder].code == BRANCH) {    //as opposed to JUMP which are already marked as finished in ROB
             next_tag = fu_br.reorder;
 
-	    cout <<"PC:= " << fu_br.PC << ", hash:= " << fu_br.PTaddr << ", BT State:= " << branchPredictor.get_bp(fu_br.PTaddr);
-	    cout << ", Stored Prediction:= " << fu_br.BRprediction << ", BRoutcome:= " << fu_br.BRoutcome << ", BrTargetAddr:= " << fu_br.BTaddr;
-	    cout << ", OPcode:= " << fu_br.code << ", ROB_tag:= " << fu_br.reorder << endl;
+	    //cout <<"PC:= " << fu_br.PC << ", hash:= " << fu_br.PTaddr << ", BT State:= " << branchPredictor.get_bp(fu_br.PTaddr);
+	    //cout << ", Stored Prediction:= " << fu_br.BRprediction << ", BRoutcome:= " << fu_br.BRoutcome << ", BrTargetAddr:= " << fu_br.BTaddr;
+	    //cout << ", OPcode:= " << fu_br.code << ", ROB_tag:= " << fu_br.reorder << endl;
 
             branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
 
@@ -194,9 +196,10 @@ void simulateExecuteStage() {
                 fetchStalledInstrPC = -1;
             }
 
+
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed
-            if (fu_br.BRoutcome == fu_br.BRprediction) {
+            //if (fu_br.BRoutcome == fu_br.BRprediction) {
                 //check if prediction was correct
                 //when branch resolves, set instructions in ROB valid up until next branch
                 //because of trace file, all instructions will end up being valid, no flushing from ROB
@@ -212,7 +215,7 @@ void simulateExecuteStage() {
                   if (rob[next_tag].code == BRANCH || next_tag == robTail)
                       done = true;
               }
-            }
+            //}
 
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches
                 anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
