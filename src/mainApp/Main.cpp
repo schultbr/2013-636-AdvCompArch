@@ -245,7 +245,8 @@ int main(int argc, char** argv) {
     int returnVal = 0;
 
     //process command line options to handle inputs
-    processCommandLine(argc, argv);
+    if(processCommandLine(argc, argv) < 0)
+        return -1;
 
     printRunningParameters();
 

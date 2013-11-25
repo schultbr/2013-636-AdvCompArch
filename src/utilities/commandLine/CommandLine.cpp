@@ -176,11 +176,10 @@ int processCommandLine(int argc, char **argv) {
             }
             case 'h':
             case '?':
-                print_usage();
-                exit 0;
-                break; //this is funny..
             default:
-                break;
+                print_usage();
+                return -1;
+                break; //this is funny..
         }
 
     }

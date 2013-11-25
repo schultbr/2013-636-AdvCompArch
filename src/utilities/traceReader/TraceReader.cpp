@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <iostream>
+#include <cstdlib>
 #include "GlobalVars.h"
 
 using namespace std;
@@ -72,7 +73,7 @@ int TraceReader::openTrace(std::string traceName) {
     //check to make sure it's actually open..
     if (!(traceFile->is_open())) {
         cout << "ERROR: unable to open file.\n";
-        exit -1; //quit if it cant be opened.
+        return -1; //quit if it cant be opened.
     }
 
     return 0;
