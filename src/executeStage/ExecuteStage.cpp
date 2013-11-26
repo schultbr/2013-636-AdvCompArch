@@ -185,6 +185,7 @@ void simulateExecuteStage() {
                     done = true;
             }
 
+
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches
                 anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid
             }

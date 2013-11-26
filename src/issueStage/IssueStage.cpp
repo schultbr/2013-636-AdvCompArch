@@ -1,5 +1,5 @@
 /*
- * ExecuteStage.cpp
+ * IssueStage.cpp
  *
  *  Created on: Oct 29, 2013
  *      Author: jason cain
@@ -48,6 +48,7 @@ int checkFU(std::vector<FU_Element> *targetFU) {
             FU_tag = i;
             break;
         }
+        DEBUG_COUT("Empty Element = " << FU_tag << endl << endl);
     }
     return FU_tag;
 }
@@ -67,7 +68,7 @@ void checkValue(std::vector<RS_Element> *targetRS) {
         }
         if (targetRS->at(i).valid2 == 0){           //check for valid op2 value
             rename_tag = targetRS->at(i).op2;
-//            DEBUG_COUT("Issue: checking for new op2 value at rrf[" << rename_tag << "]" << endl;
+
             if (rename_tag != -1 && rrf[rename_tag].valid == true) {
                 targetRS->at(i).op2 = rrf[rename_tag].data;
                 targetRS->at(i).valid2 = true;
@@ -83,7 +84,6 @@ void checkReady(std::vector<RS_Element> *targetRS) {
     int FU_tag = 0;
     int cnt = targetRS->size();
 
-    //DEBUG_COUT("Issue: Check if RS is Ready" << endl;
     for (int i = 0; i < cnt; i++) {
         if (targetRS->at(i).ready == true){ //RS entry is ready
 
@@ -93,14 +93,12 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                     FU_tag = checkFU(&fu_add);
 
                     if (FU_tag != -1) {
-
                         //copy RS entry to FU slot & set cycle count
                         copyToFU(targetRS->at(i), fu_add, FU_tag, 1);
                         rob[targetRS->at(i).reorder].issued = true;
                         targetRS->erase(targetRS->begin() + i);	//"pop" RS entry off queue
                         i--;		//erase will reindex vector so i needs adjusted
                         cnt--;		//erase will reindex vector so cnt needs adjusted
-
                         targetRS->resize(targetRS->size() + 1, RS_Element()); //"push" empty RS entry onto queue
                         rs_int_inUse--;
                         fu_add_inUse++;
@@ -116,7 +114,6 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                         targetRS->erase(targetRS->begin() + i);
                         i--;
                         cnt--;
-
                         targetRS->resize(targetRS->size() + 1, RS_Element());
                         rs_int_inUse--;
                         fu_mult_inUse++;
@@ -132,7 +129,6 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                         targetRS->erase(targetRS->begin() + i);
                         i--;
                         cnt--;
-
                         targetRS->resize(targetRS->size() + 1, RS_Element());
                         rs_fp_inUse--;
                         fu_fp_inUse++;
@@ -151,7 +147,6 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                         targetRS->erase(targetRS->begin() + i);
                         i--;
                         cnt--;
-
                         targetRS->resize(targetRS->size() + 1, RS_Element());
                         rs_mem_inUse--;
                         fu_mem_inUse++;
@@ -163,8 +158,8 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                     if (fu_br.count == 0) {	//FU empty
                         copyToBranchFU(targetRS->at(i), fu_br);
                         rob[targetRS->at(i).reorder].issued = true;
-                        targetRS->erase(targetRS->begin() + i);
 
+                        targetRS->erase(targetRS->begin() + i);
                         targetRS->resize(targetRS->size() + 1, RS_Element());
                         //can only issue 1 per cycle so no reindexing needed
                         rs_br_inUse--;

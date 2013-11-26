@@ -250,7 +250,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
     int robTag = -1;
     std::vector<RS_Element> *targetRS;
     bool isStalled = false;
-    bool checkRet = false; //this is so dumb but im in a hurry
+    bool checkRet = false;
     bool usesRRF = false;
     bool usesRS = false;
 
@@ -266,7 +266,7 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         switch (instrToDispatch.front().opCode) {
             case ADD_SUB_I:
             case MULT_DIV_I:
-            case LOGICAL: //todo verify these go here.
+            case LOGICAL:
                 targetRS = &rs_int;
                 break;
             case FLOATING_POINT:

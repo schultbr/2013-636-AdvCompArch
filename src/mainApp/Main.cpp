@@ -2,7 +2,7 @@
  * main.c
  *
  *  Created on: Oct 22, 2013
- *      Author: brian
+ *      Author: brian s. & jason c.
  */
 
 #include "StructureDefs.h"
@@ -29,29 +29,35 @@ std::queue<Instruction> fetchDecodeBuffer;
 void determineStatistics() {
     float IPC = (float) instructionCount / cyclesCompleted;
 
+    float robAverageUsage = (float) rob_total / cyclesCompleted;
+    float robTotalUsagePercentage = (robAverageUsage / ::reorderBufferEntries) * 100;
+    float rrfAverageUsage = (float) rrf_total / cyclesCompleted;
+    float rrfTotalUsagePercentage = ( rrfAverageUsage / ::renameTableEntries ) * 100;
+
     float intRSUsage = (float) rs_int_total / cyclesCompleted;
     float memRSUsage = (float) rs_mem_total / cyclesCompleted;
     float brRSUsage = (float) rs_br_total / cyclesCompleted;
     float fpRSUsage = (float) rs_fp_total / cyclesCompleted;
-
-    float rsAverageUsage = (intRSUsage + memRSUsage + brRSUsage + fpRSUsage) / 4;
-    float rsAveragePercentage = (rsAverageUsage  / (::rsEntries * 4) ) * 100;
+    float rsAverageUsage = (intRSUsage + memRSUsage + brRSUsage + fpRSUsage);
+    float rsAveragePercentage = (rsAverageUsage  / (::rsEntries*4) ) *100;
+    float rsIntPercent = (intRSUsage / ::rsEntries) *100;
+    float rsMemPercent = (memRSUsage / ::rsEntries) *100;
+    float rsBrPercent = (brRSUsage / ::rsEntries) *100;
+    float rsFpPercent = (fpRSUsage / ::rsEntries) *100;
 
     float addFUUsage = (float) fu_add_total / cyclesCompleted;
     float multFUUsage = (float) fu_mult_total / cyclesCompleted;
     float fpFUUsage = (float) fu_fp_total / cyclesCompleted;
     float memFUUsage = (float) fu_mem_total / cyclesCompleted;
     float brFUUsage = (float) fu_br_total / cyclesCompleted;
+    float fuAverageUsage = (addFUUsage + multFUUsage + fpFUUsage + memFUUsage + brFUUsage);
+    float fuAveragePercentage = (fuAverageUsage / ((::fuCount*4)+1) ) * 100;
+    float fuAddPercent = (addFUUsage / ::fuCount) *100;
+    float fuMultPercent = (multFUUsage / ::fuCount) *100;
+    float fuMemPercent = (memFUUsage / ::fuCount) *100;
+    float fuBrPercent = (brFUUsage / 1) *100;
+    float fuFpPercent = (fpFUUsage / ::fuCount) *100;
 
-    float fuAverageUsage = (addFUUsage + multFUUsage + fpFUUsage + memFUUsage + brFUUsage) / 5;
-    float fuUsedPercentage = (fuAverageUsage / ((::fuCount * 4) + 1)) * 100;
-
-
-    float robAverageUsage = (float) rob_total / cyclesCompleted;
-    float robTotalUsagePercentage = (robAverageUsage / ::reorderBufferEntries) * 100;
-
-    float rrfAverageUsage = (float) rrf_total / cyclesCompleted;
-    float rrfTotalUsagePercentage = ( rrfAverageUsage / ::renameTableEntries ) * 100;
 
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
@@ -59,21 +65,22 @@ void determineStatistics() {
 
     branchPredictor.printPredictionStatistics();
 
-    cout << "ROB entries used per cycle = " << robAverageUsage << " with " << robTotalUsagePercentage << "% of slots used" << endl;
-    cout << "RRF entries used per cyle = " << rrfAverageUsage << " with " << rrfTotalUsagePercentage << "% of slots used" <<  endl;
-    cout << "Average RS usage per cycle = " << rsAverageUsage << "with " << rsAveragePercentage <<  "% of RS slots used."<< endl;
-    cout << "Average FU used per cycle = " << fuAverageUsage << " with " << fuUsedPercentage << "% of FU used" << endl << endl;
+    cout << "Total RS entries used per cycle \t= " << rsAverageUsage << "\t with usage rate = " << rsAveragePercentage << "%" << endl;
+    cout << "Total FU entries used per cycle \t= " << fuAverageUsage << "\t with usage rate = " << fuAveragePercentage << "%" << endl;
+    cout << "RRF entries used per cyle \t\t= " << rrfAverageUsage << "\t with usage rate = " << rrfTotalUsagePercentage << "%" << endl;
+    cout << "ROB entries used per cycle \t\t= " << robAverageUsage << "\t with usage rate = " << robTotalUsagePercentage << "%" << endl;
 
-    cout << "RS INT used per cycle = " << intRSUsage << endl;
-    cout << "RS FP used per cycle = " << fpRSUsage << endl;
-    cout << "RS MEM used per cycle = " << memRSUsage << endl;
-    cout << "RS BR used per cycle = " << brRSUsage << endl;
-
-    cout << "FU ADD used per cycle = " << addFUUsage << endl;
-    cout << "FU MULT used per cycle = " << multFUUsage << endl;
-    cout << "FU FP used per cycle = " << fpFUUsage << endl;
-    cout << "FU MEM used per cycle = " << memFUUsage << endl;
-    cout << "FU BR used per cycle = " << brFUUsage << endl;
+    cout << endl;
+    cout << "Individual Usage" << endl;
+    cout << "RS INT usage rate = " << rsIntPercent << "%" << endl;
+    cout << "RS FP usage rate = " << rsFpPercent << "%" << endl;
+    cout << "RS MEM usage rate = " << rsMemPercent << "%" << endl;
+    cout << "RS BR usage rate = " << rsBrPercent << "%" << endl << endl;
+    cout << "FU ADD usage rate = " << fuAddPercent << "%" << endl;
+    cout << "FU MULT usage rate = " << fuMultPercent << "%" << endl;
+    cout << "FU FP usage rate = " << fuFpPercent << "%" << endl;
+    cout << "FU MEM usage rate = " << fuMemPercent << "%" << endl;
+    cout << "FU BR usage rate = " << fuBrPercent << "%" << endl << endl;
 }
 
 int rrf_count() {
@@ -100,13 +107,13 @@ void dumpRegs() {
     for (size_t i = 0; i < rrf.size(); i++)
         cout << i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl;
 
-    cout << "\n================================================\n";
-    cout << "\n=====================ROB========================\n";
-    cout << "\n================================================\n";
-    cout << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished" << endl;
+    cout << "\n=================================================================\n";
+    cout << "\n==============================ROB================================\n";
+    cout << "\n=================================================================\n";
+    cout << "Index\t| Code\t| Busy\t| RRF\t| Valid\t| Finished\t| PC" << endl;
     for (size_t i = 0; i < rob.size(); i++) {
         cout << i << "\t| " << rob[i].code << "\t| " << (rob[i].busy ? "T" : "F") << "\t| " << rob[i].rename << "\t| " << (rob[i].valid ? "T" : "F") <<
-                "\t| " << (rob[i].finished ? "T" : "F") << "\t| " << rob[i].PC ;
+                "\t| " << (rob[i].finished ? "T" : "F") << "\t\t| " << rob[i].PC ;
         if ((int) i == robHead)
             cout << "<---HEAD";
 
@@ -116,6 +123,7 @@ void dumpRegs() {
         cout << endl;
     }
 
+    cout << endl << endl;
     branchPredictor.printBTB();
 }
 
@@ -256,7 +264,6 @@ int main(int argc, char** argv) {
 
     dumpRegs();
 
-    //lets figure it out.
     determineStatistics();
 
     cout << "Exiting." << endl;

@@ -97,7 +97,6 @@ void BranchPredictor::printPredictionStatistics() {
     cout << "\tBranch correct prediction rate: " << ((float)correctPredictions / branchPredictionCount) * 100 << "%" << endl;
     cout << "\tBranch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
 
-//    printBTB();
 }
 
 //////////////////////////////////////////////////////////////
@@ -196,17 +195,21 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
 }
 
 void BranchPredictor::printBTB(){
-    cout << "Branch Address \t\t| Target Address" << endl;
+    cout << "\n================================================\n";
+    cout << "\n=====================BTB========================\n";
+    cout << "\n================================================\n";
+    cout << "Index \t| Branch Address \t| Target Address" << endl;
     for(size_t i = 0; i < btb.size(); i++)
-        cout << "\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl;
+        cout << i << "\t|\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl;
 
     cout << endl << endl;
 
-
+/*
     cout << "PTable Addr\t\t|PTable State" << endl;
     for(int i = 0; i < 1024; i++)
         cout << "\t" << i << "\t\t|\t" << predictionTable[i] << endl;
 
     cout << endl << endl;
+*/
 }
 
