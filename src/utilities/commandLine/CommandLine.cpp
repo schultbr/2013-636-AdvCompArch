@@ -55,6 +55,8 @@ static struct option long_options[] = { { "ss", required_argument, 0, 's' },
                                         { "l2at", required_argument, 0, '@' },
                                         { "mmat", required_argument, 0, 'm' },
                                         { "trace", required_argument, 0, 't' },
+                                        { "help", required_argument, 0, 'h' },
+                                        { "help", required_argument, 0, '?' },
                                         { 0, 0, 0, 0 } };
 
 void promptForInt(std::string promptTextString, int &targetInt, int max) {
@@ -172,8 +174,12 @@ int processCommandLine(int argc, char **argv) {
                 foundCount++;
                 break;
             }
+            case 'h':
+            case '?':
             default:
-                break;
+                print_usage();
+                return -1;
+                break; //this is funny..
         }
 
     }

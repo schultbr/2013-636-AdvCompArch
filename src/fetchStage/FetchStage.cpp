@@ -65,7 +65,8 @@ void grabNextInstructionGroup() {
     Instruction instrToAdd;
 
     if (!instructionTrace.isTraceOpen())
-        instructionTrace.openTrace(::inputTraceFile);
+        if(instructionTrace.openTrace(::inputTraceFile) < 1)
+            return; // cant be opened... sheesh.
 
     //loop through the remaining available spots in the queue... i.e. if we only got to move
     //2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
