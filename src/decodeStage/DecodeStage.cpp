@@ -15,8 +15,6 @@
 using namespace std;
 
 void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queue<Instruction> &decodedInstructions) {
-    DEBUG_COUT("Decode:\tDecoding " << instuctionsToDecode.size() << " instructions\n");
-
     if (!isDecodeFinished && isFetchFinished) {
 //	    cout << "Decode can finish... (size: " << instuctionsToDecode.size() << ")" << endl;
         if (instuctionsToDecode.size() == 0) {
@@ -34,9 +32,6 @@ void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queu
     while (instuctionsToDecode.size() > 0 && decodedInstructions.size() < (size_t) ::superScalarFactor) {
 
         instuctionsToDecode.front().DecodeInstructionString();
-
-        DEBUG_COUT_2("Decode:\tDecoded: \n");
-        instuctionsToDecode.front().Print();
 
         decodedInstructions.push(instuctionsToDecode.front());
         instuctionsToDecode.pop();

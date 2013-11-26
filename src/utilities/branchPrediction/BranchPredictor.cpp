@@ -52,24 +52,22 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
 
     //if our state machine says to take the branch, lets see if we can!
     if (prediction) {
-        DEBUG_COUT_3("Branch predicted as taken" << endl);
+        DEBUG_COUT("Branch predicted as taken" << endl);
 
         //check btb for the branch PC to see if we have a target address. Won't be here if this is the first time through for this PC...
         for (size_t i = 0; i < btb.size(); i++) {
-//            DEBUG_COUT_3("BTB[" << i << "].PC is " << btb[i].instrPC << endl);
             if (btb[i].instrPC == instrToPredict.PC) {
                 instrToPredict.predictedTargetPC = btb[i].targetPC;
-                DEBUG_COUT_3("BTB found target pc at " << i << endl);
+                DEBUG_COUT("BTB found target pc at " << i << endl);
                 return true; //branch predicted taken _AND_ we have a target pc
             }
         }
 
-        DEBUG_COUT_3("BTB didn't have the target PC..." << endl);
+        DEBUG_COUT("BTB didn't have the target PC..." << endl);
         return false; //branch predicted taken but BTB miss
     }
     else {
-//        instrToPredict.predictedTargetPC = instrToPredict.PC + 8; //don't do this here. do it in fetch...
-        DEBUG_COUT_3("Branch predicted as not taken" << endl);
+        DEBUG_COUT("Branch predicted as not taken" << endl);
         return false; //branch predicted not taken
     }
 
@@ -78,11 +76,10 @@ bool BranchPredictor::getPredictionForInstruction(Instruction &instrToPredict) {
 
 //void BranchPredictor::updatePredictionWithResults(Instruction &executedInstr){
 void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
-    DEBUG_COUT_3("Predictor:\t Updating predictor with branch execution results (ptable add: " << entry.PTaddr <<")" << endl);
+    DEBUG_COUT("Predictor:\t Updating predictor with branch execution results (ptable add: " << entry.PTaddr <<")" << endl);
     if (entry.BRoutcome) {
         //update the state machine with the current results
         inc_state(entry.PTaddr);
-	//update the Branch History Shift Register
         shift_left(1);
     }
     else {
@@ -90,7 +87,6 @@ void BranchPredictor::updatePredictorWithResults(FU_Element entry) {
         shift_left(0);
     }
 
-//    DEBUG_COUT_3("Updating BTB record for " << entry.PC << endl);
     updateBTBRecord(entry.PC, entry.BTaddr, entry.BRoutcome);
 }
 
@@ -101,19 +97,6 @@ void BranchPredictor::printPredictionStatistics() {
     cout << "\tBranch correct prediction rate: " << ((float)correctPredictions / branchPredictionCount) * 100 << "%" << endl;
     cout << "\tBranch mis-prediction rate: " << ((float) predictionMissCount / branchPredictionCount) * 100 << "%" << endl << endl;
 
-//    printBTB();
-}
-
-//return Prediction from Table
-int BranchPredictor::get_bp(int hashAddr) {
-    return predictionTable[hashAddr];
-}
-
-void BranchPredictor::printBTB() {
-    for (size_t i = 0; i < btb.size(); i++) {
-        cout << "BTB[" << i << "] instr PC = " << btb[i].instrPC << ", target PC = " << btb[i].targetPC << endl;
-    }
-    cout << endl;
 }
 
 //////////////////////////////////////////////////////////////
@@ -123,7 +106,6 @@ void BranchPredictor::printBTB() {
 //////////////////////////////////////////////////////////////
 //shift function
 void BranchPredictor::shift_left(bool bit) {
-//    DEBUG_COUT_3("Shifting the branch" << endl);
     shiftReg = shiftReg << 1;			//shift 0 into lsb
     shiftReg = shiftReg & 0x03FF; 			//only use lower 10 bits
     if (bit == 1)
@@ -139,9 +121,12 @@ short BranchPredictor::hash(int pc) {
     x = x & 0x03FF;		//only use lower 10 bits
     hash = shiftReg ^ x;	//bitwise XOR
 
-//    DEBUG_COUT_3("Hash returned is " << hash << endl);
-
     return hash;
+}
+
+//return Prediction from Table
+int BranchPredictor::get_bp(int hashAddr) {
+    return predictionTable[hashAddr];
 }
 
 //increment Prediction State
@@ -209,20 +194,22 @@ void BranchPredictor::updateBTBRecord(int instrPC, int brachTarget, bool wasTake
 
 }
 
-/*
 void BranchPredictor::printBTB(){
-    cout << "Branch Address \t\t| Target Address" << endl;
+    cout << "\n================================================\n";
+    cout << "\n=====================BTB========================\n";
+    cout << "\n================================================\n";
+    cout << "Index \t| Branch Address \t| Target Address" << endl;
     for(size_t i = 0; i < btb.size(); i++)
-        cout << "\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl;
+        cout << i << "\t|\t" << btb[i].instrPC << "\t\t|\t" << btb[i].targetPC << endl;
 
     cout << endl << endl;
 
-
+/*
     cout << "PTable Addr\t\t|PTable State" << endl;
     for(int i = 0; i < 1024; i++)
         cout << "\t" << i << "\t\t|\t" << predictionTable[i] << endl;
 
     cout << endl << endl;
-}
 */
+}
 
