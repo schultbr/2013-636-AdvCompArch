@@ -160,6 +160,9 @@ void simulateExecuteStage() {
         if (rob[fu_br.reorder].code == BRANCH) {    //as opposed to JUMP which are already marked as finished in ROB
             next_tag = fu_br.reorder;
 
+            //check if prediction was correct
+            branchPredictor.updatePredictorWithResults(fu_br);      //update Prediction Table & BTB regardless if branch was taken or not
+
             //if prediction was not correct, Fetch is stalled to simulate "flushing"
             //so there will be no new instrs in the ROB that need flushed
             if (fetchStalled == true && fetchStalledInstrPC == fu_br.PC) {    //if mispredicted
@@ -167,9 +170,6 @@ void simulateExecuteStage() {
                 fetchStalledInstrPC = -1;
             }
 
-            branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
-
-            //check if prediction was correct
             //when branch resolves, set instructions in ROB valid up until next branch
             //because of trace file, all instructions will end up being valid, no flushing from ROB
             while (!done) {
@@ -184,7 +184,6 @@ void simulateExecuteStage() {
                 if (rob[next_tag].code == BRANCH || next_tag == robTail)
                     done = true;
             }
-
 
             if (fu_br.reorder == unresolvedBranchRobIndex){     //check if ROB has additional unresolved branches
                 anyUnresolvedBranches = false;		//used in Dispatch to set new ROB entries valid or invalid

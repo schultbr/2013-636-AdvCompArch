@@ -73,7 +73,7 @@ void simulateCompleteStage() {
                 robHead = 0;
 
         }
-        else { 			//do we do anything special for finished but not valid?
+        else {
             done = true;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
         }
     }
