@@ -27,8 +27,6 @@ std::queue<Instruction> decodeDispatchBuffer;
 std::queue<Instruction> fetchDecodeBuffer;
 
 void determineStatistics() {
-    //replace this with IPC calculations and whatnot
-
     float IPC = (float) instructionCount / cyclesCompleted;
 
     float intRSUsage = (float) rs_int_total / cyclesCompleted;
@@ -123,8 +121,6 @@ void dumpRegs() {
 
 int runSimulation() {
     bool notDone = true;
-//	int i = 0;
-//	unsigned int max = 50;
     unsigned int max = 500000; // if this thing runs away... don't wait
     while (notDone) {
         DEBUG_COUT("Simulating cycle " << cyclesCompleted << endl);
@@ -188,7 +184,7 @@ void resizeHardwareFromParameters() {
     branchPredictor.resizeBTB(::btbSize);
 
     //set up global register collections
-    arf.resize(32 + 31 + 1 + 1, ARF_Element()); //need +1+1 for the HI_LO and FCC reg... 63 and 64
+    arf.resize(32 + 31 + 1 + 1, ARF_Element()); //need 32+31+1+1 for the HI_LO and FCC reg... 63 and 64
 
     rrf.resize(::renameTableEntries, RRF_Element());
     rob.resize(::reorderBufferEntries, ROB_Element());
@@ -262,9 +258,6 @@ int main(int argc, char** argv) {
 
     //lets figure it out.
     determineStatistics();
-
-    //print final buffers
-    //printBuff();
 
     cout << "Exiting." << endl;
 

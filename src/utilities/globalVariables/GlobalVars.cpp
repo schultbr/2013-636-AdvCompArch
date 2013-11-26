@@ -17,11 +17,11 @@ int rsEntries = -1;
 int fuCount = -1;
 int renameTableEntries = -1;
 int reorderBufferEntries = -1;
-float instrCacheHitRate = -1;		//should these be floats or int?
+float instrCacheHitRate = -1;
 //int instrCacheAccessTime = -1;    //use l1 cache time
-float level1CacheHitRate = -1;		//should these be floats or int?
+float level1CacheHitRate = -1;
 int level1CacheAccessTime = -1;
-float level2CacheHitRate = -1;		//should these be floats or int?
+float level2CacheHitRate = -1;
 int level2CacheAccessTime = -1;
 int systemMemoryAccessTime = -1;
 std::string inputTraceFile;

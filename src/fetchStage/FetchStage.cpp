@@ -37,7 +37,7 @@ bool checkBranchPrediction(Instruction &currentInstr) {
     //did our branch predictor say to take the branch *AND* was it found in the btb, then true. Otherwise false.
     currentInstr.wasBranchPredictedAsTaken = branchPredictor.getPredictionForInstruction(currentInstr);
 
-    //did the trace actually take the prediction??
+    //did the trace actually take the prediction?
     currentInstr.wasBranchActuallyTaken = !((currentInstr.PC + 8) == actualNextPC);
 
     //did we predict taken _and_ did the branch actually get taken? -OR-
@@ -64,13 +64,14 @@ void grabNextInstructionGroup() {
     int penaltyTime = 0;
     Instruction instrToAdd;
 
-    if (!instructionTrace.isTraceOpen())
-        if(instructionTrace.openTrace(::inputTraceFile) < 1)
-            return; // cant be opened... sheesh.
+    if (!instructionTrace.isTraceOpen()) {
+        if(instructionTrace.openTrace(::inputTraceFile) < 1) {
+            return; //cant be opened... sheesh.
+        }
+    }
 
     //loop through the remaining available spots in the queue... i.e. if we only got to move
-    //2 of 4 into decode due to stalls in dispatch, we only add 2 instructions... right? or do we
-    //pause all together? todo: figure this out
+    //2 of 4 into decode due to stalls in dispatch, we only add 2 instructions...
     //per discussion in class 11/14/2013 -> pipeline buffers fill up if dispatch fills up.
     for (int i = 0; i < ::superScalarFactor; i++) {
         //lets check to see if we get a cache hit or miss...
@@ -103,7 +104,6 @@ void grabNextInstructionGroup() {
         instrToAdd = instructionTrace.getNextInstruction();
 
         //we got an empty instruction due to being at the end of the file. big day.
-//		if(instrToAdd.PC == -2 && instrToAdd.GetOpcodeString() == "") //old way to check... not reliable
         if (instrToAdd.getIsEOF())
             break;
 
@@ -160,8 +160,6 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
 }
 
 //pull in n instructions
-//process from strings into instruction types? or should they be in them already from the reader? derp.
-//
 void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
 
     if (!isFetchFinished && instructionsInPipeline.size() == 0 && endOfTraceReached) {
@@ -185,18 +183,18 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
         DEBUG_COUT("Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n");
         cacheMissWaitTimeRemaining = 0;
         isResumeNextCycle = false;
-//		return; //don't return, we need to decrement still. only new instruction fetching is stalled
+        //don't return, we need to decrement still. only new instruction fetching is stalled
     }
     else if (!fetchStalled && !isResumeNextCycle) { //yay! fetch can resume next cycle!
         isResumeNextCycle = true;
-//        return; //don't return, we need to decrement still. only new instruction fetching is stalled
+        //don't return, we need to decrement still. only new instruction fetching is stalled
     }
     else if (cacheMissWaitTimeRemaining > 0) {
         //did we previously miss a cache hit?
         //check to we're still paying any penalty
         cacheMissWaitTimeRemaining--;
         DEBUG_COUT("Still waiting. " << cacheMissWaitTimeRemaining << " cycles remaining before fetching again.\n");
-//        return;  //don't return, we need to decrement still. only new instruction fetching is stalled
+        //don't return, we need to decrement still. only new instruction fetching is stalled
     }
     else if ((int) fetchedInstructions.size() == 0 && instructionsInPipeline.size() == 0)	    //add another instruction set to the group, if we can. if size is > 0, we shoudln't grab more
         grabNextInstructionGroup(); //prevent us from grabbing too many instructions by subtracting buffersize from ss_size

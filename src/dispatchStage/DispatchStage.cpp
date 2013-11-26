@@ -48,7 +48,6 @@ bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS, boo
 
     if (usesRRF) {
         for (size_t i = 0; i < rrf.size() && isRRFFull; i++) {
-            DEBUG_COUT("Dispatch:\tIs " << i << " in rrf busy? " << (rrf[i].busy ? trueStr : falseStr) << endl);
             if (rrf[i].busy == false) {
                 isRRFFull = false;
                 break;
@@ -306,7 +305,6 @@ void simulateDispatchStage(std::queue<Instruction> &instrToDispatch) {
         robTag = dispatchToROB(instrToDispatch.front(), rrfTag, (instrToDispatch.front().opCode == NOP ? true : false));
 
         //RS dispatch
-        //does RS dispatch need RRF tag? I can't recall.
         if (usesRS) {
             dispatchToRS(instrToDispatch.front(), targetRS, robTag);
             //update stats for RS entries in use

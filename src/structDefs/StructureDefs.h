@@ -12,15 +12,7 @@ enum OpcodeType {
     ADD_SUB_I, MULT_DIV_I, BRANCH, JUMP, LOAD, STORE, FLOATING_POINT, LOGICAL, NOP
 };
 
-//is this type needed? would it be helpful in issue?
-enum ReservationStationType {
-    INTEGER_RS, FLOATING_POINT_RS, MEMORY_RS, BRANCH_RS, NO_RS
-};
-
-//the following can just be structs with constructors... a quick-and-dirty class,
-//essentially, since that's all we needed anyways.
 //Reorder Buffer slot
-
 struct ROB_Element {
     bool busy;		//busy bit, this entry in use
     bool finished;		//out of FU, has finished execution
@@ -140,7 +132,6 @@ struct FU_Element {
 struct BTB_Element {
     int instrPC;
     int targetPC;
-//    bool lastPredictedTaken; //not needed? i dont think
 
     BTB_Element() {
         instrPC = -1;

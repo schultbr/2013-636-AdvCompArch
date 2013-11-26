@@ -167,7 +167,7 @@ void simulateExecuteStage() {
                 fetchStalledInstrPC = -1;
             }
 
-            branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not, right?
+            branchPredictor.updatePredictorWithResults(fu_br);   	//update Prediction Table & BTB regardless if branch was taken or not
 
             //check if prediction was correct
             //when branch resolves, set instructions in ROB valid up until next branch

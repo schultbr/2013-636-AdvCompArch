@@ -568,13 +568,13 @@ void Instruction::FillMaps() {
     opcodeTypeMap["mult"] = MULT_DIV_I;
     opcodeTypeMap["div"] = MULT_DIV_I;
     opcodeTypeMap["divu"] = MULT_DIV_I;
-    opcodeTypeMap["mfhi"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["mflo"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["lui"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["mfc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["dmfc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["mtc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
-    opcodeTypeMap["dmtc1"] = ADD_SUB_I; //todo: is this a mult? I have no idea. documentation doesn't mention it
+    opcodeTypeMap["mfhi"] = ADD_SUB_I;
+    opcodeTypeMap["mflo"] = ADD_SUB_I;
+    opcodeTypeMap["lui"] = ADD_SUB_I;
+    opcodeTypeMap["mfc1"] = ADD_SUB_I;
+    opcodeTypeMap["dmfc1"] = ADD_SUB_I;
+    opcodeTypeMap["mtc1"] = ADD_SUB_I;
+    opcodeTypeMap["dmtc1"] = ADD_SUB_I;
 
     opcodeTypeMap["and"] = LOGICAL;
     opcodeTypeMap["andi"] = LOGICAL;

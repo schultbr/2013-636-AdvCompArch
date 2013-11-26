@@ -148,7 +148,7 @@ void BranchPredictor::inc_state(int hashAddr) {
             predictionTable[hashAddr] = 3;
             break;
         default:
-            break; //should we bother with a default?
+            break;
     }
 }
 
@@ -170,7 +170,7 @@ void BranchPredictor::dec_state(int hashAddr) {
             predictionTable[hashAddr] = 2;
             break;
         default:
-            break; //should we bother with a default?
+            break;
     }
 }
 
