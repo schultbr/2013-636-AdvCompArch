@@ -16,7 +16,6 @@ using namespace std;
 
 void simulateDecodeStage(std::queue<Instruction> &instuctionsToDecode, std::queue<Instruction> &decodedInstructions) {
     if (!isDecodeFinished && isFetchFinished) {
-//	    cout << "Decode can finish... (size: " << instuctionsToDecode.size() << ")" << endl;
         if (instuctionsToDecode.size() == 0) {
             cout << "Decode is now finished" << endl;
             isDecodeFinished = true;

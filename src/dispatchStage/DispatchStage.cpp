@@ -20,13 +20,6 @@ using namespace std;
 bool checkDestAvailable(Instruction inst, std::vector<RS_Element> *targetRS, bool &usesRRF, bool &usesRS) {
     bool isROBFull = true;
 
-    string trueStr = "true";
-    string falseStr = "false";
-
-    //todo: this can be done by checking head and tail, but i need to
-    //know if tail points to the next available entry or the last used entry...
-    // that changes the math needed (ideally tail points to next available,
-    //so we can check tail == head and be done)
     for (size_t i = 0; i < rob.size() && isROBFull; i++) {
         if (rob[i].busy == false) {
             isROBFull = false;
@@ -136,8 +129,7 @@ void checkForValid(int &op, bool &valid) {
 
 }
 
-//returns some reference to the RS... not
-//sure what it should be yet though todo:figure out
+//returns tag to the RS
 int dispatchToRS(Instruction inst, std::vector<RS_Element> *targetRS, int robTag) {
     int returnTag = -1;
     bool isReg1 = false;

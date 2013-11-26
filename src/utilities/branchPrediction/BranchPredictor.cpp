@@ -16,7 +16,7 @@ using namespace std;
 
 BranchPredictor::BranchPredictor() {
     shiftReg = 0x0000;
-    std::fill(predictionTable, predictionTable + 1024, 2);  //set initial prediction to '01', Not Taken
+    std::fill(predictionTable, predictionTable + 1024, 2);  //set initial prediction to '10', Taken
     btbInsertIndex = 0;
     branchPredictionCount = 0;
     predictionMissCount = 0;

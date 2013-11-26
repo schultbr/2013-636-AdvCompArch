@@ -167,7 +167,7 @@ void checkReady(std::vector<RS_Element> *targetRS) {
                     }
                     break;
 
-                case NOP: //NOP goes straight to ROB with complete marked as true -- brs
+                case NOP: //NOP goes straight to ROB with complete marked as true
                 default:
                     break;
             }
@@ -195,8 +195,6 @@ void simulateIssueStage() {
     }
     else if (isIssueFinished)
         return;
-
-    //DEBUG_COUT("Issue Stage\n";
 
     //check Common Data Bus for updates
     checkValue(&rs_int);

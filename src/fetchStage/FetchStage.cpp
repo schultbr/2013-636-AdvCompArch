@@ -134,21 +134,14 @@ void decrementAllPipelineInstructions(std::queue<Instruction> &fetchedInstructio
     for (size_t i = 0; i < instructionsInPipeline.size(); i++) {
         if (instructionsInPipeline[i].cyclesUntilReturned > 0) //make sure we don't go negative
             instructionsInPipeline[i].cyclesUntilReturned--;
-
-        //debug print:
-        DEBUG_COUT("Fetch:\t" << "Buffered instruction set " << i << " (PC " << instructionsInPipeline[i].instructions.front().PC << ") has " << instructionsInPipeline[i].cyclesUntilReturned << " cycles before being flushed\n");
     }
 
     string boolCheck = (instructionsInPipeline[0].cyclesUntilReturned == 0 ? "true" : "false");
 
-    DEBUG_COUT("Fetch:\t" << "Front instruction set has " << instructionsInPipeline[0].cyclesUntilReturned << " to go. We should flush it (" << boolCheck << ")\n");
-
     //start to flush the front instruction if it's time is up.
     if (instructionsInPipeline[0].cyclesUntilReturned == 0) {
-        DEBUG_COUT("Fetch:\t" << "Moving instructions over\n");
 
         while ((int) fetchedInstructions.size() < ::superScalarFactor && instructionsInPipeline[0].instructions.size() > 0) {
-            DEBUG_COUT("Fetch:\t" << "Fetched size = " << fetchedInstructions.size() << endl);
             fetchedInstructions.push(instructionsInPipeline[0].instructions.front()); //move over one at a time, in case of partial filled downstream stages
             instructionsInPipeline[0].instructions.pop();
         }
@@ -180,7 +173,6 @@ void simulateFetchStage(std::queue<Instruction> &fetchedInstructions) {
     //  a mis-predicted branch didn't finish execution in this same cycle -AND-
     //  we're not waiting on the cache
     if (fetchStalled) { //we mis-predicted a branch. it hurt.
-        DEBUG_COUT("Fetch is stalled until instruction PC " << fetchStalledInstrPC << " has finished executing\n");
         cacheMissWaitTimeRemaining = 0;
         isResumeNextCycle = false;
         //don't return, we need to decrement still. only new instruction fetching is stalled
