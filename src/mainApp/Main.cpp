@@ -31,23 +31,51 @@ void determineStatistics() {
 
     float IPC = (float) instructionCount / cyclesCompleted;
 
+    float intRSUsage = (float) rs_int_total / cyclesCompleted;
+    float memRSUsage = (float) rs_mem_total / cyclesCompleted;
+    float brRSUsage = (float) rs_br_total / cyclesCompleted;
+    float fpRSUsage = (float) rs_fp_total / cyclesCompleted;
+
+    float rsAverageUsage = (intRSUsage + memRSUsage + brRSUsage + fpRSUsage) / 4;
+    float rsAveragePercentage = (rsAverageUsage  / (::rsEntries * 4) ) * 100;
+
+    float addFUUsage = (float) fu_add_total / cyclesCompleted;
+    float multFUUsage = (float) fu_mult_total / cyclesCompleted;
+    float fpFUUsage = (float) fu_fp_total / cyclesCompleted;
+    float memFUUsage = (float) fu_mem_total / cyclesCompleted;
+    float brFUUsage = (float) fu_br_total / cyclesCompleted;
+
+    float fuAverageUsage = (addFUUsage + multFUUsage + fpFUUsage + memFUUsage + brFUUsage) / 5;
+    float fuUsedPercentage = (fuAverageUsage / ((::fuCount * 4) + 1)) * 100;
+
+
+    float robAverageUsage = (float) rob_total / cyclesCompleted;
+    float robTotalUsagePercentage = (robAverageUsage / ::reorderBufferEntries) * 100;
+
+    float rrfAverageUsage = (float) rrf_total / cyclesCompleted;
+    float rrfTotalUsagePercentage = ( rrfAverageUsage / ::renameTableEntries ) * 100;
+
     cout << "Instruction count: " << instructionCount << endl;
     cout << "Cycle count: " << cyclesCompleted << endl;
     cout << "IPC, then, is " << IPC << endl << endl;
 
     branchPredictor.printPredictionStatistics();
 
-    cout << "ROB entries used per cycle = " << (float) rob_total / cyclesCompleted << endl;
-    cout << "RRF entries used per cyle = " << (float) rrf_total / cyclesCompleted << endl;
-    cout << "RS INT used per cycle = " << (float) rs_int_total / cyclesCompleted << endl;
-    cout << "RS FP used per cycle = " << (float) rs_fp_total / cyclesCompleted << endl;
-    cout << "RS MEM used per cycle = " << (float) rs_mem_total / cyclesCompleted << endl;
-    cout << "RS BR used per cycle = " << (float) rs_br_total / cyclesCompleted << endl;
-    cout << "FU ADD used per cycle = " << (float) fu_add_total / cyclesCompleted << endl;
-    cout << "FU MULT used per cycle = " << (float) fu_mult_total / cyclesCompleted << endl;
-    cout << "FU FP used per cycle = " << (float) fu_fp_total / cyclesCompleted << endl;
-    cout << "FU MEM used per cycle = " << (float) fu_mem_total / cyclesCompleted << endl;
-    cout << "FU BR used per cycle = " << (float) fu_br_total / cyclesCompleted << endl << endl;
+    cout << "ROB entries used per cycle = " << robAverageUsage << " with " << robTotalUsagePercentage << "% of slots used" << endl;
+    cout << "RRF entries used per cyle = " << rrfAverageUsage << " with " << rrfTotalUsagePercentage << "% of slots used" <<  endl;
+    cout << "Average RS usage per cycle = " << rsAverageUsage << "with " << rsAveragePercentage <<  "% of RS slots used."<< endl;
+    cout << "Average FU used per cycle = " << fuAverageUsage << " with " << fuUsedPercentage << "% of FU used" << endl << endl;
+
+    cout << "RS INT used per cycle = " << intRSUsage << endl;
+    cout << "RS FP used per cycle = " << fpRSUsage << endl;
+    cout << "RS MEM used per cycle = " << memRSUsage << endl;
+    cout << "RS BR used per cycle = " << brRSUsage << endl;
+
+    cout << "FU ADD used per cycle = " << addFUUsage << endl;
+    cout << "FU MULT used per cycle = " << multFUUsage << endl;
+    cout << "FU FP used per cycle = " << fpFUUsage << endl;
+    cout << "FU MEM used per cycle = " << memFUUsage << endl;
+    cout << "FU BR used per cycle = " << brFUUsage << endl;
 }
 
 int rrf_count() {
@@ -58,27 +86,21 @@ int rrf_count() {
     }
     return cnt;
 }
-//void clearQueue(){
-//	while(decodeDispatchBuffer.size() > 0)
-//		decodeDispatchBuffer.pop();
-//}
 
 void dumpRegs() {
     cout << "\n================================================\n";
     cout << "\n=====================ARF========================\n";
     cout << "\n================================================\n";
     cout << "Index\t| Data\t| Busy\t| RRF\t" << endl;
-    for (size_t i = 0; i < arf.size(); i++) {
-        cout << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl);
-    }
+    for (size_t i = 0; i < arf.size(); i++)
+        cout << i << "\t| " << arf[i].data << "\t| " << (arf[i].busy ? "T" : "F") << "\t| " << arf[i].rename << endl;
 
     cout << "\n================================================\n";
     cout << "\n=====================RRF========================\n";
     cout << "\n================================================\n";
     cout << "Index\t| Data\t| Busy\t| ARF\t| Valid?\t" << endl;
-    for (size_t i = 0; i < rrf.size(); i++) {
+    for (size_t i = 0; i < rrf.size(); i++)
         cout << i << "\t| " << rrf[i].data << "\t| " << (rrf[i].busy ? "T" : "F") << "\t| " << rrf[i].dest << "\t| " << (rrf[i].valid ? "T" : "F") << endl;
-    }
 
     cout << "\n================================================\n";
     cout << "\n=====================ROB========================\n";
@@ -139,13 +161,6 @@ int runSimulation() {
 
         if (cyclesCompleted == max)
             notDone = false;
-
-        //use the below to debug the regs after every cycle, beginning after a certain cycle count
-//#ifdef DEBUG3
-//        if (cyclesCompleted > 91375)
-//            dumpRegs(); //195605    //89469 //91475
-//#endif
-
     }
 
     return 1;

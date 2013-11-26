@@ -48,8 +48,6 @@ void simulateCompleteStage() {
         return;
     }
 
-    DEBUG_COUT("Complete:\t" << "Completing instructions\n");
-
     while (!done) {
 
         if (rob[robHead].busy == 1 && rob[robHead].finished == 1 && rob[robHead].valid == 1) {
@@ -76,7 +74,6 @@ void simulateCompleteStage() {
 
         }
         else { 			//do we do anything special for finished but not valid?
-            DEBUG_COUT("Complete:\t Hit else case. Done checking." << endl);
             done = true;		//next element was: not busy(hit tail), not finished, or not valid(wait for br to resolve)
         }
     }
